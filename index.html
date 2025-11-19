@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Summit 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #4a5d7e 50%, #2d4a5e 100%);
+            min-height: 100vh;
+            color: white;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #a8c0ff 0%, #d4e4ff 50%, #e8f4ff 100%);
+            color: #1a2332;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            background-color: rgba(44, 62, 80, 0.9);
+            transition: background-color 0.5s;
+        }
+
+        body.light-mode nav {
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #b0c4de;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        body.light-mode .nav-links a {
+            color: #4a5d7e;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #4db8ff;
+        }
+
+        body.light-mode .nav-links a:hover,
+        body.light-mode .nav-links a.active {
+            color: #0066cc;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.3s;
+        }
+
+        body.light-mode .theme-toggle {
+            color: #1a2332;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(20deg);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px 60px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .hero h1 .community {
+            color: #7c9fd9;
+        }
+
+        body.light-mode .hero h1 .community {
+            color: #5577cc;
+        }
+
+        .hero h1 .summit {
+            color: #4db8ff;
+        }
+
+        body.light-mode .hero h1 .summit {
+            color: #0088ff;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #d0d8e0;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        body.light-mode .hero p {
+            color: #3a4a5e;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 80px;
+        }
+
+        .btn {
+            padding: 16px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(30, 40, 50, 0.9);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        body.light-mode .btn-secondary {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a2332;
+            border: 2px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .info-cards {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0 40px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: rgba(30, 50, 70, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px 36px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 280px;
+            transition: background 0.5s, border 0.5s;
+        }
+
+        body.light-mode .card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            font-size: 28px;
+            opacity: 0.8;
+        }
+
+        .card-icon.calendar {
+            color: #7ed321;
+        }
+
+        .card-icon.location {
+            color: #7ed321;
+        }
+
+        .card-icon.people {
+            color: #7ed321;
+        }
+
+        .card-content {
+            text-align: left;
+        }
+
+        .card-content p {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .scroll-indicator {
+            text-align: center;
+            margin-top: 40px;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator svg {
+            width: 40px;
+            height: 40px;
+            opacity: 0.6;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .speakers-section {
+            padding: 80px 40px;
+            background: rgba(20, 30, 45, 0.5);
+        }
+
+        body.light-mode .speakers-section {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .speakers-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .speakers-section h2 {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 16px;
+            color: #4db8ff;
+            font-weight: 700;
+        }
+
+        body.light-mode .speakers-section h2 {
+            color: #0088ff;
+        }
+
+        .speakers-section > div > p {
+            text-align: center;
+            font-size: 17px;
+            color: #a0b4c8;
+            max-width: 650px;
+            margin: 0 auto 60px;
+            line-height: 1.7;
+        }
+
+        body.light-mode .speakers-section > div > p {
+            color: #5a6a7e;
+        }
+
+        .speakers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .speaker-card {
+            background: rgba(30, 50, 70, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.5s, border 0.5s;
+            cursor: pointer;
+        }
+
+        body.light-mode .speaker-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .speaker-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode .speaker-card:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .speaker-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .speaker-info {
+            padding: 24px;
+        }
+
+        .speaker-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        body.light-mode .speaker-name {
+            color: #1a2332;
+        }
+
+        .speaker-title {
+            font-size: 14px;
+            color: #4db8ff;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        body.light-mode .speaker-title {
+            color: #0066cc;
+        }
+
+        .speaker-bio {
+            font-size: 15px;
+            color: #b0c4de;
+            line-height: 1.6;
+        }
+
+        body.light-mode .speaker-bio {
+            color: #5a6a7e;
+        }
+
+        .partners-section {
+            padding: 80px 40px;
+            background: rgba(30, 45, 65, 0.6);
+        }
+
+        body.light-mode .partners-section {
+            background: rgba(195, 225, 255, 0.5);
+        }
+
+        .partners-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .partners-section h2 {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 16px;
+            color: #4db8ff;
+            font-weight: 700;
+        }
+
+        body.light-mode .partners-section h2 {
+            color: #0088ff;
+        }
+
+        .partners-section > div > p {
+            text-align: center;
+            font-size: 17px;
+            color: #a0b4c8;
+            max-width: 650px;
+            margin: 0 auto 60px;
+            line-height: 1.7;
+        }
+
+        body.light-mode .partners-section > div > p {
+            color: #5a6a7e;
+        }
+
+        .partners-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .partner-card {
+            background: rgba(20, 30, 40, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 40px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.5s, border 0.5s;
+            cursor: pointer;
+            min-height: 140px;
+        }
+
+        body.light-mode .partner-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .partner-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode .partner-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .partner-logo {
+            max-width: 120px;
+            max-height: 60px;
+            filter: brightness(0.9);
+            transition: filter 0.3s;
+        }
+
+        body.light-mode .partner-logo {
+            filter: brightness(0.7);
+        }
+
+        .partner-card:hover .partner-logo {
+            filter: brightness(1.1);
+        }
+
+        body.light-mode .partner-card:hover .partner-logo {
+            filter: brightness(0.5);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            nav {
+                padding: 20px 30px;
+            }
+
+            .nav-links {
+                gap: 20px;
+            }
+
+            .info-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="20" fill="#ff6b35"/>
+                <circle cx="70" cy="30" r="20" fill="#4db8ff"/>
+                <circle cx="50" cy="65" r="20" fill="#7ed321"/>
+                <circle cx="30" cy="30" r="8" fill="white"/>
+                <text x="26" y="34" font-size="12" fill="#ff6b35" font-weight="bold">C</text>
+            </svg>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active">Home</a>
+            <a href="#">About</a>
+            <a href="#">Register</a>
+            <a href="#">Contact</a>
+            <button class="theme-toggle" onclick="toggleTheme()">☀</button>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h1>
+            <span class="community">Community</span> <span class="summit">Summit 2025</span>
+        </h1>
+        <p>Join us for an inspiring gathering of innovators, thought leaders, and changemakers shaping the future of technology and community.</p>
+        
+        <div class="cta-buttons">
+            <button class="btn btn-primary">Register Now</button>
+            <button class="btn btn-secondary">Learn More</button>
+        </div>
+
+        <div class="info-cards">
+            <div class="card">
+                <div class="card-icon calendar">📅</div>
+                <div class="card-content">
+                    <p>June 15-17, 2025</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon location">📍</div>
+                <div class="card-content">
+                    <p>Tech Convention Center</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-icon people">👥</div>
+                <div class="card-content">
+                    <p>500+ Attendees Expected</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+        </div>
+    </div>
+
+    <section class="speakers-section">
+        <div class="speakers-content">
+            <h2>Featured Speakers</h2>
+            <p>Learn from industry experts and visionaries who are shaping the future of technology and innovation.</p>
+
+            <div class="speakers-grid">
+            <div class="speaker-card">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=280&fit=crop" alt="Dr. Sarah Mitchell" class="speaker-image">
+                <div class="speaker-info">
+                    <h3 class="speaker-name">Dr. Sarah Mitchell</h3>
+                    <p class="speaker-title">Chief Innovation Officer, TechCorp</p>
+                    <p class="speaker-bio">Leading digital transformation initiatives with 15+ years of experience in enterprise technology and innovation strategy.</p>
+                </div>
+            </div>
+
+            <div class="speaker-card">
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=280&fit=crop" alt="Marcus Chen" class="speaker-image">
+                <div class="speaker-info">
+                    <h3 class="speaker-name">Marcus Chen</h3>
+                    <p class="speaker-title">Founder & CEO, StartupHub</p>
+                    <p class="speaker-bio">Serial entrepreneur and startup mentor who has built and scaled multiple successful tech ventures across Asia and North America.</p>
+                </div>
+            </div>
+
+            <div class="speaker-card">
+                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=280&fit=crop" alt="Dr. Aisha Patel" class="speaker-image">
+                <div class="speaker-info">
+                    <h3 class="speaker-name">Dr. Aisha Patel</h3>
+                    <p class="speaker-title">Director of AI Research, DataLabs</p>
+                    <p class="speaker-bio">Pioneer in artificial intelligence and machine learning, published author, and advocate for ethical AI development.</p>
+                </div>
+            </div>
+
+            <div class="speaker-card">
+                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=280&fit=crop" alt="James Rodriguez" class="speaker-image">
+                <div class="speaker-info">
+                    <h3 class="speaker-name">James Rodriguez</h3>
+                    <p class="speaker-title">VP of Engineering, CloudSystems</p>
+                    <p class="speaker-bio">Expert in cloud architecture and distributed systems with a passion for building scalable infrastructure solutions.</p>
+                </div>
+            </div>
+
+            <div class="speaker-card">
+                <img src="https://images.unsplash.com/photo-1598550874175-4d0ef436c909?w=400&h=280&fit=crop" alt="Lisa Wang" class="speaker-image">
+                <div class="speaker-info">
+                    <h3 class="speaker-name">Lisa Wang</h3>
+                    <p class="speaker-title">Product Design Lead, InnovateUX</p>
+                    <p class="speaker-bio">Award-winning designer focused on creating human-centered digital experiences that drive business growth.</p>
+                </div>
+            </div>
+
+            <div class="speaker-card">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop" alt="David Thompson" class="speaker-image">
+                <div class="speaker-info">
+                    <h3 class="speaker-name">David Thompson</h3>
+                    <p class="speaker-title">Cybersecurity Strategist, SecureNet</p>
+                    <p class="speaker-bio">Leading cybersecurity expert helping organizations protect critical infrastructure and data in an evolving threat landscape.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="partners-section">
+        <div class="partners-content">
+            <h2>Our Partners</h2>
+            <p>Proud to collaborate with leading organizations making a difference in the tech community.</p>
+
+            <div class="partners-grid">
+                <div class="partner-card">
+                    <svg class="partner-logo" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="30" cy="30" r="20" fill="none" stroke="white" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="12" fill="none" stroke="white" stroke-width="3"/>
+                        <line x1="30" y1="10" x2="30" y2="50" stroke="white" stroke-width="3"/>
+                        <line x1="10" y1="30" x2="50" y2="30" stroke="white" stroke-width="3"/>
+                        <text x="60" y="35" fill="white" font-size="16" font-weight="bold">TechVenture</text>
+                    </svg>
+                </div>
+
+                <div class="partner-card">
+                    <svg class="partner-logo" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 20 15 L 35 45 L 50 15 Z" fill="none" stroke="white" stroke-width="3"/>
+                        <circle cx="35" cy="35" r="8" fill="white"/>
+                        <text x="60" y="35" fill="white" font-size="14" font-weight="bold">Innovation Labs</text>
+                    </svg>
+                </div>
+
+                <div class="partner-card">
+                    <svg class="partner-logo" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="15" y="15" width="30" height="30" rx="5" fill="none" stroke="white" stroke-width="3"/>
+                        <circle cx="30" cy="30" r="8" fill="white"/>
+                        <text x="55" y="35" fill="white" font-size="16" font-weight="bold">DataCore</text>
+                    </svg>
+                </div>
+
+                <div class="partner-card">
+                    <svg class="partner-logo" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 20 30 Q 30 15 40 30 T 60 30" fill="none" stroke="white" stroke-width="3"/>
+                        <circle cx="20" cy="30" r="4" fill="white"/>
+                        <circle cx="40" cy="30" r="4" fill="white"/>
+                        <circle cx="60" cy="30" r="4" fill="white"/>
+                        <text x="70" y="35" fill="white" font-size="14" font-weight="bold">Future AI</text>
+                    </svg>
+                </div>
+
+                <div class="partner-card">
+                    <svg class="partner-logo" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="30,15 45,45 15,45" fill="none" stroke="white" stroke-width="3"/>
+                        <circle cx="30" cy="35" r="5" fill="white"/>
+                        <text x="55" y="35" fill="white" font-size="16" font-weight="bold">CloudSync</text>
+                    </svg>
+                </div>
+
+                <div class="partner-card">
+                    <svg class="partner-logo" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="25" cy="25" r="12" fill="none" stroke="white" stroke-width="3"/>
+                        <circle cx="35" cy="35" r="12" fill="none" stroke="white" stroke-width="3"/>
+                        <text x="55" y="35" fill="white" font-size="14" font-weight="bold">GlobalTech</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeToggle.textContent = '☀';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+                themeToggle.textContent = '🌙';
+            }
+        });
+    </script>
+</body>
+</html>
