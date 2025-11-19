@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Summit 2025</title>
+    <title>Ogoni Summit 2025</title>
     <!-- Load Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Configure Tailwind for custom colors, font, and the standard 'dark' class -->
@@ -79,9 +79,9 @@
         <img src="img/logo.png" alt="Logo" class="w-[60px] h-auto">
         
         <ul class="hidden  md:flex gap-10 items-center list-none">
-            <li><a href="index.html" class="text-slate-600 text-base font-medium hover:text-blue-500 transition-colors dark:text-slate-300">Home</a></li>
+            <li><a href="index.html" class="text-blue-500 text-base font-medium transition-colors">Home</a></li>
             <li><a href="about.html" class="text-slate-600 text-base font-medium hover:text-blue-500 transition-colors dark:text-slate-300">About</a></li>
-            <li><a href="registrationform.html" class="text-blue-500 text-base font-medium transition-colors">Register</a></li>
+            <li><a href="registrationform.html" class="text-slate-600 text-base font-medium hover:text-blue-500 transition-colors dark:text-slate-300">Register</a></li>
             <li><a href="contactus.html" class="text-slate-600 text-base font-medium hover:text-blue-500 transition-colors dark:text-slate-300">Contact</a></li>
             <button class="theme-toggle bg-transparent border-none text-slate-600 text-2xl cursor-pointer hover:rotate-180 transition-transform duration-300 dark:text-slate-300">🌙</button>
         </ul>
@@ -93,31 +93,30 @@
         </div>
 
         <div id="mobile-menu" class="fixed  inset-0 top-[89px] bg-white dark:bg-dark-nav  flex flex-col items-center justify-start pt-16 gap-8 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden border-t border-slate-100 dark:bg-dark-nav/98 dark:border-white/5">
-            <a href="/index.html" class="text-slate-600 text-xl font-medium hover:text-blue-500 transition-colors dark:text-slate-300">Home</a>
+            <a href="/index.html" class="text-blue-500 text-xl font-medium transition-colors">Home</a>
             <a href="/about.html" class="text-slate-600 text-xl font-medium hover:text-blue-500 transition-colors dark:text-slate-300">About</a>
-            <a href="/registrationform.html" class="text-blue-500 text-xl font-medium transition-colors">Register</a>
+            <a href="/registrationform.html" class="text-slate-600 text-xl font-medium hover:text-blue-500 transition-colors dark:text-slate-300">Register</a>
             <a href="/contactus.html" class="text-slate-600 text-xl font-medium hover:text-blue-500 transition-colors dark:text-slate-300 ">Contact</a>
             <button class="theme-toggle-mobile text-slate-600 text-3xl hover:rotate-180 transition-transform duration-300 dark:text-slate-300 ">🌙</button>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <div class="hero text-center pt-20 pb-16 max-w-5xl mx-auto px-4">
-        <h1 class="text-5xl sm:text-7xl font-extrabold mb-8 leading-tight">
-            <span class="text-blue-600 dark:text-blue-300 transition-colors duration-500">Community</span> 
-            <span class="text-blue-800 dark:text-cyan-400 transition-colors duration-500">Summit 2025</span>
+    <div class="w-full py-24 px-8 bg-gradient-to-b from-[#e8eef5] to-[#dce4ed] dark:from-dark-nav dark:to-[#16192a]">
+        <h1 class="text-4xl text-center md:text-6xl font-bold mb-10 text-blue-500 leading-tight">
+            Community Summit 2025
         </h1>
-        <p class="text-lg sm:text-xl mb-10 max-w-3xl mx-auto text-gray-700 dark:text-blue-200">
+        <p class="text-lg md:text-xl text-slate-500 leading-loose mb-12 max-w-6xl dark:text-slate-400 text-center">
             Join us for an inspiring gathering of innovators, thought leaders, and changemakers shaping the future of technology and community.
         </p>
         
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row gap-5 justify-center mb-20">
-            <a href="#" class="btn bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-xl hover:shadow-red-500/50">
+            <a href="#" class="btn px-8 py-4 rounded-full bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-xl hover:shadow-red-500/20 animate-bounce-custom ">
                 Register Now
             </a>
-            <a href="#" class="btn bg-white border-2 border-gray-300 text-gray-900 shadow-md hover:shadow-xl
-                dark:bg-gray-800/90 dark:border-white/20 dark:text-white">
+            <a href="#" class="btn px-8 py-4 rounded-full bg-white border-2 border-gray-300 text-gray-900 shadow-md hover:shadow-xl
+                dark:bg-gray-800/90 dark:border-white/20 dark:text-white hover:shadow-gray-500/20">
                 Learn More
             </a>
         </div>
@@ -159,9 +158,9 @@
     </div>
 
     <!-- Speakers Section -->
-    <section class="py-20 px-4 bg-gray-100/50 dark:bg-gray-900/50 shadow-inner">
+    <section class="w-full py-20 px-8 bg-white dark:bg-dark-bg">
         <div class="max-w-7xl mx-auto">
-            <h2 class="text-4xl sm:text-5xl font-bold text-center mb-4 text-blue-800 dark:text-cyan-400">Featured Speakers</h2>
+            <h2 class="text-4xl text-center md:text-6xl font-bold mb-10 text-blue-500 leading-tight">Featured Speakers</h2>
             <p class="text-center text-lg max-w-xl mx-auto mb-16 text-gray-600 dark:text-blue-200">
                 Learn from industry experts and visionaries who are shaping the future of technology and innovation.
             </p>
@@ -169,101 +168,142 @@
             <!-- Speakers Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Speaker Card 1 -->
-                <div class="speaker-card bg-white/80 border border-gray-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-3xl
-                    dark:bg-gray-700/50 dark:border-white/10">
+                <div class="speaker-card bg-slate-50 border
+                border-slate-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer 
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-blue-500
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:border-blue-500 group">
                     <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/4db8ff/ffffff?text=Sarah+M';" alt="Dr. Sarah Mitchell" class="w-full h-72 object-cover bg-gradient-to-br from-indigo-500 to-purple-700">
                     <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">Dr. Sarah Mitchell</h3>
-                        <p class="text-sm font-semibold mb-3 text-blue-600 dark:text-cyan-400">Chief Innovation Officer, TechCorp</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-4 dark:text-slate-100">Dr. Sarah Mitchell</h3>
+                        <p class="text-sm font-semibold mb-3 text-blue-500 ">Chief Innovation Officer, TechCorp</p>
                         <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Leading digital transformation initiatives with 15+ years of experience in enterprise technology and innovation strategy.</p>
                     </div>
                 </div>
 
                 <!-- Speaker Card 2 -->
-                <div class="speaker-card bg-white/80 border border-gray-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-3xl
-                    dark:bg-gray-700/50 dark:border-white/10">
+                <div class="speaker-card bg-slate-50 border
+                border-slate-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer 
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-blue-500
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:border-blue-500 group">
                     <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/ff9a56/ffffff?text=Marcus+C';" alt="Marcus Chen" class="w-full h-72 object-cover bg-gradient-to-br from-orange-500 to-red-500">
                     <div class="p-6">
                         <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">Marcus Chen</h3>
-                        <p class="text-sm font-semibold mb-3 text-blue-600 dark:text-cyan-400">Founder & CEO, StartupHub</p>
+                        <p class="text-sm font-semibold mb-3 text-blue-500">Founder & CEO, StartupHub</p>
                         <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Serial entrepreneur and startup mentor who has built and scaled multiple successful tech ventures across Asia and North America.</p>
                     </div>
                 </div>
 
                 <!-- Speaker Card 3 -->
-                <div class="speaker-card bg-white/80 border border-gray-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-3xl
-                    dark:bg-gray-700/50 dark:border-white/10">
+                <div class="speaker-card bg-slate-50 border
+                border-slate-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer 
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-blue-500
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:border-blue-500 group">
                     <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/7ed321/ffffff?text=Aisha+P';" alt="Dr. Aisha Patel" class="w-full h-72 object-cover bg-gradient-to-br from-green-400 to-teal-500">
                     <div class="p-6">
                         <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">Dr. Aisha Patel</h3>
-                        <p class="text-sm font-semibold mb-3 text-blue-600 dark:text-cyan-400">Director of AI Research, DataLabs</p>
+                        <p class="text-sm font-semibold mb-3 text-blue-500">Director of AI Research, DataLabs</p>
                         <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Pioneer in artificial intelligence and machine learning, published author, and advocate for ethical AI development.</p>
                     </div>
                 </div>
 
-                <!-- Speaker Card 4 -->
-                <div class="speaker-card bg-white/80 border border-gray-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-3xl
-                    dark:bg-gray-700/50 dark:border-white/10">
-                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/667eea/ffffff?text=James+R';" alt="James Rodriguez" class="w-full h-72 object-cover bg-gradient-to-br from-blue-500 to-indigo-700">
+                 <!-- Speaker Card 1 -->
+                <div class="speaker-card bg-slate-50 border
+                border-slate-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer 
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-blue-500
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:border-blue-500 group">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/4db8ff/ffffff?text=Sarah+M';" alt="Dr. Sarah Mitchell" class="w-full h-72 object-cover bg-gradient-to-br from-indigo-500 to-purple-700">
                     <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">James Rodriguez</h3>
-                        <p class="text-sm font-semibold mb-3 text-blue-600 dark:text-cyan-400">VP of Engineering, CloudSystems</p>
-                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Expert in cloud architecture and distributed systems with a passion for building scalable infrastructure solutions.</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-4 dark:text-slate-100">Dr. Sarah Mitchell</h3>
+                        <p class="text-sm font-semibold mb-3 text-blue-500 ">Chief Innovation Officer, TechCorp</p>
+                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Leading digital transformation initiatives with 15+ years of experience in enterprise technology and innovation strategy.</p>
                     </div>
                 </div>
 
-                <!-- Speaker Card 5 -->
-                <div class="speaker-card bg-white/80 border border-gray-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-3xl
-                    dark:bg-gray-700/50 dark:border-white/10">
-                    <img src="https://images.unsplash.com/photo-1598550874175-4d0ef436c909?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/ff6b35/ffffff?text=Lisa+W';" alt="Lisa Wang" class="w-full h-72 object-cover bg-gradient-to-br from-pink-500 to-red-400">
+                <!-- Speaker Card 2 -->
+                <div class="speaker-card bg-slate-50 border
+                border-slate-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer 
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-blue-500
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:border-blue-500 group">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/ff9a56/ffffff?text=Marcus+C';" alt="Marcus Chen" class="w-full h-72 object-cover bg-gradient-to-br from-orange-500 to-red-500">
                     <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">Lisa Wang</h3>
-                        <p class="text-sm font-semibold mb-3 text-blue-600 dark:text-cyan-400">Product Design Lead, InnovateUX</p>
-                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Award-winning designer focused on creating human-centered digital experiences that drive business growth.</p>
+                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">Marcus Chen</h3>
+                        <p class="text-sm font-semibold mb-3 text-blue-500">Founder & CEO, StartupHub</p>
+                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Serial entrepreneur and startup mentor who has built and scaled multiple successful tech ventures across Asia and North America.</p>
                     </div>
                 </div>
 
-                <!-- Speaker Card 6 -->
-                <div class="speaker-card bg-white/80 border border-gray-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-3xl
-                    dark:bg-gray-700/50 dark:border-white/10">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/4a5d7e/ffffff?text=David+T';" alt="David Thompson" class="w-full h-72 object-cover bg-gradient-to-br from-gray-600 to-gray-800">
+                <!-- Speaker Card 3 -->
+                <div class="speaker-card bg-slate-50 border
+                border-slate-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer 
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-blue-500
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:border-blue-500 group">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/7ed321/ffffff?text=Aisha+P';" alt="Dr. Aisha Patel" class="w-full h-72 object-cover bg-gradient-to-br from-green-400 to-teal-500">
                     <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">David Thompson</h3>
-                        <p class="text-sm font-semibold mb-3 text-blue-600 dark:text-cyan-400">Cybersecurity Strategist, SecureNet</p>
-                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Leading cybersecurity expert helping organizations protect critical infrastructure and data in an evolving threat landscape.</p>
-                    </div>
-                </div>
-                <!-- speacker card 7  -->
-                  <div class="speaker-card bg-white/80 border border-gray-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-3xl
-                    dark:bg-gray-700/50 dark:border-white/10">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/4a5d7e/ffffff?text=David+T';" alt="David Thompson" class="w-full h-72 object-cover bg-gradient-to-br from-gray-600 to-gray-800">
-                    <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">David Thompson</h3>
-                        <p class="text-sm font-semibold mb-3 text-blue-600 dark:text-cyan-400">Cybersecurity Strategist, SecureNet</p>
-                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Leading cybersecurity expert helping organizations protect critical infrastructure and data in an evolving threat landscape.</p>
-                    </div>
-                </div>
-                <!-- speacker card 8 -->
-                  <div class="speaker-card bg-white/80 border border-gray-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-3xl
-                    dark:bg-gray-700/50 dark:border-white/10">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/4a5d7e/ffffff?text=David+T';" alt="David Thompson" class="w-full h-72 object-cover bg-gradient-to-br from-gray-600 to-gray-800">
-                    <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">David Thompson</h3>
-                        <p class="text-sm font-semibold mb-3 text-blue-600 dark:text-cyan-400">Cybersecurity Strategist, SecureNet</p>
-                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Leading cybersecurity expert helping organizations protect critical infrastructure and data in an evolving threat landscape.</p>
+                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">Dr. Aisha Patel</h3>
+                        <p class="text-sm font-semibold mb-3 text-blue-500">Director of AI Research, DataLabs</p>
+                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Pioneer in artificial intelligence and machine learning, published author, and advocate for ethical AI development.</p>
                     </div>
                 </div>
 
-                <!-- speacker card 8 -->
-                  <div class="speaker-card bg-white/80 border border-gray-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:shadow-3xl
-                    dark:bg-gray-700/50 dark:border-white/10">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/4a5d7e/ffffff?text=David+T';" alt="David Thompson" class="w-full h-72 object-cover bg-gradient-to-br from-gray-600 to-gray-800">
+
+                 <!-- Speaker Card 1 -->
+                <div class="speaker-card bg-slate-50 border
+                border-slate-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer 
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-blue-500
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:border-blue-500 group">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/4db8ff/ffffff?text=Sarah+M';" alt="Dr. Sarah Mitchell" class="w-full h-72 object-cover bg-gradient-to-br from-indigo-500 to-purple-700">
                     <div class="p-6">
-                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">David Thompson</h3>
-                        <p class="text-sm font-semibold mb-3 text-blue-600 dark:text-cyan-400">Cybersecurity Strategist, SecureNet</p>
-                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Leading cybersecurity expert helping organizations protect critical infrastructure and data in an evolving threat landscape.</p>
+                        <h3 class="text-2xl font-bold text-slate-800 mb-4 dark:text-slate-100">Dr. Sarah Mitchell</h3>
+                        <p class="text-sm font-semibold mb-3 text-blue-500 ">Chief Innovation Officer, TechCorp</p>
+                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Leading digital transformation initiatives with 15+ years of experience in enterprise technology and innovation strategy.</p>
                     </div>
                 </div>
+
+                <!-- Speaker Card 2 -->
+                <div class="speaker-card bg-slate-50 border
+                border-slate-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer 
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-blue-500
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:border-blue-500 group">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/ff9a56/ffffff?text=Marcus+C';" alt="Marcus Chen" class="w-full h-72 object-cover bg-gradient-to-br from-orange-500 to-red-500">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">Marcus Chen</h3>
+                        <p class="text-sm font-semibold mb-3 text-blue-500">Founder & CEO, StartupHub</p>
+                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Serial entrepreneur and startup mentor who has built and scaled multiple successful tech ventures across Asia and North America.</p>
+                    </div>
+                </div>
+
+                <!-- Speaker Card 3 -->
+                <div class="speaker-card bg-slate-50 border
+                border-slate-200 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 cursor-pointer 
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-blue-500
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:border-blue-500 group">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=280&fit=crop" onerror="this.onerror=null;this.src='https://placehold.co/400x280/7ed321/ffffff?text=Aisha+P';" alt="Dr. Aisha Patel" class="w-full h-72 object-cover bg-gradient-to-br from-green-400 to-teal-500">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-1 text-gray-900 dark:text-white">Dr. Aisha Patel</h3>
+                        <p class="text-sm font-semibold mb-3 text-blue-500">Director of AI Research, DataLabs</p>
+                        <p class="text-base text-gray-600 dark:text-blue-200 leading-relaxed">Pioneer in artificial intelligence and machine learning, published author, and advocate for ethical AI development.</p>
+                    </div>
+                </div>
+
+               
                 
                  
             </div>
@@ -386,7 +426,7 @@
     </section>
 
     <!-- Partners Section -->
-    <section class="py-20 px-4 bg-blue-100/50 dark:bg-gray-800/60">
+    <section class="w-full py-24 px-8 bg-gradient-to-b from-[#e8eef5] to-[#dce4ed] dark:from-dark-nav dark:to-[#16192a]">
         <div class="max-w-7xl mx-auto">
             <h2 class="text-4xl sm:text-5xl font-bold text-center mb-4 text-blue-800 dark:text-cyan-400">Our Partners</h2>
             <p class="text-center text-lg max-w-xl mx-auto mb-16 text-gray-600 dark:text-blue-200">
@@ -398,7 +438,7 @@
                 
                 <!-- Partner Card 1 -->
                 <div class="partner-card bg-white border border-gray-200 rounded-xl p-8 flex items-center justify-center min-h-[140px] shadow-lg hover:-translate-y-1 hover:shadow-xl
-                    dark:bg-gray-900/70 dark:border-white/10">
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:shadow-blue-500/10">
                     <svg class="partner-logo w-full max-w-[120px] max-h-[60px] filter brightness-50 dark:filter dark:brightness-90" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="30" cy="30" r="20" fill="none" stroke="currentColor" stroke-width="3"/>
                         <circle cx="30" cy="30" r="12" fill="none" stroke="currentColor" stroke-width="3"/>
@@ -410,7 +450,7 @@
 
                 <!-- Partner Card 2 -->
                 <div class="partner-card bg-white border border-gray-200 rounded-xl p-8 flex items-center justify-center min-h-[140px] shadow-lg hover:-translate-y-1 hover:shadow-xl
-                    dark:bg-gray-900/70 dark:border-white/10">
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:shadow-blue-500/10">
                     <svg class="partner-logo w-full max-w-[120px] max-h-[60px] filter brightness-50 dark:filter dark:brightness-90" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
                         <path d="M 20 15 L 35 45 L 50 15 Z" fill="none" stroke="currentColor" stroke-width="3"/>
                         <circle cx="35" cy="35" r="8" fill="currentColor"/>
@@ -420,7 +460,7 @@
 
                 <!-- Partner Card 3 -->
                 <div class="partner-card bg-white border border-gray-200 rounded-xl p-8 flex items-center justify-center min-h-[140px] shadow-lg hover:-translate-y-1 hover:shadow-xl
-                    dark:bg-gray-900/70 dark:border-white/10">
+                   dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:shadow-blue-500/10">
                     <svg class="partner-logo w-full max-w-[120px] max-h-[60px] filter brightness-50 dark:filter dark:brightness-90" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
                         <rect x="15" y="15" width="30" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
                         <circle cx="30" cy="30" r="8" fill="currentColor"/>
@@ -430,7 +470,7 @@
 
                 <!-- Partner Card 4 -->
                 <div class="partner-card bg-white border border-gray-200 rounded-xl p-8 flex items-center justify-center min-h-[140px] shadow-lg hover:-translate-y-1 hover:shadow-xl
-                    dark:bg-gray-900/70 dark:border-white/10">
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:shadow-blue-500/10">
                     <svg class="partner-logo w-full max-w-[120px] max-h-[60px] filter brightness-50 dark:filter dark:brightness-90" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
                         <path d="M 20 30 Q 30 15 40 30 T 60 30" fill="none" stroke="currentColor" stroke-width="3"/>
                         <circle cx="20" cy="30" r="4" fill="currentColor"/>
@@ -442,7 +482,7 @@
 
                 <!-- Partner Card 5 -->
                 <div class="partner-card bg-white border border-gray-200 rounded-xl p-8 flex items-center justify-center min-h-[140px] shadow-lg hover:-translate-y-1 hover:shadow-xl
-                    dark:bg-gray-900/70 dark:border-white/10">
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:shadow-blue-500/10">
                     <svg class="partner-logo w-full max-w-[120px] max-h-[60px] filter brightness-50 dark:filter dark:brightness-90" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
                         <polygon points="30,15 45,45 15,45" fill="none" stroke="currentColor" stroke-width="3"/>
                         <circle cx="30" cy="35" r="5" fill="currentColor"/>
@@ -452,7 +492,7 @@
 
                 <!-- Partner Card 6 -->
                 <div class="partner-card bg-white border border-gray-200 rounded-xl p-8 flex items-center justify-center min-h-[140px] shadow-lg hover:-translate-y-1 hover:shadow-xl
-                    dark:bg-gray-900/70 dark:border-white/10">
+                    dark:bg-slate-800/40 dark:border-slate-700/10 dark:hover:bg-slate-800/60 dark:hover:shadow-blue-500/10">
                     <svg class="partner-logo w-full max-w-[120px] max-h-[60px] filter brightness-50 dark:filter dark:brightness-90" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="25" cy="25" r="12" fill="none" stroke="currentColor" stroke-width="3"/>
                         <circle cx="35" cy="35" r="12" fill="none" stroke="currentColor" stroke-width="3"/>
