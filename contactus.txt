@@ -1,0 +1,51 @@
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Use 'dark' class on <html> for dark mode
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        // Using custom colors for gradients
+                        'dark-start': '#1e293b',
+                        'dark-mid': '#171e2b',
+                        'dark-end': '#0f172a',
+                        'light-start': '#a8c0ff',
+                        'light-mid': '#d4e4ff',
+                        'light-end': '#e8f4ff',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Keyframes for the bounce animation */
+        @keyframes bounce-custom {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        .animate-bounce-custom {
+            animation: bounce-custom 2s infinite;
+        }
+
+        /* Ensure smooth transitions on all elements for the theme toggle */
+        * {
+            transition: all 0.5s ease-in-out;
+        }
+        
+        /* Base button style */
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            transform: scale(1);
+        }
+        .btn:hover {
+            transform: scale(1.03);
+        }
+    </style>

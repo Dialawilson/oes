@@ -1,0 +1,29 @@
+1. add contact us to navbar
+2. fix the hamburger
+3. fix the footer and 
+
+
+<nav class="sticky top-0 z-10 flex justify-between items-center px-4 sm:px-12 py-5 backdrop-blur-sm shadow-xl
+        bg-white/95 dark:bg-gray-800/90 border-b border-gray-200 dark:border-white/10">
+        <div class="w-16 h-16 bg-white p-2 rounded-lg shadow-lg dark:shadow-none">
+            <!-- Logo SVG (Community Circles) -->
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="20" fill="#ff6b35"/>
+                <circle cx="70" cy="30" r="20" fill="#4db8ff"/>
+                <circle cx="50" cy="65" r="20" fill="#7ed321"/>
+                <circle cx="30" cy="30" r="8" fill="white"/>
+                <text x="26" y="34" font-size="12" fill="#ff6b35" font-weight="bold">C</text>
+            </svg>
+        </div>
+        <div class="flex gap-4 sm:gap-8 items-center">
+            <a href="index.html" class="font-medium hover:text-blue-700 text-gray-600 dark:text-blue-200 dark:hover:text-cyan-400">Home</a>
+            <a href="about.html" class="font-medium hover:text-blue-700 text-gray-600 dark:text-blue-200 dark:hover:text-cyan-400">About</a>
+            <a href="registrationform.html" class="font-medium hover:text-blue-700 text-gray-600 dark:text-blue-200 dark:hover:text-cyan-400">Register</a>
+            <a href="contactus.html" class="font-medium hover:text-blue-700 text-gray-600 dark:text-blue-200 dark:hover:text-cyan-400">Contact</a>
+            
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle" class="bg-transparent border-none text-gray-800 dark:text-white text-xl cursor-pointer p-1 transition-transform duration-300 hover:rotate-12" onclick="toggleTheme()">
+                <!-- Icon will be set by JavaScript -->
+            </button>
+        </div>
+    </nav>
