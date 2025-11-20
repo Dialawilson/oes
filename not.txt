@@ -1,0 +1,4 @@
+gray-700
+
+primary color code --#821917
+card backgroun ---#f2e1d6
