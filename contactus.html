@@ -60,46 +60,16 @@
 <!-- Body: Default to dark mode (using dark-mode colors as base), switch to light mode by removing 'dark' class -->
 <body class="text-white min-h-screen overflow-x-hidden transition-colors duration-300">
 
-    <nav
-      class="flex shadow-xl justify-between items-center px-8 md:px-12 py-3 bg-white shadow-sm sticky top-0 z-50 transition-colors duration-300 dark:bg-dark-nav dark:shadow-md md:bg-white md:dark:bg-dark-nav/100"
-    >
-      <img src="img/logo.png" alt="Logo" class="w-[50px] h-auto" />
-
-      <ul class="hidden md:flex gap-10 items-center list-none">
-        <li>
-          <a
-            href="index.html"
-            class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-base font-medium transition-colors"
-            >Home</a
-          >
-        </li>
-        <li>
-          <a
-            href="about.html"
-            class="text-gray-700 hover:text-[#821917] text-base font-medium transition-colors dark:text-slate-300"
-            >About</a
-          >
-        </li>
-        <li>
-          <a
-            href="registrationform.html"
-            class="text-gray-700 hover:text-[#821917] text-base font-medium transition-colors dark:text-slate-300"
-            >Register</a
-          >
-        </li>
-        <li>
-          <a
-            href="contactus.html"
-            class="text-gray-700 hover:text-[#821917] text-base font-medium transition-colors dark:text-[#821917]"
-            >Contact</a
-          >
-        </li>
-        <button
-          class="theme-toggle bg-transparent border-none text-slate-600 text-xl cursor-pointer hover:rotate-180 transition-transform duration-300 dark:text-slate-300"
-        >
-          🌙
-        </button>
-      </ul>
+   <nav class="flex shadow-xl  justify-between items-center px-6 md:px-12 py-6 bg-white-nav shadow-sm sticky top-0 z-50 transition-colors duration-300 dark:bg-dark-nav dark:shadow-md md:bg-white md:dark:bg-dark-nav">
+        <img src="img/logo.png" alt="Logo" class="w-[60px] h-auto">
+        
+        <ul class="hidden  md:flex gap-10 items-center list-none">
+            <li><a href="index.html" class="text-gray-700 hover:text-[#821917] text-base font-medium transition-colors dark:text-slate-300">Home</a></li>
+            <li><a href="about.html" class="text-gray-700 hover:text-[#821917] text-base font-medium transition-colors dark:text-slate-300">About</a></li>
+            <li><a href="registrationform.html" class="text-gray-700 hover:text-[#821917] text-base font-medium transition-colors dark:text-slate-300">Register</a></li>
+            <li><a href="contactus.html" class=" dark:text-[#821917] text-base font-medium transition-colors">Contact</a></li>
+            <button class="theme-toggle bg-transparent border-none text-gray-700 hover:text-[#821917] text-xl cursor-pointer hover:rotate-180 transition-transform duration-300 dark:text-slate-300">🌙</button>
+        </ul>
 
       <div class="md:hidden flex gap-4">
         <button
