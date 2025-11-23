@@ -5,8 +5,8 @@
 // ============================================
 
 // Configuration - UPDATE THESE VALUES
-const SPREADSHEET_ID = '14c8ihY1HoDyHNEYCRWijK_0j_fFnG5kivhitLxkQP3A'; // Get from URL of your Google Sheet
-const VERIFIED_SHEET_NAME = 'Verified'; // Only using the Verified sheet based on current flow logic
+const SPREADSHEET_ID = "14c8ihY1HoDyHNEYCRWijK_0j_fFnG5kivhitLxkQP3A"; // Get from URL of your Google Sheet
+const VERIFIED_SHEET_NAME = "Verified"; // Only using the Verified sheet based on current flow logic
 
 // ============================================
 // HANDLE POST REQUEST (Form Submission)
@@ -14,10 +14,12 @@ const VERIFIED_SHEET_NAME = 'Verified'; // Only using the Verified sheet based o
 function doPost(e) {
   try {
     if (!e || !e.postData || !e.postData.contents) {
-      return ContentService.createTextOutput(JSON.stringify({
-        success: false,
-        message: 'Invalid request format.'
-      })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(
+        JSON.stringify({
+          success: false,
+          message: "Invalid request format.",
+        })
+      ).setMimeType(ContentService.MimeType.JSON);
     }
 
     const data = JSON.parse(e.postData.contents);
@@ -30,33 +32,50 @@ function doPost(e) {
     const occupation = data.occupation;
 
     // ✅ FIX IMPLEMENTED: Use data.message as intended by the comment
-    const reason = data.message; 
+    const reason = data.message;
 
     const attendanceMode = data.attendanceMode;
 
     // 1. Basic Validation Checks (Updated to check all required fields)
-    if (!fullName || !email || !phoneNumber || !community || !lgaOrigin || !ageRange || !occupation || !reason || !attendanceMode) {
-      return ContentService.createTextOutput(JSON.stringify({
-        success: false,
-        message: 'All fields are required for submission.'
-      })).setMimeType(ContentService.MimeType.JSON);
+    if (
+      !fullName ||
+      !email ||
+      !phoneNumber ||
+      !community ||
+      !lgaOrigin ||
+      !ageRange ||
+      !occupation ||
+      !reason ||
+      !attendanceMode
+    ) {
+      return ContentService.createTextOutput(
+        JSON.stringify({
+          success: false,
+          message: "All fields are required for submission.",
+        })
+      ).setMimeType(ContentService.MimeType.JSON);
     }
 
     if (!isValidEmail(email)) {
-      return ContentService.createTextOutput(JSON.stringify({
-        success: false,
-        message: 'Invalid email address.'
-      })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(
+        JSON.stringify({
+          success: false,
+          message: "Invalid email address.",
+        })
+      ).setMimeType(ContentService.MimeType.JSON);
     }
 
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
     // 2. Duplicate Check: Check if email already exists in the Verified sheet
     if (isEmailRegistered(email, ss)) {
-      return ContentService.createTextOutput(JSON.stringify({
-        success: false,
-        message: 'This email is already registered and a code has been sent previously.'
-      })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(
+        JSON.stringify({
+          success: false,
+          message:
+            "This email is already registered and a code has been sent previously.",
+        })
+      ).setMimeType(ContentService.MimeType.JSON);
     }
 
     // 3. Process New Submission (Saves directly to Verified sheet and sends code)
@@ -64,14 +83,16 @@ function doPost(e) {
     const uniqueCode = generateUniqueCode(); // Generate the code immediately
 
     const verifiedSheet = ss.getSheetByName(VERIFIED_SHEET_NAME);
-    
+
     // Check if sheet exists before trying to append
     if (!verifiedSheet) {
-        Logger.log(`Sheet '${VERIFIED_SHEET_NAME}' not found.`); 
-        return ContentService.createTextOutput(JSON.stringify({
+      Logger.log(`Sheet '${VERIFIED_SHEET_NAME}' not found.`);
+      return ContentService.createTextOutput(
+        JSON.stringify({
           success: false,
-          message: `The required sheet '${VERIFIED_SHEET_NAME}' was not found. Please run setupSheets() first.`
-        })).setMimeType(ContentService.MimeType.JSON);
+          message: `The required sheet '${VERIFIED_SHEET_NAME}' was not found. Please run setupSheets() first.`,
+        })
+      ).setMimeType(ContentService.MimeType.JSON);
     }
 
     // Save the submission with all new fields. Ensure the order matches the headers in setupSheets.
@@ -87,29 +108,32 @@ function doPost(e) {
       reason,
       attendanceMode,
       uniqueCode,
-      "Code Sent"
+      "Code Sent",
     ]);
 
     // Send the code email directly
     sendCodeEmail(email, fullName, uniqueCode);
 
-    return ContentService.createTextOutput(JSON.stringify({
-      success: true,
-      message: 'Submission successful, unique code sent to your email.'
-    })).setMimeType(ContentService.MimeType.JSON);
-
+    return ContentService.createTextOutput(
+      JSON.stringify({
+        success: true,
+        message: "Submission successful, unique code sent to your email.",
+      })
+    ).setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     // Log the actual error for debugging
-    Logger.log('Error in doPost: ' + error.toString()); 
-    return ContentService.createTextOutput(JSON.stringify({
-      success: false,
-      message: 'An internal server error occurred.'
-    })).setMimeType(ContentService.MimeType.JSON);
+    Logger.log("Error in doPost: " + error.toString());
+    return ContentService.createTextOutput(
+      JSON.stringify({
+        success: false,
+        message: "An internal server error occurred.",
+      })
+    ).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
 // ============================================
-// HELPER FUNCTIONS 
+// HELPER FUNCTIONS
 // ============================================
 
 /**
@@ -122,7 +146,7 @@ function isEmailRegistered(email, ss) {
   const verifiedSheet = ss.getSheetByName(VERIFIED_SHEET_NAME);
   if (!verifiedSheet) {
     // ✅ SYNTAX FIX IMPLEMENTED: Changed to template literal using backticks (`)
-    Logger.log(`Sheet '${VERIFIED_SHEET_NAME}' not found.`); 
+    Logger.log(`Sheet '${VERIFIED_SHEET_NAME}' not found.`);
     return false;
   }
 
@@ -134,12 +158,17 @@ function isEmailRegistered(email, ss) {
   }
 
   // Get the range of the Email column (C) from row 2 to the last row
-  const emailColumnValues = verifiedSheet.getRange(2, 3, lastRow - 1, 1).getValues();
+  const emailColumnValues = verifiedSheet
+    .getRange(2, 3, lastRow - 1, 1)
+    .getValues();
 
   const normalizedEmail = email.toLowerCase().trim();
 
   for (let i = 0; i < emailColumnValues.length; i++) {
-    if (emailColumnValues[i][0].toString().toLowerCase().trim() === normalizedEmail) {
+    if (
+      emailColumnValues[i][0].toString().toLowerCase().trim() ===
+      normalizedEmail
+    ) {
       return true;
     }
   }
@@ -160,7 +189,7 @@ function generateUniqueCode() {
  * Sends the unique 4-digit code using the GmailApp service for higher quotas.
  */
 function sendCodeEmail(email, fullName, code) {
-  const subject = '🎉 Your Unique Verification Code';
+  const subject = "🎉 Your Unique Verification Code";
   const htmlBody = `
     <!DOCTYPE html>
     <html>
@@ -198,7 +227,7 @@ function sendCodeEmail(email, fullName, code) {
   `;
 
   GmailApp.sendEmail(email, subject, "", {
-    htmlBody: htmlBody
+    htmlBody: htmlBody,
   });
 }
 
@@ -210,9 +239,11 @@ function setupSheets() {
 
   // The original Pending sheet logic is removed as it's not used by doPost.
   // If you need an actual verification flow, this part needs to be re-added and doPost adjusted.
-  let pendingSheet = ss.getSheetByName('Pending');
+  let pendingSheet = ss.getSheetByName("Pending");
   if (pendingSheet) {
-    Logger.log('Note: The "Pending" sheet exists but is currently unused by doPost.');
+    Logger.log(
+      'Note: The "Pending" sheet exists but is currently unused by doPost.'
+    );
   }
 
   let verifiedSheet = ss.getSheetByName(VERIFIED_SHEET_NAME);
@@ -220,21 +251,25 @@ function setupSheets() {
     verifiedSheet = ss.insertSheet(VERIFIED_SHEET_NAME);
     // === UPDATED HEADER ROW TO INCLUDE ALL NEW FIELDS ===
     verifiedSheet.appendRow([
-      'Timestamp', 
-      'Full Name', 
-      'Email', 
-      'Phone Number', // Column D
-      'Community',    // Column E
-      'LGA of Origin',// Column F
-      'Age Range',    // Column G
-      'Occupation/Business Interest', // Column H
-      'Why Attend Summit', // Column I
-      'Mode of Attendance', // Column J
-      '4-Digit Code', // Column K
-      'Status'        // Column L
+      "Timestamp",
+      "Full Name",
+      "Email",
+      "Phone Number", // Column D
+      "Community", // Column E
+      "LGA of Origin", // Column F
+      "Age Range", // Column G
+      "Occupation/Business Interest", // Column H
+      "Why Attend Summit", // Column I
+      "Mode of Attendance", // Column J
+      "4-Digit Code", // Column K
+      "Status", // Column L
     ]);
-    verifiedSheet.getRange('A1:L1').setFontWeight('bold').setBackground('#28a745').setFontColor('white');
+    verifiedSheet
+      .getRange("A1:L1")
+      .setFontWeight("bold")
+      .setBackground("#28a745")
+      .setFontColor("white");
   }
 
-  Logger.log('Sheets setup complete!');
+  Logger.log("Sheets setup complete!");
 }
