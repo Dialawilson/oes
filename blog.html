@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+  
+  <!-- Header -->
+  <header class="bg-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              TechBlog
+            </h1>
+            <p class="text-slate-500 text-sm">Exploring Ideas & Stories</p>
+          </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="#" onclick="filterPosts('all')" class="text-slate-700 hover:text-blue-600 font-medium transition">All</a>
+          <a href="#" onclick="filterPosts('Technology')" class="text-slate-700 hover:text-blue-600 font-medium transition">Technology</a>
+          <a href="#" onclick="filterPosts('Lifestyle')" class="text-slate-700 hover:text-blue-600 font-medium transition">Lifestyle</a>
+          <a href="#" onclick="filterPosts('Travel')" class="text-slate-700 hover:text-blue-600 font-medium transition">Travel</a>
+        </nav>
+
+        <!-- Mobile Menu Button -->
+        <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Menu -->
+      <nav id="mobileMenu" class="hidden md:hidden mt-4 pt-4 border-t border-slate-200 space-y-2">
+        <a href="#" onclick="filterPosts('all')" class="block text-slate-700 hover:text-blue-600 font-medium py-2">All</a>
+        <a href="#" onclick="filterPosts('Technology')" class="block text-slate-700 hover:text-blue-600 font-medium py-2">Technology</a>
+        <a href="#" onclick="filterPosts('Lifestyle')" class="block text-slate-700 hover:text-blue-600 font-medium py-2">Lifestyle</a>
+        <a href="#" onclick="filterPosts('Travel')" class="block text-slate-700 hover:text-blue-600 font-medium py-2">Travel</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl overflow-hidden shadow-2xl">
+      <div class="grid md:grid-cols-2 gap-8 items-center p-8 md:p-12">
+        <div class="text-white">
+          <h2 class="text-4xl md:text-5xl font-bold mb-4">Welcome to Our Blog</h2>
+          <p class="text-lg text-blue-100 mb-6">Discover stories, insights, and perspectives from our community of writers.</p>
+          <button onclick="document.getElementById('postsSection').scrollIntoView({behavior: 'smooth'})" class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition shadow-lg">
+            Explore Posts
+          </button>
+        </div>
+        <div class="hidden md:block">
+          <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600" alt="Blog" class="rounded-2xl shadow-2xl">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search & Filter -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div class="relative w-full md:w-96">
+        <input 
+          type="text" 
+          id="searchInput" 
+          onkeyup="searchPosts()"
+          placeholder="Search posts..." 
+          class="w-full pl-12 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-sm"
+        >
+        <svg class="w-5 h-5 text-slate-400 absolute left-4 top-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+      
+      <div class="flex gap-2">
+        <button onclick="filterPosts('all')" class="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow-sm">
+          All Posts
+        </button>
+        <button onclick="sortPosts('latest')" class="px-6 py-2 bg-white text-slate-700 rounded-xl hover:bg-slate-100 transition border border-slate-200 shadow-sm">
+          Latest First
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blog Posts Grid -->
+  <section id="postsSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h2 class="text-3xl font-bold text-slate-800 mb-8">Latest Articles</h2>
+    <div id="postsContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-white mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid md:grid-cols-4 gap-8">
+        <div class="md:col-span-2">
+          <h3 class="text-2xl font-bold mb-4">TechBlog</h3>
+          <p class="text-slate-400 mb-4">Sharing knowledge and inspiring ideas through thoughtful content.</p>
+          <div class="flex gap-4">
+            <a href="#" class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </a>
+            <a href="#" class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+            </a>
+            <a href="#" class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.441 16.892c-2.102.144-6.784.144-8.883 0C5.282 16.736 5.017 15.622 5 12c.017-3.629.285-4.736 2.558-4.892 2.099-.144 6.782-.144 8.883 0C18.718 7.264 18.982 8.378 19 12c-.018 3.629-.285 4.736-2.559 4.892zM10 9.658l4.917 2.338L10 14.342V9.658z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">Quick Links</h4>
+          <ul class="space-y-2 text-slate-400">
+            <li><a href="#" class="hover:text-white transition">About Us</a></li>
+            <li><a href="#" class="hover:text-white transition">Contact</a></li>
+            <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">Categories</h4>
+          <ul class="space-y-2 text-slate-400">
+            <li><a href="#" class="hover:text-white transition">Technology</a></li>
+            <li><a href="#" class="hover:text-white transition">Lifestyle</a></li>
+            <li><a href="#" class="hover:text-white transition">Travel</a></li>
+            <li><a href="#" class="hover:text-white transition">Business</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
+        <p>&copy; 2024 TechBlog. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal for Full Post -->
+  <div id="postModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeModal(event)">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" onclick="event.stopPropagation()">
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const posts = [
+      {
+        id: 1,
+        title: 'The Future of Artificial Intelligence',
+        excerpt: 'Exploring how AI is reshaping our world and what it means for the future of humanity.',
+        content: 'Artificial Intelligence has become one of the most transformative technologies of our time. From healthcare to transportation, AI is revolutionizing how we live and work. This article explores the latest developments in AI technology and its potential impact on society.\n\nMachine learning algorithms are now capable of processing vast amounts of data and making predictions with unprecedented accuracy. As we continue to advance in this field, we must also consider the ethical implications and ensure that AI development aligns with human values.',
+        image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800',
+        author: 'Sarah Johnson',
+        date: 'Nov 20, 2024',
+        readTime: '5 min read',
+        category: 'Technology'
+      },
+      {
+        id: 2,
+        title: 'Minimalist Living: Less is More',
+        excerpt: 'Discover the art of living with less and finding joy in simplicity.',
+        content: 'Minimalism is more than just decluttering your home; it\'s a philosophy that can transform your entire life. By focusing on what truly matters and eliminating excess, you can find greater peace, clarity, and satisfaction.\n\nThis lifestyle encourages us to be intentional with our possessions, relationships, and commitments. When we remove the unnecessary, we make room for the things that bring us genuine happiness and fulfillment.',
+        image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800',
+        author: 'Michael Chen',
+        date: 'Nov 18, 2024',
+        readTime: '4 min read',
+        category: 'Lifestyle'
+      },
+      {
+        id: 3,
+        title: 'Hidden Gems of Southeast Asia',
+        excerpt: 'Uncover breathtaking destinations off the beaten path in Southeast Asia.',
+        content: 'Southeast Asia is home to countless beautiful destinations that remain relatively undiscovered by mass tourism. From pristine beaches to ancient temples, this region offers incredible experiences for adventurous travelers.\n\nIn this guide, we explore some of the most stunning hidden gems, including remote islands in the Philippines, tranquil mountain villages in Vietnam, and sacred sites in Myanmar. These destinations offer authentic cultural experiences and natural beauty without the crowds.',
+        image: 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800',
+        author: 'Emma Rodriguez',
+        date: 'Nov 15, 2024',
+        readTime: '7 min read',
+        category: 'Travel'
+      },
+      {
+        id: 4,
+        title: 'The Rise of Remote Work Culture',
+        excerpt: 'How remote work is changing the traditional workplace landscape.',
+        content: 'The shift to remote work has fundamentally changed how we think about employment and productivity. Companies worldwide are embracing flexible work arrangements, leading to a reimagining of office culture.\n\nThis transformation brings both opportunities and challenges. While remote work offers greater flexibility and work-life balance, it also requires new approaches to collaboration, communication, and maintaining company culture.',
+        image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800',
+        author: 'David Park',
+        date: 'Nov 12, 2024',
+        readTime: '6 min read',
+        category: 'Technology'
+      },
+      {
+        id: 5,
+        title: 'Plant-Based Cooking Made Easy',
+        excerpt: 'Simple recipes and tips for delicious plant-based meals.',
+        content: 'Transitioning to a plant-based diet doesn\'t have to be complicated. With the right recipes and techniques, you can create delicious, nutritious meals that satisfy your taste buds and nourish your body.\n\nThis guide covers essential ingredients, cooking methods, and meal planning strategies to help you succeed with plant-based eating. Whether you\'re fully vegan or just looking to add more plants to your diet, these tips will help you along the way.',
+        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
+        author: 'Lisa Thompson',
+        date: 'Nov 10, 2024',
+        readTime: '5 min read',
+        category: 'Lifestyle'
+      },
+      {
+        id: 6,
+        title: 'Sustainable Travel: A Guide',
+        excerpt: 'Learn how to explore the world while minimizing your environmental impact.',
+        content: 'Sustainable travel is about making conscious choices that reduce your environmental footprint while still enjoying amazing experiences around the globe. From choosing eco-friendly accommodations to supporting local communities, every decision matters.\n\nThis comprehensive guide provides practical tips for traveling more sustainably, including how to reduce waste, choose responsible tour operators, and make choices that benefit both the environment and local populations.',
+        image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800',
+        author: 'Alex Martinez',
+        date: 'Nov 8, 2024',
+        readTime: '8 min read',
+        category: 'Travel'
+      }
+    ];
+
+    let filteredPosts = [...posts];
+
+    function renderPosts() {
+      const container = document.getElementById('postsContainer');
+      container.innerHTML = filteredPosts.map(post => `
+        <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" onclick="openModal(${post.id})">
+          <div class="relative overflow-hidden h-56">
+            <img src="${post.image}" alt="${post.title}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500">
+            <div class="absolute top-4 right-4">
+              <span class="bg-white px-3 py-1 rounded-full text-sm font-semibold text-blue-600 shadow-lg">${post.category}</span>
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3 text-sm text-slate-500 mb-3">
+              <span class="flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                ${post.author}
+              </span>
+              <span>•</span>
+              <span>${post.date}</span>
+              <span>•</span>
+              <span>${post.readTime}</span>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 mb-3 hover:text-blue-600 transition">${post.title}</h3>
+            <p class="text-slate-600 leading-relaxed mb-4">${post.excerpt}</p>
+            <button class="text-blue-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all">
+              Read More
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function openModal(id) {
+      const post = posts.find(p => p.id === id);
+      if (post) {
+        const modalContent = document.getElementById('modalContent');
+        modalContent.innerHTML = `
+          <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition z-10">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+          <img src="${post.image}" alt="${post.title}" class="w-full h-96 object-cover">
+          <div class="p-8">
+            <span class="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-semibold mb-4">${post.category}</span>
+            <h2 class="text-4xl font-bold text-slate-800 mb-4">${post.title}</h2>
+            <div class="flex items-center gap-4 text-slate-500 mb-6 pb-6 border-b border-slate-200">
+              <span class="flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                ${post.author}
+              </span>
+              <span>•</span>
+              <span>${post.date}</span>
+              <span>•</span>
+              <span>${post.readTime}</span>
+            </div>
+            <div class="prose prose-lg max-w-none">
+              <p class="text-slate-600 leading-relaxed whitespace-pre-line">${post.content}</p>
+            </div>
+          </div>
+        `;
+        document.getElementById('postModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal(event) {
+      if (!event || event.target.id === 'postModal') {
+        document.getElementById('postModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    function filterPosts(category) {
+      if (category === 'all') {
+        filteredPosts = [...posts];
+      } else {
+        filteredPosts = posts.filter(post => post.category === category);
+      }
+      renderPosts();
+    }
+
+    function searchPosts() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      filteredPosts = posts.filter(post => 
+        post.title.toLowerCase().includes(searchTerm) ||
+        post.excerpt.toLowerCase().includes(searchTerm) ||
+        post.content.toLowerCase().includes(searchTerm)
+      );
+      renderPosts();
+    }
+
+    function sortPosts(order) {
+      if (order === 'latest') {
+        filteredPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+      }
+      renderPosts();
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobileMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Initialize
+    renderPosts();
+  </script>
+</body>
+</html>
