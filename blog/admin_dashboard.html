@@ -4,68 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog Admin Dashboard</title>
+    <link rel="icon" href="data:,">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        
-        .image-upload-area {
-            transition: all 0.3s ease;
-        }
-        
-        .image-upload-area:hover {
-            border-color: #6366f1;
-            background-color: #f8f9ff;
-        }
-        
+        body { font-family: 'Inter', sans-serif; }
+        .image-upload-area { transition: all 0.3s ease; }
+        .image-upload-area:hover { border-color: #6366f1; background-color: #f8f9ff; }
+        .image-upload-area.dragover { border-color: #6366f1; background-color: #eef2ff; }
         .uploading-spinner {
             border: 3px solid #f3f4f6;
             border-top: 3px solid #6366f1;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             animation: spin 1s linear infinite;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .modal-content { animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .post-card { transition: all 0.3s ease; scroll-snap-align: start; }
+        .post-card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
+        #postsGrid {
+            display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 1.5rem; padding: 1rem 0;
+            scroll-snap-type: x mandatory; scrollbar-width: thin;
         }
-        
-        .modal {
-            transition: opacity 0.3s ease;
-        }
-        
-        .modal-content {
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        .post-card {
-            transition: all 0.3s ease;
-        }
-        
-        .post-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-        }
+        #postsGrid::-webkit-scrollbar { height: 8px; }
+        #postsGrid::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        #postsGrid::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        #postsGrid::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    
+
     <!-- Header -->
     <header class="bg-white shadow-sm border-b sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -90,45 +60,44 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">Total Posts</p>
-                        <p id="totalPosts" class="text-3xl font-bold text-gray-900 mt-2">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                    </div>
+
+        <!-- RESPONSIVE STATS CARDS (FIXED!) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <!-- Total Posts -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-600">Total Posts</p>
+                    <p id="totalPosts" class="text-3xl font-bold text-gray-900 mt-1">0</p>
+                </div>
+                <div class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
                 </div>
             </div>
-            
-            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">Categories</p>
-                        <p id="totalCategories" class="text-3xl font-bold text-gray-900 mt-2">4</p>
-                    </div>
-                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                        </svg>
-                    </div>
+
+            <!-- Categories -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-600">Categories</p>
+                    <p id="totalCategories" class="text-3xl font-bold text-gray-900 mt-1">4</p>
+                </div>
+                <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
                 </div>
             </div>
-            
-            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
+
+            <!-- Latest Post (NOW FULLY RESPONSIVE!) -->
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-600">Latest Post</p>
-                        <p id="latestPost" class="text-sm font-semibold text-gray-900 mt-2 truncate">Loading...</p>
+                        <p id="latestPost" class="text-lg font-semibold text-gray-900 mt-1 line-clamp-2 break-words">Loading...</p>
                     </div>
-                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -136,7 +105,7 @@
             </div>
         </div>
 
-        <!-- Posts Grid -->
+        <!-- All Posts Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-bold text-gray-900">All Posts</h2>
@@ -147,535 +116,310 @@
                     <span>Refresh</span>
                 </button>
             </div>
-            
-            <!-- Loading State -->
+
             <div id="loadingState" class="flex flex-col items-center justify-center py-16">
                 <div class="uploading-spinner mb-4"></div>
                 <p class="text-gray-600">Loading posts...</p>
             </div>
-            
-            <!-- Empty State -->
+
             <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16">
                 <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
                 <p class="text-gray-600 text-lg font-medium mb-2">No posts yet</p>
                 <p class="text-gray-500 mb-4">Create your first blog post to get started</p>
-                <button onclick="showCreateModal()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition">
-                    Create Post
-                </button>
+                <button onclick="showCreateModal()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition">Create Post</button>
             </div>
-            
-            <!-- Posts Grid -->
-            <div id="postsGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Posts will be inserted here -->
-            </div>
+
+            <div id="postsGrid" class="hidden"></div>
         </div>
     </main>
 
     <!-- Create/Edit Modal -->
     <div id="postModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
                 <h3 id="modalTitle" class="text-2xl font-bold text-gray-900">Create New Post</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            
             <form id="postForm" class="p-6 space-y-6">
-                <input type="hidden" id="postId" name="postId">
-                
-                <!-- Image Upload -->
+                <input type="hidden" id="postId">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">Cover Image</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">Cover & Gallery Images (First = Cover)</label>
                     <div class="image-upload-area border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer" onclick="document.getElementById('imageInput').click()">
-                        <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+                        <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageSelect(event)">
                         <div id="uploadPlaceholder">
                             <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
-                            <p class="text-gray-600 font-medium">Click to upload image</p>
-                            <p class="text-gray-400 text-sm mt-1">PNG, JPG, GIF up to 10MB</p>
+                            <p class="text-gray-600 font-medium">Drop images or click to upload</p>
+                            <p class="text-gray-400 text-sm mt-1">Multiple images • First image = Cover</p>
                         </div>
-                        <div id="uploadingState" class="hidden">
-                            <div class="uploading-spinner mx-auto mb-3"></div>
-                            <p class="text-indigo-600 font-medium">Uploading image...</p>
-                        </div>
-                        <div id="imagePreview" class="hidden">
-                            <img id="previewImage" class="max-h-64 mx-auto rounded-lg shadow-lg mb-3">
-                            <button type="button" onclick="removeImage(event)" class="text-red-600 hover:text-red-700 font-medium text-sm">Remove Image</button>
-                        </div>
+                        <div id="imagePreview" class="hidden mt-6"><div id="imagePreviewContainer" class="flex flex-wrap gap-4 justify-center"></div></div>
                     </div>
                 </div>
-                
-                <!-- Title -->
-                <div>
-                    <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">Title</label>
-                    <input type="text" id="title" name="title" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                </div>
-                
-                <!-- Author & Category -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="author" class="block text-sm font-semibold text-gray-700 mb-2">Author</label>
-                        <input type="text" id="author" name="author" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                    </div>
-                    <div>
-                        <label for="category" class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
-                        <select id="category" name="category" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
-                            <option value="Technology">Technology</option>
-                            <option value="Lifestyle">Lifestyle</option>
-                            <option value="Travel">Travel</option>
-                            <option value="Business">Business</option>
+                <div><label for="title" class="block text-sm font-semibold text-gray-700 mb-2">Title</label><input type="text" id="title" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label for="author" class="block text-sm font-semibold text-gray-700 mb-2">Author</label><input type="text" id="author" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></div>
+                    <div><label for="category" class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                        <select id="category" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
+                            <option value="Technology">Technology</option><option value="Lifestyle">Lifestyle</option><option value="Travel">Travel</option><option value="Business">Business</option>
                         </select>
                     </div>
                 </div>
-                
-                <!-- Excerpt -->
-                <div>
-                    <label for="excerpt" class="block text-sm font-semibold text-gray-700 mb-2">Excerpt</label>
-                    <textarea id="excerpt" name="excerpt" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></textarea>
-                </div>
-                
-                <!-- Content -->
-                <div>
-                    <label for="content" class="block text-sm font-semibold text-gray-700 mb-2">Content</label>
-                    <textarea id="content" name="content" rows="8" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition font-mono text-sm"></textarea>
-                </div>
-                
-                <!-- Submit Buttons -->
+                <div><label for="excerpt" class="block text-sm font-semibold text-gray-700 mb-2">Excerpt</label><textarea id="excerpt" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></textarea></div>
+                <div><label for="content" class="block text-sm font-semibold text-gray-700 mb-2">Content (Markdown supported)</label><textarea id="content" rows="10" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition font-mono text-sm"></textarea></div>
                 <div class="flex justify-end space-x-3 pt-4 border-t">
-                    <button type="button" onclick="closeModal()" class="px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition">
-                        Cancel
-                    </button>
+                    <button type="button" onclick="closeModal()" class="px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
                     <button type="submit" id="submitBtn" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center space-x-2">
                         <span id="submitText">Publish Post</span>
-                        <div id="submitSpinner" class="hidden uploading-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>
+                        <div id="submitSpinner" class="hidden uploading-spinner" style="width:20px;height:20px;border-width:2px;"></div>
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Delete Modal & Toast -->
     <div id="deleteModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-            <div class="text-center">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Delete Post?</h3>
-                <p class="text-gray-600 mb-6">This action cannot be undone. Are you sure you want to delete this post?</p>
-                <div class="flex space-x-3">
-                    <button onclick="closeDeleteModal()" class="flex-1 px-4 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition">
-                        Cancel
-                    </button>
-                    <button onclick="confirmDelete()" class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">
-                        Delete
-                    </button>
-                </div>
+        <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Delete Post?</h3>
+            <p class="text-gray-600 mb-6">This action cannot be undone.</p>
+            <div class="flex space-x-3">
+                <button onclick="closeDeleteModal()" class="flex-1 px-4 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
+                <button onclick="confirmDelete()" class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">Delete</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="hidden fixed bottom-6 right-6 bg-white rounded-xl shadow-2xl p-4 max-w-sm border-l-4 z-50">
         <div class="flex items-start space-x-3">
-            <div id="toastIcon" class="flex-shrink-0"></div>
-            <div class="flex-1">
-                <p id="toastMessage" class="font-semibold text-gray-900"></p>
-            </div>
-            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
+            <div id="toastIcon"></div>
+            <div class="flex-1"><p id="toastMessage" class="font-semibold text-gray-900"></p></div>
+            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+, </div>
         </div>
     </div>
 
-    <script>
-        // Configuration
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwFibF_sQV6wcj3TP-iaEx2pBO69IaXXm238mJ4G2_nl24i1g6v7mLHuiXF-GKwLh_f0w/exec';
-        
-        let allPosts = [];
-        let currentEditId = null;
-        let deletePostId = null;
-        let selectedImageBase64 = null;
-        let selectedImageMimeType = null;
+<script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbw8rELdmF1UdWGlrBnoFQcn2SOYuPK0SuVU7EIeey9jvzEGpNkSs5mrwGV7QVp3Z1SbgA/exec';
+    let allPosts = [], currentEditId = null, deletePostId = null, uploadedImages = [];
 
-        // Load posts on page load
-        window.addEventListener('DOMContentLoaded', loadPosts);
+    window.addEventListener('DOMContentLoaded', loadPosts);
 
-        // Load Posts Function
-        async function loadPosts() {
-            const loadingState = document.getElementById('loadingState');
-            const emptyState = document.getElementById('emptyState');
-            const postsGrid = document.getElementById('postsGrid');
-            
-            loadingState.classList.remove('hidden');
-            emptyState.classList.add('hidden');
-            postsGrid.classList.add('hidden');
+    async function loadPosts() {
+        document.getElementById('loadingState').classList.remove('hidden');
+        document.getElementById('emptyState').classList.add('hidden');
+        document.getElementById('postsGrid').classList.add('hidden');
 
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                allPosts = data.posts || [];
-                
-                // Update stats
-                document.getElementById('totalPosts').textContent = allPosts.length;
-                if (allPosts.length > 0) {
-                    document.getElementById('latestPost').textContent = allPosts[allPosts.length - 1].title || 'Untitled';
-                }
-                
-                if (allPosts.length === 0) {
-                    loadingState.classList.add('hidden');
-                    emptyState.classList.remove('hidden');
-                } else {
-                    renderPosts();
-                    loadingState.classList.add('hidden');
-                    postsGrid.classList.remove('hidden');
-                }
-                
-            } catch (error) {
-                console.error('Load error:', error);
-                showToast('Failed to load posts: ' + error.message, 'error');
-                loadingState.classList.add('hidden');
+        try {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+
+            allPosts = (data.posts || []).sort((a, b) => (b.id || 0) - (a.id || 0));
+            document.getElementById('totalPosts').textContent = allPosts.length;
+            document.getElementById('latestPost').textContent = allPosts[0]?.title || 'None';
+
+            if (allPosts.length === 0) {
+                document.getElementById('emptyState').classList.remove('hidden');
+            } else {
+                renderPosts();
+                document.getElementById('postsGrid').classList.remove('hidden');
             }
-        }
+        } catch (e) { showToast('Load error: ' + e.message, 'error'); }
+        finally { document.getElementById('loadingState').classList.add('hidden'); }
+    }
 
-        // Render Posts
-        function renderPosts() {
-            const grid = document.getElementById('postsGrid');
-            grid.innerHTML = allPosts.map(post => {
-                const categoryColors = {
-                    'Technology': 'bg-blue-100 text-blue-800',
-                    'Lifestyle': 'bg-green-100 text-green-800',
-                    'Travel': 'bg-yellow-100 text-yellow-800',
-                    'Business': 'bg-purple-100 text-purple-800'
-                };
-                
-                const categoryClass = categoryColors[post.category] || 'bg-gray-100 text-gray-800';
-                const imageUrl = post.imageurl || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
-                
-                return `
-                    <div class="post-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <img src="${imageUrl}" alt="${post.title}" class="w-full h-48 object-cover">
-                        <div class="p-5">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="px-3 py-1 ${categoryClass} text-xs font-semibold rounded-full">${post.category}</span>
-                                <span class="text-xs text-gray-500">${post.date}</span>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">${post.title}</h3>
-                            <p class="text-sm text-gray-600 mb-4 line-clamp-2">${post.excerpt}</p>
-                            <div class="flex items-center justify-between pt-4 border-t">
-                                <span class="text-sm text-gray-500">By ${post.author}</span>
-                                <div class="flex space-x-2">
-                                    <button onclick="editPost(${post.id})" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                        </svg>
-                                    </button>
-                                    <button onclick="showDeleteModal(${post.id})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
+    function renderPosts() {
+        const grid = document.getElementById('postsGrid'); grid.innerHTML = '';
+        const colors = { 'Technology': 'bg-blue-100 text-blue-800', 'Lifestyle': 'bg-green-100 text-green-800', 'Travel': 'bg-yellow-100 text-yellow-800', 'Business': 'bg-purple-100 text-purple-800' };
+        allPosts.slice(0, 30).forEach(p => {
+            const imgs = Array.isArray(p.imageurls) ? p.imageurls.filter(url => !url.includes('placehold.co')) : [];
+            const cover = imgs[0] || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
+            const extra = imgs.length > 1 ? `+${imgs.length-1}` : '';
+            const card = document.createElement('div');
+            card.className = 'post-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col min-w-[300px] max-w-[320px] snap-start';
+            card.innerHTML = `
+                <div class="relative">
+                    <img src="${cover}" alt="${p.title}" class="w-full h-40 object-cover">
+                    ${extra ? `<div class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full">${extra}</div>` : ''}
+                </div>
+                <div class="p-4 flex-1 flex flex-col">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="px-2.5 py-1 ${colors[p.category] || 'bg-gray-100 text-gray-800'} text-xs font-medium rounded-full">${p.category}</span>
+                        <span class="text-xs text-gray-500">${p.date || 'No date'}</span>
+                    </div>
+                    <h3 class="font-bold text-gray-900 line-clamp-2 text-sm mb-1">${p.title}</h3>
+                    <p class="text-xs text-gray-600 line-clamp-2 flex-1">${p.excerpt}</p>
+                    <div class="mt-3 pt-3 border-t flex items-center justify-between">
+                        <span class="text-xs text-gray-500">by ${p.author}</span>
+                        <div class="flex space-x-1">
+                            <button onclick="editPost(${p.id})" class="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+                            <button onclick="showDeleteModal(${p.id})" class="p-1.5 text-red-600 hover:bg-red-50 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>`;
+            grid.appendChild(card);
+        });
+        if (allPosts.length > 30) {
+            const note = document.createElement('div');
+            note.className = 'min-w-full text-center py-6 text-gray-500 text-sm italic';
+            note.textContent = `Showing latest 30 of ${allPosts.length} posts • Scroll →`;
+            grid.appendChild(note);
         }
+    }
 
-        // Show Create Modal
-        function showCreateModal() {
-            currentEditId = null;
-            selectedImageBase64 = null;
-            selectedImageMimeType = null;
-            document.getElementById('modalTitle').textContent = 'Create New Post';
-            document.getElementById('submitText').textContent = 'Publish Post';
-            document.getElementById('postForm').reset();
-            resetImageUpload();
-            document.getElementById('postModal').classList.remove('hidden');
-        }
-
-        // Edit Post
-        function editPost(id) {
-            const post = allPosts.find(p => p.id === id);
-            if (!post) return;
-            
-            currentEditId = id;
-            document.getElementById('modalTitle').textContent = 'Edit Post';
-            document.getElementById('submitText').textContent = 'Update Post';
-            document.getElementById('postId').value = id;
-            document.getElementById('title').value = post.title;
-            document.getElementById('author').value = post.author;
-            document.getElementById('category').value = post.category;
-            document.getElementById('excerpt').value = post.excerpt;
-            document.getElementById('content').value = post.content;
-            
-            // Show existing image if available
-            if (post.imageurl && !post.imageurl.includes('placehold.co')) {
-                document.getElementById('uploadPlaceholder').classList.add('hidden');
-                document.getElementById('imagePreview').classList.remove('hidden');
-                document.getElementById('previewImage').src = post.imageurl;
-                selectedImageBase64 = null; // Don't re-upload existing image
-            }
-            
-            document.getElementById('postModal').classList.remove('hidden');
-        }
-
-        // Handle Image Select
-        function handleImageSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            if (!file.type.startsWith('image/')) {
-                showToast('Please select a valid image file', 'error');
-                return;
-            }
-            
-            document.getElementById('uploadPlaceholder').classList.add('hidden');
-            document.getElementById('uploadingState').classList.remove('hidden');
-            
-            selectedImageMimeType = file.type;
-            
+    function handleImageSelect(e) {
+        const files = e.target.files || e.dataTransfer?.files;
+        if (!files?.length) return;
+        Array.from(files).forEach(f => {
+            if (!f.type.startsWith('image/')) return showToast('Only images', 'error');
             const reader = new FileReader();
-            reader.onload = (e) => {
-                selectedImageBase64 = e.target.result;
-                document.getElementById('uploadingState').classList.add('hidden');
-                document.getElementById('imagePreview').classList.remove('hidden');
-                document.getElementById('previewImage').src = selectedImageBase64;
-            };
-            reader.readAsDataURL(file);
-        }
+            reader.onload = ev => { uploadedImages.push({ base64: ev.target.result }); renderImagePreviews(); };
+            reader.readAsDataURL(f);
+        });
+        e.target.value = '';
+    }
 
-        // Remove Image
-        function removeImage(event) {
-            event.stopPropagation();
-            selectedImageBase64 = null;
-            selectedImageMimeType = null;
-            resetImageUpload();
-        }
+    function renderImagePreviews() {
+        const c = document.getElementById('imagePreviewContainer'); c.innerHTML = '';
+        const validImages = uploadedImages.filter(img => 
+            img.base64 || (img.url && !img.url.includes('placehold.co'))
+        );
 
-        // Reset Image Upload
-        function resetImageUpload() {
-            document.getElementById('imageInput').value = '';
+        if (validImages.length === 0) {
             document.getElementById('uploadPlaceholder').classList.remove('hidden');
-            document.getElementById('uploadingState').classList.add('hidden');
             document.getElementById('imagePreview').classList.add('hidden');
+            return;
         }
 
-        // Handle Form Submit
-        document.getElementById('postForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const submitText = document.getElementById('submitText');
-            const submitSpinner = document.getElementById('submitSpinner');
-            
-            submitBtn.disabled = true;
-            submitText.classList.add('hidden');
-            submitSpinner.classList.remove('hidden');
-            
-            try {
-                const formData = new FormData(e.target);
-                const postData = {};
-                
-                // Collect form data
-                formData.forEach((value, key) => {
-                    if (key !== 'postId' && value) {
-                        postData[key] = value.trim();
-                    }
-                });
-                
-                // Add image if selected (only send if user selected a new image)
-                if (selectedImageBase64) {
-                    postData.base64Image = selectedImageBase64;
-                    postData.imageMimeType = selectedImageMimeType;
-                }
-                
-                // Add action and postId for updates
-                if (currentEditId) {
-                    postData.action = 'update';
-                    postData.postId = currentEditId;
-                }
-                
-                console.log('Sending data:', Object.keys(postData)); // Debug log
-                
-                // Convert to URLSearchParams for form data submission
-                const urlParams = new URLSearchParams();
-                for (const [key, value] of Object.entries(postData)) {
-                    urlParams.append(key, value);
-                }
-                
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: urlParams
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                console.log('Backend response:', result); // Debug log
-                
-                if (result.error) {
-                    throw new Error(result.details || result.error);
-                }
-                
-                showToast(currentEditId ? 'Post updated successfully!' : 'Post published successfully!', 'success');
-                closeModal();
-                await loadPosts();
-                
-            } catch (error) {
-                console.error('Submit error details:', error);
-                showToast('Failed to save post: ' + error.message, 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitText.classList.remove('hidden');
-                submitSpinner.classList.add('hidden');
-            }
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('imagePreview').classList.remove('hidden');
+
+        validImages.forEach((img, i) => {
+            const d = document.createElement('div'); d.className = 'relative group';
+            d.innerHTML = `
+                <img src="${img.base64 || img.url}" class="w-32 h-32 object-cover rounded-lg shadow-md">
+                ${i===0 ? '<div class="absolute top-2 left-2 bg-indigo-600 text-white text-xs px-2 py-1 rounded">Cover</div>' : ''}
+                <button onclick="uploadedImages = uploadedImages.filter((_,idx)=>idx!==${i}); renderImagePreviews();" class="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>`;
+            c.appendChild(d);
         });
 
-        // Close Modal
-        function closeModal() {
-            document.getElementById('postModal').classList.add('hidden');
-            document.getElementById('postForm').reset();
-            resetImageUpload();
-            currentEditId = null;
-        }
+        const add = document.createElement('div');
+        add.className = 'w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-indigo-500';
+        add.onclick = () => document.getElementById('imageInput').click();
+        add.innerHTML = `<svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>`;
+        c.appendChild(add);
+    }
 
-        // Show Delete Modal
-        function showDeleteModal(id) {
-            deletePostId = id;
-            document.getElementById('deleteModal').classList.remove('hidden');
-        }
+    function showCreateModal() { 
+        currentEditId = null; uploadedImages = []; 
+        document.getElementById('modalTitle').textContent = 'Create New Post'; 
+        document.getElementById('submitText').textContent = 'Publish Post'; 
+        document.getElementById('postForm').reset(); 
+        renderImagePreviews(); 
+        document.getElementById('postModal').classList.remove('hidden'); 
+    }
 
-        // Close Delete Modal
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-            deletePostId = null;
-        }
+    function closeModal() { document.getElementById('postModal').classList.add('hidden'); uploadedImages = []; }
 
-        // Confirm Delete
-        async function confirmDelete() {
-            if (!deletePostId) return;
-            
-            const deleteBtn = event.target;
-            deleteBtn.disabled = true;
-            deleteBtn.textContent = 'Deleting...';
-            
-            try {
-                const urlParams = new URLSearchParams();
-                urlParams.append('action', 'delete');
-                urlParams.append('postId', deletePostId);
-                
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: urlParams
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                if (result.error) {
-                    throw new Error(result.details || result.error);
-                }
-                
-                showToast('Post deleted successfully!', 'success');
-                closeDeleteModal();
-                await loadPosts();
-                
-            } catch (error) {
-                console.error('Delete error:', error);
-                showToast('Failed to delete post: ' + error.message, 'error');
-                deleteBtn.disabled = false;
-                deleteBtn.textContent = 'Delete';
-            }
-        }
+    function editPost(id) {
+        const p = allPosts.find(x => x.id === id);
+        currentEditId = id; 
+        document.getElementById('modalTitle').textContent = 'Edit Post'; 
+        document.getElementById('submitText').textContent = 'Update Post';
+        document.getElementById('postId').value = id; 
+        document.getElementById('title').value = p.title; 
+        document.getElementById('author').value = p.author;
+        document.getElementById('category').value = p.category; 
+        document.getElementById('excerpt').value = p.excerpt; 
+        document.getElementById('content').value = p.content;
 
-        // Toast Notification
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
-            const toastIcon = document.getElementById('toastIcon');
-            
-            const icons = {
-                success: `
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                `,
-                error: `
-                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                `,
-                info: `
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                `
+        uploadedImages = (Array.isArray(p.imageurls) ? p.imageurls : [])
+            .filter(url => url && !url.includes('placehold.co'))
+            .map(url => ({ url }));
+
+        renderImagePreviews(); 
+        document.getElementById('postModal').classList.remove('hidden');
+    }
+
+    document.getElementById('postForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn'), txt = document.getElementById('submitText'), spin = document.getElementById('submitSpinner');
+        btn.disabled = true; txt.classList.add('hidden'); spin.classList.remove('hidden');
+
+        try {
+            const postData = {
+                title: document.getElementById('title').value.trim(),
+                author: document.getElementById('author').value.trim(),
+                category: document.getElementById('category').value,
+                excerpt: document.getElementById('excerpt').value.trim(),
+                content: document.getElementById('content').value.trim(),
             };
-            
-            const borderColors = {
-                success: 'border-green-500',
-                error: 'border-red-500',
-                info: 'border-blue-500'
-            };
-            
-            toastMessage.textContent = message;
-            toastIcon.innerHTML = icons[type];
-            
-            toast.className = `fixed bottom-6 right-6 bg-white rounded-xl shadow-2xl p-4 max-w-sm border-l-4 z-50 ${borderColors[type]}`;
-            toast.classList.remove('hidden');
-            
-            setTimeout(() => {
-                hideToast();
-            }, 5000);
-        }
 
-        function hideToast() {
-            document.getElementById('toast').classList.add('hidden');
-        }
+            const newImgs = uploadedImages.filter(i => i.base64);
+            if (newImgs.length) postData.base64Images = newImgs.map(i => i.base64);
 
-        // Close modals when clicking outside
-        document.getElementById('postModal').addEventListener('click', (e) => {
-            if (e.target.id === 'postModal') {
-                closeModal();
+            const existing = uploadedImages.filter(i => i.url).map(i => i.url);
+            if (existing.length) postData.existingImageURLs = JSON.stringify(existing);
+
+            if (currentEditId) { postData.action = 'update'; postData.postId = currentEditId; }
+
+            const params = new URLSearchParams();
+            for (const [k, v] of Object.entries(postData)) {
+                if (Array.isArray(v)) v.forEach((val, idx) => params.append(`${k}[${idx}]`, val));
+                else params.append(k, v);
             }
-        });
 
-        document.getElementById('deleteModal').addEventListener('click', (e) => {
-            if (e.target.id === 'deleteModal') {
-                closeDeleteModal();
-            }
-        });
+            const res = await fetch(API_URL, { method: 'POST', body: params });
+            const result = await res.json();
+            if (result.error) throw new Error(result.details || result.error);
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-                closeDeleteModal();
-            }
-        });
-    </script>
+            showToast(currentEditId ? 'Post updated!' : 'Post published!', 'success');
+            closeModal(); loadPosts();
+        } catch (err) { showToast('Error: ' + err.message, 'error'); }
+        finally { btn.disabled = false; txt.classList.remove('hidden'); spin.classList.add('hidden'); }
+    });
+
+    function showDeleteModal(id) { deletePostId = id; document.getElementById('deleteModal').classList.remove('hidden'); }
+    function closeDeleteModal() { document.getElementById('deleteModal').classList.add('hidden'); }
+    async function confirmDelete() {
+        const p = new URLSearchParams(); p.append('action', 'delete'); p.append('postId', deletePostId);
+        await fetch(API_URL, { method: 'POST', body: p });
+        showToast('Post deleted!', 'success'); closeDeleteModal(); loadPosts();
+    }
+
+    function showToast(msg, type='success') {
+        const t = document.getElementById('toast');
+        document.getElementById('toastMessage').textContent = msg;
+        document.getElementById('toastIcon').innerHTML = type === 'success'
+            ? '<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+            : '<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+        t.className = `fixed bottom-6 right-6 bg-white rounded-xl shadow-2xl p-4 max-w-sm border-l-4 z-50 ${type==='success'?'border-green-500':'border-red-500'}`;
+        t.classList.remove('hidden');
+        setTimeout(() => t.classList.add('hidden'), 5000);
+    }
+    function hideToast() { document.getElementById('toast').classList.add('hidden'); }
+
+    // Drag & drop
+    const dropZone = document.querySelector('.image-upload-area');
+    ['dragover','dragenter'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('dragover'); }));
+    ['dragleave','dragend','drop'].forEach(ev => dropZone.addEventListener(ev, e => {
+        dropZone.classList.remove('dragover');
+        if (ev === 'drop') { e.preventDefault(); handleImageSelect(e); }
+    }));
+
+    document.getElementById('postModal').addEventListener('click', e => e.target.id === 'postModal' && closeModal());
+    document.getElementById('deleteModal').addEventListener('click', e => e.target.id === 'deleteModal' && closeDeleteModal());
+    document.addEventListener('keydown', e => e.key === 'Escape' && (closeModal(), closeDeleteModal()));
+</script>
 </body>
 </html>
