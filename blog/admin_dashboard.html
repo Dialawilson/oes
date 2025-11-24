@@ -10,11 +10,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .image-upload-area { transition: all 0.3s ease; }
-        .image-upload-area:hover { border-color: #6366f1; background-color: #f8f9ff; }
-        .image-upload-area.dragover { border-color: #6366f1; background-color: #eef2ff; }
+        .image-upload-area:hover { border-color: #f9a133; background-color: #f8f9ff; }
+        .image-upload-area.dragover { border-color: #821917; background-color: #eef2ff; }
         .uploading-spinner {
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #6366f1;
+            border-top: 3px solid #f9a133;
             border-radius: 50%;
             width: 40px; height: 40px;
             animation: spin 1s linear infinite;
@@ -22,12 +22,51 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .modal-content { animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .post-card { transition: all 0.3s ease; scroll-snap-align: start; }
-        .post-card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
-        #postsGrid {
-            display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 1.5rem; padding: 1rem 0;
-            scroll-snap-type: x mandatory; scrollbar-width: thin;
+        
+        /* Post Card Base Styling */
+        .post-card { 
+            transition: all 0.3s ease; 
+            scroll-snap-align: start; 
+            /* Base sizing for mobile/scroll view */
+            min-width: 300px; 
+            /* max-width: 320px;  */
         }
+        .post-card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
+        
+        /* --- POSTS GRID LAYOUT FIX --- */
+        /* Default for Mobile/Tablet: Horizontal Scroll */
+        #postsGrid {
+            display: flex; 
+            flex-wrap: nowrap; 
+            /* overflow-x: auto;  */
+            gap: 1.5rem; 
+            padding: 1rem 0;
+            flex-direction: column;
+            scroll-snap-type: x mandatory; 
+            scrollbar-width: thin;
+        }
+        
+        /* PC View (1024px and up): 4-Column Wrapping Grid */
+        @media (min-width: 1024px) {
+            #postsGrid {
+                display: grid;
+                /* Sets up 4 columns of equal width */
+                grid-template-columns: repeat(4, 1fr); 
+                flex-wrap: wrap; 
+                overflow-x: hidden; /* Removes horizontal scrolling */
+                padding: 0; /* Remove padding used for scrollbar spacing */
+                scroll-snap-type: none;
+            }
+            .post-card {
+                /* Allows the card to naturally fill the 1fr column width */
+                min-width: unset; 
+                max-width: unset;
+                /* Remove snap-start as it's not needed for wrapping grid */
+                scroll-snap-align: none;
+            }
+        }
+
+        /* Scrollbar Styling */
         #postsGrid::-webkit-scrollbar { height: 8px; }
         #postsGrid::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         #postsGrid::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
@@ -36,19 +75,17 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-    <!-- Header -->
     <header class="bg-white shadow-sm border-b sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
+                    <div class="w-10 h-10  rounded-xl flex items-center justify-center">
+                        <img src="../img/logo.png" alt="">
                     </div>
-                    <h1 class="text-2xl font-bold text-gray-900">Blog Dashboard</h1>
+                    <h1 class="text-2xl font-bold text-gray-900"></h1>
+
                 </div>
-                <button onclick="showCreateModal()" class="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center space-x-2 shadow-lg shadow-indigo-200">
+                <button onclick="showCreateModal()" class="bg-gradient-to-br from-[#f9a133] to-[#821917] text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center space-x-2 shadow-lg hover:shadow-[#f9a133]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -58,12 +95,9 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-        <!-- RESPONSIVE STATS CARDS (FIXED!) -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-            <!-- Total Posts -->
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
                 <div class="flex-1">
                     <p class="text-sm font-medium text-gray-600">Total Posts</p>
@@ -76,7 +110,6 @@
                 </div>
             </div>
 
-            <!-- Categories -->
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
                 <div class="flex-1">
                     <p class="text-sm font-medium text-gray-600">Categories</p>
@@ -89,7 +122,6 @@
                 </div>
             </div>
 
-            <!-- Latest Post (NOW FULLY RESPONSIVE!) -->
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
                 <div class="flex items-start justify-between gap-4">
                     <div class="flex-1 min-w-0">
@@ -97,7 +129,7 @@
                         <p id="latestPost" class="text-lg font-semibold text-gray-900 mt-1 line-clamp-2 break-words">Loading...</p>
                     </div>
                     <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 text-purp-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -105,11 +137,10 @@
             </div>
         </div>
 
-        <!-- All Posts Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-bold text-gray-900">All Posts</h2>
-                <button onclick="loadPosts()" class="text-indigo-600 hover:text-indigo-700 font-medium flex items-center space-x-2">
+                <button onclick="loadPosts()" class="text-gray-700 hover:text-indigo-700 font-medium flex items-center space-x-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                     </svg>
@@ -118,7 +149,7 @@
             </div>
 
             <div id="loadingState" class="flex flex-col items-center justify-center py-16">
-                <div class="uploading-spinner mb-4"></div>
+                <div class="uploading-spinner mb-4 text-gray-400"></div>
                 <p class="text-gray-600">Loading posts...</p>
             </div>
 
@@ -135,7 +166,6 @@
         </div>
     </main>
 
-    <!-- Create/Edit Modal -->
     <div id="postModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
@@ -173,7 +203,7 @@
                 <div><label for="content" class="block text-sm font-semibold text-gray-700 mb-2">Content (Markdown supported)</label><textarea id="content" rows="10" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition font-mono text-sm"></textarea></div>
                 <div class="flex justify-end space-x-3 pt-4 border-t">
                     <button type="button" onclick="closeModal()" class="px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
-                    <button type="submit" id="submitBtn" class="px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center space-x-2">
+                    <button type="submit" id="submitBtn" class="px-6 py-3 bg-[#821917] text-white rounded-xl font-semibold hover:bg-[#f2e1d6] hover:transition hover:text-[#821917] flex items-center space-x-2">
                         <span id="submitText">Publish Post</span>
                         <div id="submitSpinner" class="hidden uploading-spinner" style="width:20px;height:20px;border-width:2px;"></div>
                     </button>
@@ -182,7 +212,6 @@
         </div>
     </div>
 
-    <!-- Delete Modal & Toast -->
     <div id="deleteModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
             <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -244,7 +273,8 @@
             const cover = imgs[0] || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
             const extra = imgs.length > 1 ? `+${imgs.length-1}` : '';
             const card = document.createElement('div');
-            card.className = 'post-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col min-w-[300px] max-w-[320px] snap-start';
+            // The class for post-card now only sets base styles. Sizing is handled by CSS media query.
+            card.className = 'post-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col snap-start';
             card.innerHTML = `
                 <div class="relative">
                     <img src="${cover}" alt="${p.title}" class="w-full h-40 object-cover">
@@ -267,12 +297,9 @@
                 </div>`;
             grid.appendChild(card);
         });
-        if (allPosts.length > 30) {
-            const note = document.createElement('div');
-            note.className = 'min-w-full text-center py-6 text-gray-500 text-sm italic';
-            note.textContent = `Showing latest 30 of ${allPosts.length} posts • Scroll →`;
-            grid.appendChild(note);
-        }
+        
+        // Removed the "Scroll ->" note as the grid will now wrap on PC view.
+        // The display will be managed by the CSS media query.
     }
 
     function handleImageSelect(e) {
