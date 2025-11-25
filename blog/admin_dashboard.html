@@ -22,23 +22,17 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .modal-content { animation: slideUp 0.3s ease; }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        /* Post Card Base Styling */
+
         .post-card { 
             transition: all 0.3s ease; 
             scroll-snap-align: start; 
-            /* Base sizing for mobile/scroll view */
             min-width: 300px; 
-            /* max-width: 320px;  */
         }
         .post-card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
-        
-        /* --- POSTS GRID LAYOUT FIX --- */
-        /* Default for Mobile/Tablet: Horizontal Scroll */
+
         #postsGrid {
             display: flex; 
             flex-wrap: nowrap; 
-            /* overflow-x: auto;  */
             gap: 1.5rem; 
             padding: 1rem 0;
             flex-direction: column;
@@ -46,27 +40,22 @@
             scrollbar-width: thin;
         }
         
-        /* PC View (1024px and up): 4-Column Wrapping Grid */
         @media (min-width: 1024px) {
             #postsGrid {
                 display: grid;
-                /* Sets up 4 columns of equal width */
                 grid-template-columns: repeat(4, 1fr); 
                 flex-wrap: wrap; 
-                overflow-x: hidden; /* Removes horizontal scrolling */
-                padding: 0; /* Remove padding used for scrollbar spacing */
+                overflow-x: hidden;
+                padding: 0;
                 scroll-snap-type: none;
             }
             .post-card {
-                /* Allows the card to naturally fill the 1fr column width */
                 min-width: unset; 
                 max-width: unset;
-                /* Remove snap-start as it's not needed for wrapping grid */
                 scroll-snap-align: none;
             }
         }
 
-        /* Scrollbar Styling */
         #postsGrid::-webkit-scrollbar { height: 8px; }
         #postsGrid::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         #postsGrid::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
@@ -79,13 +68,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10  rounded-xl flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center">
                         <img src="../img/logo.png" alt="">
                     </div>
                     <h1 class="text-2xl font-bold text-gray-900"></h1>
-
                 </div>
-                <button onclick="showCreateModal()" class="bg-gradient-to-br from-[#f9a133] to-[#821917] text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center space-x-2 shadow-lg hover:shadow-[#f9a133]">
+                <button onclick="showCreateModal()" class="bg-gradient-to-br from-[#f9a133] to-[#821917] text-white px-6 py-2.5 rounded-xl font-semibold hover:opacity-90 transition flex items-center space-x-2 shadow-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -96,7 +84,6 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
                 <div class="flex-1">
@@ -113,7 +100,7 @@
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
                 <div class="flex-1">
                     <p class="text-sm font-medium text-gray-600">Categories</p>
-                    <p id="totalCategories" class="text-3xl font-bold text-gray-900 mt-1">4</p>
+                    <p id="totalCategories" class="text-3xl font-bold text-gray-900 mt-1">6</p>
                 </div>
                 <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center flex-shrink-0">
                     <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +116,7 @@
                         <p id="latestPost" class="text-lg font-semibold text-gray-900 mt-1 line-clamp-2 break-words">Loading...</p>
                     </div>
                     <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <svg class="w-8 h-8 text-purp-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -166,6 +153,7 @@
         </div>
     </main>
 
+    <!-- Modals and Toast (unchanged) -->
     <div id="postModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
@@ -195,7 +183,12 @@
                     <div><label for="author" class="block text-sm font-semibold text-gray-700 mb-2">Author</label><input type="text" id="author" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></div>
                     <div><label for="category" class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
                         <select id="category" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
-                            <option value="Technology">Technology</option><option value="Lifestyle">Lifestyle</option><option value="Travel">Travel</option><option value="Business">Business</option>
+                            <option value="Press Releases">Press Releases</option>
+                            <option value="Activity Updates">Activity Updates</option>
+                            <option value="Entrepreneurship and Business Development">Entrepreneurship and Business Development</option>
+                            <option value="Career Growth and Professional Development">Career Growth and Professional Development</option>
+                            <option value="Mentorship and Funding">Mentorship and Funding</option>
+                            <option value="Impact Stories">Impact Stories</option>
                         </select>
                     </div>
                 </div>
@@ -203,12 +196,13 @@
                 <div><label for="content" class="block text-sm font-semibold text-gray-700 mb-2">Content (Markdown supported)</label><textarea id="content" rows="10" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition font-mono text-sm"></textarea></div>
                 <div class="flex justify-end space-x-3 pt-4 border-t">
                     <button type="button" onclick="closeModal()" class="px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
-                    <button type="submit" id="submitBtn" class="px-6 py-3 bg-[#821917] text-white rounded-xl font-semibold hover:bg-[#f2e1d6] hover:transition hover:text-[#821917] flex items-center space-x-2">
+                    <button type="submit" id="submitBtn" class="px-6 py-3 bg-[#821917] text-white rounded-xl font-semibold hover:bg-[#a0231e] transition flex items-center space-x-2">
                         <span id="submitText">Publish Post</span>
                         <div id="submitSpinner" class="hidden uploading-spinner" style="width:20px;height:20px;border-width:2px;"></div>
                     </button>
                 </div>
             </form>
+            </div>
         </div>
     </div>
 
@@ -231,12 +225,11 @@
             <div id="toastIcon"></div>
             <div class="flex-1"><p id="toastMessage" class="font-semibold text-gray-900"></p></div>
             <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-, </div>
         </div>
     </div>
 
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbw8rELdmF1UdWGlrBnoFQcn2SOYuPK0SuVU7EIeey9jvzEGpNkSs5mrwGV7QVp3Z1SbgA/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzJfflkV6BID7xkV1YNYCcgR3y9wOqXn34l-tD5WdChnw7v93jeKFfitk1t_le9aa7ReQ/exec';
     let allPosts = [], currentEditId = null, deletePostId = null, uploadedImages = [];
 
     window.addEventListener('DOMContentLoaded', loadPosts);
@@ -261,19 +254,31 @@
                 renderPosts();
                 document.getElementById('postsGrid').classList.remove('hidden');
             }
-        } catch (e) { showToast('Load error: ' + e.message, 'error'); }
-        finally { document.getElementById('loadingState').classList.add('hidden'); }
+        } catch (e) {
+            showToast('Load error: ' + e.message, 'error');
+        } finally {
+            document.getElementById('loadingState').classList.add('hidden');
+        }
     }
 
     function renderPosts() {
-        const grid = document.getElementById('postsGrid'); grid.innerHTML = '';
-        const colors = { 'Technology': 'bg-blue-100 text-blue-800', 'Lifestyle': 'bg-green-100 text-green-800', 'Travel': 'bg-yellow-100 text-yellow-800', 'Business': 'bg-purple-100 text-purple-800' };
+        const grid = document.getElementById('postsGrid');
+        grid.innerHTML = '';
+        const colors = {
+            'Press Releases': 'bg-blue-100 text-blue-800',
+            'Activity Updates': 'bg-green-100 text-green-800',
+            'Entrepreneurship and Business Development': 'bg-yellow-100 text-yellow-800',
+            'Career Growth and Professional Development': 'bg-purple-100 text-purple-800',
+            'Mentorship and Funding': 'bg-gray-100 text-gray-800',
+            'Impact Stories': 'bg-pink-100 text-pink-800'
+        };
+
         allPosts.slice(0, 30).forEach(p => {
             const imgs = Array.isArray(p.imageurls) ? p.imageurls.filter(url => !url.includes('placehold.co')) : [];
             const cover = imgs[0] || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
-            const extra = imgs.length > 1 ? `+${imgs.length-1}` : '';
+            const extra = imgs.length > 1 ? `+${imgs.length - 1}` : '';
+
             const card = document.createElement('div');
-            // The class for post-card now only sets base styles. Sizing is handled by CSS media query.
             card.className = 'post-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col snap-start';
             card.innerHTML = `
                 <div class="relative">
@@ -290,35 +295,38 @@
                     <div class="mt-3 pt-3 border-t flex items-center justify-between">
                         <span class="text-xs text-gray-500">by ${p.author}</span>
                         <div class="flex space-x-1">
-                            <button onclick="editPost(${p.id})" class="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-                            <button onclick="showDeleteModal(${p.id})" class="p-1.5 text-red-600 hover:bg-red-50 rounded transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                            <button onclick="editPost(${p.id})" class="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            </button>
+                            <button onclick="showDeleteModal(${p.id})" class="p-1.5 text-red-600 hover:bg-red-50 rounded transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>`;
             grid.appendChild(card);
         });
-        
-        // Removed the "Scroll ->" note as the grid will now wrap on PC view.
-        // The display will be managed by the CSS media query.
     }
 
     function handleImageSelect(e) {
         const files = e.target.files || e.dataTransfer?.files;
         if (!files?.length) return;
         Array.from(files).forEach(f => {
-            if (!f.type.startsWith('image/')) return showToast('Only images', 'error');
+            if (!f.type.startsWith('image/')) return showToast('Only images allowed', 'error');
             const reader = new FileReader();
-            reader.onload = ev => { uploadedImages.push({ base64: ev.target.result }); renderImagePreviews(); };
+            reader.onload = ev => { 
+                uploadedImages.push({ base64: ev.target.result }); 
+                renderImagePreviews(); 
+            };
             reader.readAsDataURL(f);
         });
         e.target.value = '';
     }
 
     function renderImagePreviews() {
-        const c = document.getElementById('imagePreviewContainer'); c.innerHTML = '';
-        const validImages = uploadedImages.filter(img => 
-            img.base64 || (img.url && !img.url.includes('placehold.co'))
-        );
+        const c = document.getElementById('imagePreviewContainer'); 
+        c.innerHTML = '';
+        const validImages = uploadedImages.filter(img => img.base64 || (img.url && !img.url.includes('placehold.co')));
 
         if (validImages.length === 0) {
             document.getElementById('uploadPlaceholder').classList.remove('hidden');
@@ -330,11 +338,12 @@
         document.getElementById('imagePreview').classList.remove('hidden');
 
         validImages.forEach((img, i) => {
-            const d = document.createElement('div'); d.className = 'relative group';
+            const d = document.createElement('div'); 
+            d.className = 'relative group';
             d.innerHTML = `
                 <img src="${img.base64 || img.url}" class="w-32 h-32 object-cover rounded-lg shadow-md">
                 ${i===0 ? '<div class="absolute top-2 left-2 bg-indigo-600 text-white text-xs px-2 py-1 rounded">Cover</div>' : ''}
-                <button onclick="uploadedImages = uploadedImages.filter((_,idx)=>idx!==${i}); renderImagePreviews();" class="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition">
+                <button onclick="uploadedImages.splice(${i}, 1); renderImagePreviews();" class="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>`;
             c.appendChild(d);
@@ -356,7 +365,11 @@
         document.getElementById('postModal').classList.remove('hidden'); 
     }
 
-    function closeModal() { document.getElementById('postModal').classList.add('hidden'); uploadedImages = []; }
+    function closeModal() { 
+        document.getElementById('postModal').classList.add('hidden'); 
+        uploadedImages = []; 
+        renderImagePreviews();
+    }
 
     function editPost(id) {
         const p = allPosts.find(x => x.id === id);
@@ -378,53 +391,72 @@
         document.getElementById('postModal').classList.remove('hidden');
     }
 
+    // FIXED SUBMIT HANDLER (this was the main fix for saving + the syntax error is gone)
     document.getElementById('postForm').addEventListener('submit', async e => {
         e.preventDefault();
-        const btn = document.getElementById('submitBtn'), txt = document.getElementById('submitText'), spin = document.getElementById('submitSpinner');
+        const btn = document.getElementById('submitBtn'), 
+              txt = document.getElementById('submitText'), 
+              spin = document.getElementById('submitSpinner');
         btn.disabled = true; txt.classList.add('hidden'); spin.classList.remove('hidden');
 
         try {
-            const postData = {
-                title: document.getElementById('title').value.trim(),
-                author: document.getElementById('author').value.trim(),
-                category: document.getElementById('category').value,
-                excerpt: document.getElementById('excerpt').value.trim(),
-                content: document.getElementById('content').value.trim(),
-            };
+            const formData = new URLSearchParams();
+            formData.append('title', document.getElementById('title').value.trim());
+            formData.append('author', document.getElementById('author').value.trim());
+            formData.append('category', document.getElementById('category').value);
+            formData.append('excerpt', document.getElementById('excerpt').value.trim());
+            formData.append('content', document.getElementById('content').value.trim());
 
-            const newImgs = uploadedImages.filter(i => i.base64);
-            if (newImgs.length) postData.base64Images = newImgs.map(i => i.base64);
+            // Send new images (repeated field)
+            uploadedImages
+                .filter(img => img.base64)
+                .forEach(img => formData.append('base64Images', img.base64));
 
-            const existing = uploadedImages.filter(i => i.url).map(i => i.url);
-            if (existing.length) postData.existingImageURLs = JSON.stringify(existing);
-
-            if (currentEditId) { postData.action = 'update'; postData.postId = currentEditId; }
-
-            const params = new URLSearchParams();
-            for (const [k, v] of Object.entries(postData)) {
-                if (Array.isArray(v)) v.forEach((val, idx) => params.append(`${k}[${idx}]`, val));
-                else params.append(k, v);
+            // Send kept existing images
+            const existingUrls = uploadedImages
+                .filter(img => img.url)
+                .map(img => img.url);
+            if (existingUrls.length > 0) {
+                formData.append('existingImageURLs', JSON.stringify(existingUrls));
             }
 
-            const res = await fetch(API_URL, { method: 'POST', body: params });
+            if (currentEditId) {
+                formData.append('action', 'update');
+                formData.append('postId', currentEditId);
+            }
+
+            const res = await fetch(API_URL, { method: 'POST', body: formData });
             const result = await res.json();
+
             if (result.error) throw new Error(result.details || result.error);
 
             showToast(currentEditId ? 'Post updated!' : 'Post published!', 'success');
-            closeModal(); loadPosts();
-        } catch (err) { showToast('Error: ' + err.message, 'error'); }
-        finally { btn.disabled = false; txt.classList.remove('hidden'); spin.classList.add('hidden'); }
+            closeModal(); 
+            loadPosts();
+        } catch (err) { 
+            showToast('Error: ' + err.message, 'error'); 
+            console.error(err);
+        } finally { 
+            btn.disabled = false; 
+            txt.classList.remove('hidden'); 
+            spin.classList.add('hidden'); 
+        }
     });
 
     function showDeleteModal(id) { deletePostId = id; document.getElementById('deleteModal').classList.remove('hidden'); }
     function closeDeleteModal() { document.getElementById('deleteModal').classList.add('hidden'); }
+
     async function confirmDelete() {
-        const p = new URLSearchParams(); p.append('action', 'delete'); p.append('postId', deletePostId);
+        const p = new URLSearchParams();
+        p.append('action', 'delete'); 
+        p.append('postId', deletePostId);
         await fetch(API_URL, { method: 'POST', body: p });
-        showToast('Post deleted!', 'success'); closeDeleteModal(); loadPosts();
+        showToast('Post deleted!', 'success'); 
+        closeDeleteModal(); 
+        loadPosts();
     }
 
-    function showToast(msg, type='success') {
+    function showToast(msg, type = 'success') {
         const t = document.getElementById('toast');
         document.getElementById('toastMessage').textContent = msg;
         document.getElementById('toastIcon').innerHTML = type === 'success'

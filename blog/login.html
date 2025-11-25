@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Card Container -->
+        <div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 md:p-10">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">Admin Access</h1>
+                <p class="text-gray-300">Sign in to your account</p>
+            </div>
+
+            <!-- Form -->
+            <form id="loginForm" class="space-y-5">
+                <!-- Username Input -->
+                <div class="relative">
+                    <label for="username" class="block text-sm font-medium text-gray-200 mb-2">Username</label>
+                    <div class="relative">
+                        <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Enter username"
+                            class="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="relative">
+                    <label for="password" class="block text-sm font-medium text-gray-200 mb-2">Password</label>
+                    <div class="relative">
+                        <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="••••••••"
+                            class="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition"
+                            required
+                        >
+                        <button 
+                            type="button" 
+                            id="togglePassword"
+                            class="absolute right-3 top-3.5 text-gray-400 hover:text-gray-300 transition"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit" 
+                    id="submitBtn"
+                    class="w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+                >
+                    <span id="buttonText">Sign In</span>
+                    <svg id="spinner" class="hidden w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+
+                <!-- Alert Messages -->
+                <div id="alertContainer"></div>
+            </form>
+
+            <!-- Demo Credentials Info -->
+            <div class="mt-8 p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+                <p class="text-sm text-yellow-200">
+                    <strong>Demo Credentials:</strong><br>
+                    Username: admin<br>
+                    Password: admin123
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <p class="text-center text-gray-400 text-sm mt-8">
+            Admin Portal • <span id="versionText">v1.0</span>
+        </p>
+    </div>
+
+    <script>
+        // Configuration - Update this with your deployed Apps Script URL
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzkkT9XU4g2YBO0HgOXOzBaEQVrND7W8MuIbE-6lj6eThNSH_sy2yrWb7wOlZtrFUtz/exec";
+
+        // Password Toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+        });
+
+        // Form Submission
+        const loginForm = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const buttonText = document.getElementById('buttonText');
+        const spinner = document.getElementById('spinner');
+        const alertContainer = document.getElementById('alertContainer');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Show loading state
+            submitBtn.disabled = true;
+            buttonText.textContent = 'Signing in...';
+            spinner.classList.remove('hidden');
+            alertContainer.innerHTML = '';
+
+            try {
+                // Call Apps Script backend
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Store token in sessionStorage (cleared when browser closes)
+                    sessionStorage.setItem('authToken', result.token);
+                    sessionStorage.setItem('username', result.user.username);
+
+                    showAlert('success', '✓ Login successful! Redirecting...');
+                    
+                    setTimeout(() => {
+                        // Redirect to your dashboard or main page
+                        window.location.href = '/blog/admin_dashboard.html';
+                    }, 1500);
+                } else {
+                    showAlert('error', '✗ ' + result.error);
+                    submitBtn.disabled = false;
+                    buttonText.textContent = 'Sign In';
+                    spinner.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('error', '✗ Connection error. Please check the Apps Script URL.');
+                submitBtn.disabled = false;
+                buttonText.textContent = 'Sign In';
+                spinner.classList.add('hidden');
+            }
+        });
+
+        function showAlert(type, message) {
+            const bgColor = type === 'success' ? 'bg-green-500/20 border-green-500/50' : 'bg-red-500/20 border-red-500/50';
+            const textColor = type === 'success' ? 'text-green-300' : 'text-red-300';
+            
+            const alert = document.createElement('div');
+            alert.className = `p-3 rounded-lg border ${bgColor} ${textColor} text-sm animate-in fade-in`;
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+        }
+
+        // Redirect if already logged in
+        window.addEventListener('load', () => {
+            const token = sessionStorage.getItem('authToken');
+            if (token) {
+                // Optional: Verify token is still valid
+                // For now, redirect to dashboard if token exists
+                // window.location.href = '/dashboard';
+            }
+        });
+    </script>
+</body>
+</html>

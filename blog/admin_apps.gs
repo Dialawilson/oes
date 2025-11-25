@@ -1,478 +1,305 @@
 /**
- * Google Apps Script Backend for TechBlog Admin Dashboard
- * COMPLETE CRUD OPERATIONS - Create, Read, Update, Delete
- * 
- * DEPLOYMENT SETTINGS (CRITICAL):
- * - Execute as: "Me"
- * - Who has access: "Anyone"
- * 
- * After code changes: Deploy → Manage deployments → Edit → New version → Deploy
+ * Blog Admin Dashboard Backend (Google Apps Script)
+ * * Handles requests from the HTML frontend (doGet, doPost) to manage blog posts
+ * stored in a Google Sheet and uploads images to Cloudinary.
+ * * IMPORTANT: Replace placeholder values for Cloudinary in the Properties Service setup.
  */
 
-const SHEET_NAME = 'Posts'; 
-const REQUIRED_FIELDS = ['title', 'author', 'category', 'excerpt', 'content'];
-const SPREADSHEET_ID = '1fFbMI-WPiWBXd_sSZ8PcOZHRdRJJOZIR-IS1RJEMfoA'; 
-const HEADERS = ['ID', 'Title', 'Author', 'Category', 'Excerpt', 'Content', 'ImageURL', 'Date'];
+// --- Configuration ---
+
+const SHEET_NAME = 'Posts';
+const PROPERTIES = PropertiesService.getScriptProperties();
+// Retrieve the Cloudinary credentials from script properties (Set these via Script Editor -> Project Settings -> Script Properties)
+const CLOUDINARY_CLOUD_NAME = PROPERTIES.getProperty('CLOUDINARY_CLOUD_NAME') || 'your_cloud_name';
+const CLOUDINARY_UPLOAD_PRESET = PROPERTIES.getProperty('CLOUDINARY_UPLOAD_PRESET') || 'your_upload_preset';
+// The ID of the spreadsheet to use (optional, uses the script's bound spreadsheet by default)
+const SPREADSHEET_ID = PROPERTIES.getProperty('SPREADSHEET_ID');
 
 /**
- * Setup function - Run this ONCE
+ * Initializes the Google Sheet database.
  */
-function setupSheet() {
-  try {
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    let sheet = ss.getSheetByName(SHEET_NAME);
-
-    if (!sheet) {
-      sheet = ss.insertSheet(SHEET_NAME);
-    }
-
-    sheet.clear();
-    const headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
-    headerRange.setValues([HEADERS]);
-    headerRange.setFontWeight('bold').setBackground('#4F46E5').setFontColor('white');
-    sheet.setFrozenRows(1);
-
-    Logger.log(`Sheet "${SHEET_NAME}" setup complete!`);
-    return { success: true };
-
-  } catch (error) {
-    Logger.log(`Setup error: ${error.toString()}`);
-    return { success: false, error: error.toString() };
+function setupSheets() {
+  const ss = SPREADSHEET_ID ? SpreadsheetApp.openById(SPREADSHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    const headers = ['ID', 'Date', 'Title', 'Author', 'Category', 'Excerpt', 'Content', 'ImageURLs'];
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
+    Logger.log('Created new sheet: ' + SHEET_NAME);
   }
+  return sheet;
 }
 
+// --- Main Request Handlers ---
+
 /**
- * Handle GET requests (fetch posts)
+ * Handles GET requests to retrieve all blog posts.
+ * @param {object} e The event parameter for a GET request.
+ * @returns {object} JSON response of all posts.
  */
 function doGet(e) {
   try {
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = ss.getSheetByName(SHEET_NAME);
-
-    if (!sheet) {
-      return buildResponse({ error: `Sheet "${SHEET_NAME}" not found. Run setupSheet() first.` });
-    }
-
+    const sheet = setupSheets();
     const data = sheet.getDataRange().getValues();
     
+    // Check if only headers exist
     if (data.length <= 1) {
-      return buildResponse({ posts: [] });
+      return createJsonResponse({ posts: [] });
     }
-    
+
     const headers = data[0];
-    const posts = [];
-
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
+    const posts = data.slice(1).map(row => {
       const post = {};
-      for (let j = 0; j < headers.length; j++) {
-        const key = headers[j].toLowerCase().replace(/\s/g, '');
-        post[key] = row[j];
-      }
-      posts.push(post);
-    }
+      headers.forEach((header, i) => {
+        let value = row[i];
+        if (header === 'ImageURLs' && value) {
+          try {
+            // ImageURLs are stored as a JSON string array
+            value = JSON.parse(value);
+          } catch (err) {
+            value = []; // Handle parsing error
+            Logger.log('Error parsing ImageURLs: ' + err.message);
+          }
+        }
+        post[header.toLowerCase().replace(/ /g, '')] = value;
+      });
+      return post;
+    });
 
-    return buildResponse({ posts: posts });
+    return createJsonResponse({ posts: posts });
 
   } catch (error) {
-    Logger.log(`doGet error: ${error.toString()}`);
-    return buildResponse({ error: 'Failed to fetch posts.', details: error.toString() });
+    Logger.log('Error in doGet: ' + error.message);
+    return createErrorResponse('Failed to fetch posts: ' + error.message, 500);
   }
 }
 
 /**
- * Handle POST requests (create, update, or delete post)
+ * Handles POST requests to create, update, or delete blog posts.
+ * @param {object} e The event parameter for a POST request.
+ * @returns {object} JSON response confirming success or reporting error.
  */
 function doPost(e) {
   try {
-    let postData;
-    
-    Logger.log('Received request');
-    Logger.log('e.parameter exists: ' + (e.parameter ? 'yes' : 'no'));
-    Logger.log('e.postData exists: ' + (e.postData ? 'yes' : 'no'));
-    
-    // Try e.parameter first (form data)
-    if (e.parameter && Object.keys(e.parameter).length > 0) {
-      postData = e.parameter;
-      Logger.log('Using e.parameter with keys: ' + Object.keys(postData).join(', '));
-    } 
-    // Fallback to JSON body
-    else if (e.postData && e.postData.contents) {
-      try {
-        postData = JSON.parse(e.postData.contents);
-        Logger.log('Using JSON body with keys: ' + Object.keys(postData).join(', '));
-      } catch (jsonError) {
-        Logger.log('JSON parse failed: ' + jsonError);
-        return buildResponse({ error: 'Invalid JSON data' });
-      }
-    } else {
-      Logger.log('No data received in request');
-      return buildResponse({ error: 'No data received' });
-    }
+    const params = e.parameter;
+    const action = params.action || 'create';
+    const sheet = setupSheets();
 
-    // Check for action parameter
-    const action = postData.action;
-    
-    // Handle DELETE action
-    if (action === 'delete') {
-      return handleDelete(postData.postId);
+    switch (action) {
+      case 'create':
+        return handleCreate(sheet, params);
+      case 'update':
+        return handleUpdate(sheet, params);
+      case 'delete':
+        return handleDelete(sheet, params);
+      default:
+        return createErrorResponse('Invalid action specified.', 400);
     }
-    
-    // Handle UPDATE action
-    if (action === 'update' && postData.postId) {
-      return handleUpdate(postData);
-    }
-    
-    // Handle CREATE action (default)
-    return handleCreate(postData);
-
   } catch (error) {
-    Logger.log(`doPost error: ${error.toString()}`);
-    Logger.log(`Error stack: ${error.stack}`);
-    return buildResponse({ 
-      error: 'Failed to process request.', 
-      details: error.toString() 
-    });
+    Logger.log('Error in doPost: ' + error.message);
+    return createErrorResponse('Operation failed: ' + error.message, 500);
   }
 }
 
+// --- Action Handlers ---
+
 /**
- * Create a new post
+ * Handles the creation of a new blog post.
+ * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet The target sheet.
+ * @param {object} params The POST request parameters.
  */
-function handleCreate(postData) {
-  try {
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = ss.getSheetByName(SHEET_NAME);
+function handleCreate(sheet, params) {
+  const newId = sheet.getLastRow(); // Get last row index (1-based), new ID will be index + 1
+  const nextId = newId === 0 ? 1 : newId; // Use 1 if sheet is empty (only headers)
 
-    if (!sheet) {
-      return buildResponse({ error: `Sheet "${SHEET_NAME}" not found.` });
-    }
+  const imageURLs = uploadImages(params.base64Images);
 
-    // Validate required fields
-    const missingFields = [];
-    for (const field of REQUIRED_FIELDS) {
-      if (!postData[field]) {
-        missingFields.push(field);
+  const rowData = [
+    nextId, // ID
+    new Date().toLocaleDateString('en-US'), // Date
+    params.title || 'Untitled Post', // Title
+    params.author || 'Anonymous', // Author
+    params.category || 'Press Releases', // Category
+    params.excerpt || '', // Excerpt
+    params.content || '', // Content
+    JSON.stringify(imageURLs) // ImageURLs (Stored as JSON string)
+  ];
+
+  sheet.appendRow(rowData);
+  return createJsonResponse({ status: 'success', message: 'Post created successfully', id: nextId });
+}
+
+/**
+ * Handles the update of an existing blog post.
+ * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet The target sheet.
+ * @param {object} params The POST request parameters.
+ */
+function handleUpdate(sheet, params) {
+  const postId = parseInt(params.postId);
+  if (isNaN(postId)) {
+    return createErrorResponse('Invalid Post ID for update.', 400);
+  }
+
+  const allData = sheet.getDataRange().getValues();
+  // Row index is postId (since we start ID from 1 and data starts at row 2)
+  const rowIdx = postId;
+
+  if (rowIdx < 1 || rowIdx >= allData.length) {
+    return createErrorResponse('Post not found.', 404);
+  }
+  
+  // 1. Handle Images
+  let existingUrls = [];
+  if (params.existingImageURLs) {
+      try {
+          // existingImageURLs is sent as a JSON string array from frontend
+          existingUrls = JSON.parse(params.existingImageURLs);
+      } catch (e) {
+          Logger.log('Error parsing existingImageURLs: ' + e.message);
+          return createErrorResponse('Invalid existing image URL format.', 400);
       }
+  }
+
+  // Upload any new base64 images
+  const newImageURLs = uploadImages(params.base64Images);
+  
+  // Combine existing (kept) and newly uploaded URLs
+  const finalImageURLs = existingUrls.concat(newImageURLs);
+
+
+  // 2. Prepare new data array
+  const updatedData = [
+    postId, // ID (Unchanged)
+    allData[rowIdx][1] || new Date().toLocaleDateString('en-US'), // Date (Keep existing date)
+    params.title || 'Untitled Post', // Title
+    params.author || 'Anonymous', // Author
+    params.category || 'Press Releases', // Category
+    params.excerpt || '', // Excerpt
+    params.content || '', // Content
+    JSON.stringify(finalImageURLs) // ImageURLs (Updated JSON string)
+  ];
+  
+  // Update the row (rowIdx + 1 because sheet is 1-indexed)
+  sheet.getRange(rowIdx + 1, 1, 1, updatedData.length).setValues([updatedData]);
+  
+  return createJsonResponse({ status: 'success', message: 'Post updated successfully', id: postId });
+}
+
+/**
+ * Handles the deletion of an existing blog post.
+ * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet The target sheet.
+ * @param {object} params The POST request parameters.
+ */
+function handleDelete(sheet, params) {
+  const postId = parseInt(params.postId);
+  if (isNaN(postId)) {
+    return createErrorResponse('Invalid Post ID for delete.', 400);
+  }
+
+  // Row index is postId + 1 (1 for headers)
+  // Since IDs are appended sequentially, Row index should match ID + 1.
+  // We need to iterate to find the actual row number (1-based index)
+  const data = sheet.getDataRange().getValues();
+  let rowToDelete = -1;
+  
+  // Find the row number by ID
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0] === postId) {
+      rowToDelete = i + 1; // Apps Script row index (1-based)
+      break;
     }
+  }
+
+  if (rowToDelete === -1) {
+    return createErrorResponse('Post not found.', 404);
+  }
+
+  sheet.deleteRow(rowToDelete);
+  
+  // NOTE: This leaves a gap in IDs, but the client side uses IDs not row index.
+  // The client side re-sorts by ID on load.
+
+  return createJsonResponse({ status: 'success', message: 'Post deleted successfully', id: postId });
+}
+
+// --- Image & Utility Functions ---
+
+/**
+ * Uploads an array of base64 images to Cloudinary.
+ * @param {string[]|string} base64Images Base64 string(s) of images.
+ * @returns {string[]} Array of secure image URLs.
+ */
+function uploadImages(base64Images) {
+  if (!base64Images) return [];
+  
+  // Ensure we are working with an array, even if only one image was sent
+  const imagesToUpload = Array.isArray(base64Images) ? base64Images : [base64Images];
+  
+  const uploadedUrls = [];
+  
+  if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+      Logger.log("Cloudinary credentials not set. Skipping image upload.");
+      return [];
+  }
+  
+  const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+  
+  imagesToUpload.forEach(base64Data => {
+    // Clean up the base64 string (remove data prefix)
+    const cleanedBase64 = base64Data.split(',')[1] || base64Data;
     
-    if (missingFields.length > 0) {
-      Logger.log('Missing fields: ' + missingFields.join(', '));
-      Logger.log('Available fields: ' + Object.keys(postData).join(', '));
-      return buildResponse({ 
-        error: `Missing required fields: ${missingFields.join(', ')}`,
-        details: 'Available fields: ' + Object.keys(postData).join(', ')
-      });
-    }
+    // Cloudinary requires the full data URI (e.g., 'data:image/png;base64,...')
+    const dataUri = base64Data.startsWith('data:') ? base64Data : `data:image/png;base64,${cleanedBase64}`;
+
+    const payload = {
+      upload_preset: CLOUDINARY_UPLOAD_PRESET,
+      file: dataUri
+    };
     
-    let imageUrl = '';
-    
-    // Handle image upload
-    if (postData.base64Image) {
-      Logger.log('Processing image upload...');
+    const options = {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    };
+
+    try {
+      const response = UrlFetchApp.fetch(uploadUrl, options);
+      const jsonResponse = JSON.parse(response.getContentText());
       
-      try {
-        const uploadResult = uploadToCloudinary(postData.base64Image);
-        
-        if (uploadResult.error) {
-          Logger.log(`Cloudinary error: ${uploadResult.error}`);
-          imageUrl = 'https://placehold.co/600x400/2563eb/ffffff?text=Upload+Failed';
-        } else {
-          imageUrl = uploadResult.url;
-          Logger.log(`Image uploaded: ${imageUrl}`);
-        }
-      } catch (uploadError) {
-        Logger.log('Image upload exception: ' + uploadError);
-        imageUrl = 'https://placehold.co/600x400/2563eb/ffffff?text=Upload+Error';
+      if (jsonResponse.secure_url) {
+        uploadedUrls.push(jsonResponse.secure_url);
+        Logger.log('Image uploaded successfully: ' + jsonResponse.secure_url);
+      } else {
+        Logger.log('Cloudinary upload error: ' + jsonResponse.error.message);
       }
-    } else {
-      Logger.log('No image provided, using placeholder');
-      imageUrl = 'https://placehold.co/600x400/2563eb/ffffff?text=No+Image';
+    } catch (e) {
+      Logger.log('Network/Parsing error during Cloudinary fetch: ' + e.message);
     }
-
-    // Generate ID and date
-    const lastRow = sheet.getLastRow();
-    let newId = 1;
-    
-    if (lastRow > 1) {
-      try {
-        const lastIdValue = sheet.getRange(lastRow, 1).getValue();
-        const lastId = parseInt(lastIdValue);
-        newId = (isNaN(lastId) || lastId === 0) ? 1 : lastId + 1;
-      } catch (idError) {
-        Logger.log('Error getting last ID: ' + idError);
-        newId = lastRow;
-      }
-    }
-    
-    const dateString = new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
-
-    // Create new row
-    const newRow = [
-      newId,
-      postData.title,
-      postData.author,
-      postData.category,
-      postData.excerpt,
-      postData.content,
-      imageUrl,
-      dateString
-    ];
-
-    sheet.appendRow(newRow);
-    Logger.log(`Post ${newId} created successfully`);
-
-    return buildResponse({ 
-      success: true,
-      message: 'Post published successfully!', 
-      postId: newId, 
-      imageUrl: imageUrl 
-    });
-
-  } catch (error) {
-    Logger.log(`handleCreate error: ${error.toString()}`);
-    return buildResponse({ 
-      error: 'Failed to create post.', 
-      details: error.toString() 
-    });
-  }
+  });
+  
+  return uploadedUrls;
 }
 
 /**
- * Update an existing post
+ * Creates a standard JSON response.
+ * @param {object} data The data object to return.
  */
-function handleUpdate(postData) {
-  try {
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = ss.getSheetByName(SHEET_NAME);
-
-    if (!sheet) {
-      return buildResponse({ error: `Sheet "${SHEET_NAME}" not found.` });
-    }
-
-    const postId = parseInt(postData.postId);
-    if (!postId) {
-      return buildResponse({ error: 'Invalid post ID for update' });
-    }
-
-    // Find the row with this ID
-    const data = sheet.getDataRange().getValues();
-    let rowIndex = -1;
-    
-    for (let i = 1; i < data.length; i++) {
-      if (parseInt(data[i][0]) === postId) {
-        rowIndex = i + 1; // Sheet rows are 1-indexed
-        break;
-      }
-    }
-    
-    if (rowIndex === -1) {
-      return buildResponse({ error: `Post with ID ${postId} not found` });
-    }
-
-    // Validate required fields
-    const missingFields = [];
-    for (const field of REQUIRED_FIELDS) {
-      if (!postData[field]) {
-        missingFields.push(field);
-      }
-    }
-    
-    if (missingFields.length > 0) {
-      return buildResponse({ 
-        error: `Missing required fields: ${missingFields.join(', ')}`
-      });
-    }
-
-    // Get existing image URL (column 7)
-    let imageUrl = sheet.getRange(rowIndex, 7).getValue();
-    
-    // Only upload new image if base64Image is provided
-    if (postData.base64Image) {
-      Logger.log('Updating image...');
-      
-      try {
-        const uploadResult = uploadToCloudinary(postData.base64Image);
-        
-        if (uploadResult.error) {
-          Logger.log(`Cloudinary error: ${uploadResult.error}`);
-          // Keep existing image on error
-        } else {
-          imageUrl = uploadResult.url;
-          Logger.log(`New image uploaded: ${imageUrl}`);
-        }
-      } catch (uploadError) {
-        Logger.log('Image upload exception: ' + uploadError);
-        // Keep existing image on error
-      }
-    } else {
-      Logger.log('No new image provided, keeping existing image');
-    }
-
-    // Update the row (keep original ID and date)
-    const existingId = sheet.getRange(rowIndex, 1).getValue();
-    const existingDate = sheet.getRange(rowIndex, 8).getValue();
-    
-    const updatedRow = [
-      existingId,           // Keep original ID
-      postData.title,
-      postData.author,
-      postData.category,
-      postData.excerpt,
-      postData.content,
-      imageUrl,             // Updated or existing image
-      existingDate          // Keep original date
-    ];
-
-    // Update the entire row
-    sheet.getRange(rowIndex, 1, 1, HEADERS.length).setValues([updatedRow]);
-    Logger.log(`Post ${postId} updated successfully`);
-
-    return buildResponse({ 
-      success: true,
-      message: 'Post updated successfully!', 
-      postId: postId,
-      imageUrl: imageUrl 
-    });
-
-  } catch (error) {
-    Logger.log(`handleUpdate error: ${error.toString()}`);
-    return buildResponse({ 
-      error: 'Failed to update post.', 
-      details: error.toString() 
-    });
-  }
+function createJsonResponse(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 /**
- * Delete a post
+ * Creates an error JSON response.
+ * @param {string} message The error message.
+ * @param {number} code The HTTP status code (used for logging/debugging, not actual HTTP status).
  */
-function handleDelete(postId) {
-  try {
-    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    const sheet = ss.getSheetByName(SHEET_NAME);
-
-    if (!sheet) {
-      return buildResponse({ error: `Sheet "${SHEET_NAME}" not found.` });
-    }
-
-    const id = parseInt(postId);
-    if (!id) {
-      return buildResponse({ error: 'Invalid post ID for deletion' });
-    }
-
-    // Find and delete the row with this ID
-    const data = sheet.getDataRange().getValues();
-    
-    for (let i = 1; i < data.length; i++) {
-      if (parseInt(data[i][0]) === id) {
-        sheet.deleteRow(i + 1); // Sheet rows are 1-indexed
-        Logger.log(`Post ${id} deleted successfully`);
-        return buildResponse({ 
-          success: true,
-          message: 'Post deleted successfully!',
-          postId: id 
-        });
-      }
-    }
-    
-    return buildResponse({ error: `Post with ID ${id} not found` });
-
-  } catch (error) {
-    Logger.log(`handleDelete error: ${error.toString()}`);
-    return buildResponse({ 
-      error: 'Failed to delete post.', 
-      details: error.toString() 
-    });
-  }
-}
-
-/**
- * Upload image to Cloudinary using signed upload
- */
-function uploadToCloudinary(base64Data) {
-  const CLOUD_NAME = PropertiesService.getScriptProperties().getProperty('CLOUD_NAME');
-  const API_KEY = PropertiesService.getScriptProperties().getProperty('API_KEY');
-  const API_SECRET = PropertiesService.getScriptProperties().getProperty('API_SECRET');
-  
-  if (!CLOUD_NAME || !API_KEY || !API_SECRET) {
-    return { error: 'Cloudinary credentials not configured in Script Properties.' };
-  }
-
-  const timestamp = Math.round(new Date().getTime() / 1000);
-  const folder = "blog-posts-admin";
-  
-  const signatureString = `folder=${folder}&timestamp=${timestamp}${API_SECRET}`;
-  
-  const signature = Utilities.computeDigest(
-    Utilities.DigestAlgorithm.SHA_1,
-    signatureString,
-    Utilities.Charset.UTF_8
-  ).map(function(byte) {
-    const v = (byte < 0) ? 256 + byte : byte;
-    return ('0' + v.toString(16)).slice(-2);
-  }).join('');
-
-  const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
-  
-  const boundary = '----WebKitFormBoundary' + Utilities.getUuid().replace(/-/g, '');
-  let payload = '';
-  
-  payload += '--' + boundary + '\r\n';
-  payload += 'Content-Disposition: form-data; name="file"\r\n\r\n';
-  payload += base64Data + '\r\n';
-  
-  payload += '--' + boundary + '\r\n';
-  payload += 'Content-Disposition: form-data; name="api_key"\r\n\r\n';
-  payload += API_KEY + '\r\n';
-  
-  payload += '--' + boundary + '\r\n';
-  payload += 'Content-Disposition: form-data; name="timestamp"\r\n\r\n';
-  payload += timestamp + '\r\n';
-  
-  payload += '--' + boundary + '\r\n';
-  payload += 'Content-Disposition: form-data; name="signature"\r\n\r\n';
-  payload += signature + '\r\n';
-  
-  payload += '--' + boundary + '\r\n';
-  payload += 'Content-Disposition: form-data; name="folder"\r\n\r\n';
-  payload += folder + '\r\n';
-  
-  payload += '--' + boundary + '--\r\n';
-
-  const options = {
-    method: 'post',
-    contentType: 'multipart/form-data; boundary=' + boundary,
-    payload: payload,
-    muteHttpExceptions: true
-  };
-
-  try {
-    const response = UrlFetchApp.fetch(url, options);
-    const result = JSON.parse(response.getContentText());
-
-    if (response.getResponseCode() === 200 && result.secure_url) {
-      Logger.log('Cloudinary upload successful: ' + result.secure_url);
-      return { url: result.secure_url };
-    } else {
-      Logger.log('Cloudinary error response: ' + response.getContentText());
-      return { error: result.error ? result.error.message : 'Unknown Cloudinary error' };
-    }
-  } catch (e) {
-    Logger.log('Cloudinary API exception: ' + e.toString());
-    return { error: 'Cloudinary API call failed: ' + e.toString() };
-  }
-}
-
-/**
- * Build JSON response
- */
-function buildResponse(data) {
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
+function createErrorResponse(message, code) {
+  return ContentService.createTextOutput(JSON.stringify({ 
+    error: message, 
+    details: 'Status Code: ' + code 
+  }))
     .setMimeType(ContentService.MimeType.JSON);
 }
