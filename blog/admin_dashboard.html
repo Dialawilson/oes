@@ -69,7 +69,10 @@
             <div class="flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center">
-                        <img src="../img/logo.png" alt="">
+                        <a href="../index.html">
+
+                            <img src="../img/logo.png" alt="">
+                        </a>
                     </div>
                     <h1 class="text-2xl font-bold text-gray-900"></h1>
                 </div>
@@ -315,7 +318,7 @@
             card.className = 'post-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col snap-start';
             card.innerHTML = `
                 <div class="relative">
-                    <img src="${cover}" alt="${p.title}" class="w-full h-40 object-cover">
+                    <img src="${cover}" alt="${p.title}" class="w-full h-50 object-cover">
                     ${extra ? `<div class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full">${extra}</div>` : ''}
                 </div>
                 <div class="p-4 flex-1 flex flex-col">

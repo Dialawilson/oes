@@ -136,8 +136,8 @@
     </div>
   </main>
 
-  <div id="modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="modal-content rounded-3xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-y-auto">
+  <div id="modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center px-4 overflow-y-auto">
+    <div class="modal-content rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] overflow-y-auto">
       <div class="sticky top-0 border-b px-8 py-6 flex justify-between items-center" style="background-color: var(--card); border-color: var(--border);">
         <h2 id="modalTitle" class="text-4xl font-bold"></h2>
         <button id="closeModal" class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
@@ -154,13 +154,13 @@
 
   <footer class="py-12 mt-24 text-center text-gray-500" style="background-color: var(--card);">
     <div class="max-w-7xl mx-auto px-6">
-      <p><a href="admin_dashboard.html">&copy;</a> 2025 Ogoni</a> Entrepreneurship Summit. All rights reserved.</p>
+      <p><a href="login.html">&copy;</a> 2025 Ogoni</a> Entrepreneurship Summit. All rights reserved.</p>
       </div>
     </div>
   </footer>
 
   <script>
-    const API = 'https://script.google.com/macros/s/AKfycbwooOn6nNRw_s7kweRmlzOYImNrC0QKnii1cWiib_fVKtOkug6ZX4zG4uxeEtehIQNq/exec';
+    const API = 'https://script.google.com/macros/s/AKfycbw8rELdmF1UdWGlrBnoFQcn2SOYuPK0SuVU7EIeey9jvzEGpNkSs5mrwGV7QVp3Z1SbgA/exec';
     let posts = [];
 
     // PREMIUM DARK MODE
@@ -251,16 +251,16 @@
         card.className = 'card rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border';
         card.onclick = () => openPost(p);
         card.innerHTML = `
-          <img src="${cover}" alt="${p.title}" class="w-full h-56 object-cover" loading="lazy">
+          <img src="${cover}" alt="${p.title}" class="w-full h-[15rem] object-cover" loading="lazy">
           <div class="p-6">
             <div class="flex justify-between text-sm text-muted mb-3">
               <span>${formatDate(p.date)}</span>
               <span>by ${p.author}</span>
             </div>
             <h2 class="text-2xl font-bold mb-3 line-clamp-2">${p.title}</h2>
-            <span class="inline-block px-4 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium mb-4">${p.category}</span>
+            <span class="inline-block px-4 py-1.5 bg-[#82191723] dark:bg-[#f9a13312] text-[#822927] dark:text-[#f9a133] rounded-full text-sm font-medium mb-4">${p.category}</span>
             <p class="text-muted line-clamp-3 mb-6">${p.excerpt}</p>
-            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition">Read More</button>
+            <button class="w-full bg-[#821927] hover:text-[#821917] hover:bg-[#82191770] text-white py-3 rounded-lg font-semibold transition dark:bg-[#f9a133] dark:hover:text-[#f9a133] dark:hover:bg-[#f9a13352]">Read More</button>
           </div>
         `;
         grid.appendChild(card);
@@ -268,24 +268,24 @@
     }
 
     function openPost(post) {
-      document.getElementById('modalTitle').textContent = post.title;
+      document.getElementById('modalTitle').innerHTML = `<h2 class="text-sm">${post.title}</h2>`;
       const gallery = (post.imageurls && post.imageurls.length > 0) ? `
         <div class="gallery">
           ${post.imageurls.map(src => `
-            <img src="${src}" alt="Post image" class="w-full h-64 object-cover cursor-pointer hover:opacity-90 transition" onclick="event.stopPropagation(); window.open('${src}', '_blank')">
+            <img src="${src}" alt="Post image" class="w-full h-64 object-cover" onclick="event.stopPropagation(); window.open('${src}', '_blank')">
           `).join('')}
         </div>
       ` : '';
 
       document.getElementById('modalContent').innerHTML = `
         <div class="flex flex-wrap gap-4 text-sm text-muted mb-8 pb-6 border-b" style="border-color: var(--border);">
-          <span>${formatDate(post.date)}</span>
+          <span>${post.date || 'Recent'}</span>
           <span>•</span>
           <span>by <strong>${post.author}</strong></span>
-          <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">${post.category}</span>
+          <span class="px-3 py-1 bg-[#82171912]  text-[#821719] dark:text-[#f9a133] dark:bg-[#f9a13312] rounded-full bg-[#82191723]">${post.category}</span>
         </div>
         ${gallery}
-        <div class="markdown prose prose-lg dark:prose-invert max-w-none">
+        <div class="markdown">
           ${marked.parse(post.content || '')}
         </div>
       `;
