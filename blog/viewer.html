@@ -116,7 +116,7 @@
         <button data-cat="all" class="filter-btn px-6 py-3 rounded-full font-semibold text-white  hover:bg-opacity-90 transition-colors">All Post</button>
         <button data-cat="Press Releases" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors hover:text-[#821917] dark:hover:text-[#f9a133]">Press Releases</button>
         <button data-cat="Activity Upadte" class="filter-btn px-6 py-3 rounded-full font-semibold dark:hover:bg-gray-700/50 transition-colors hover:bg-gray-100  hover:text-[#821917] dark:hover:text-[#f9a133]">Activity Update</button>
-        <button data-cat="Entrepreneurshipa and Business Development" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-[#821917] transition-colors dark:hover:text-[#f9a133]">Entrepreneurship & Busines Development</button>
+        <button data-cat="Entrepreneurship and Business Development" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-[#821917] transition-colors dark:hover:text-[#f9a133]">Entrepreneurship & Busines Development</button>
         <button data-cat="Career Growth and Professional Development" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 hover:text-[#821917] dark:hover:bg-gray-700/50 transition-colors dark:hover:text-[#f9a133]">Career Growth and Professional Development</button>
         <button data-cat="Mentorship and Funding" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 hover:text-[#821917] dark:hover:bg-gray-700/50 transition-colors dark:hover:text-[#f9a133]">Mentorship and Funding</button>
         <button data-cat="Impact Stories" class="filter-btn px-6 py-3 rounded-full  font-semibold dark:hover:bg-gray-700/50 transition-colors hover:bg-gray-100 hover:text-[#821917] dark:hover:text-[#f9a133]">Impact Stories</button>
@@ -160,18 +160,17 @@
   </footer>
 
   <script>
-    const API = 'https://script.google.com/macros/s/AKfycbw8rELdmF1UdWGlrBnoFQcn2SOYuPK0SuVU7EIeey9jvzEGpNkSs5mrwGV7QVp3Z1SbgA/exec';
+    const API = 'https://script.google.com/macros/s/AKfycbzzjNBoI5HLP74wijH0enNGK-g0Lfah8tq4s3oNc8fsnh-Q_pf8jrH1wpZO1hZSIYceHg/exec';
     let posts = [];
 
     // PREMIUM DARK MODE
     const themeToggle = document.getElementById('themeToggle');
     const sunIcon = document.getElementById('sun');
     const moonIcon = document.getElementById('moon');
-    const htmlElement = document.documentElement; // Reference the <html> tag
+    const htmlElement = document.documentElement;
 
     function applyTheme(theme) {
       if (theme === 'dark') {
-        // 🌟 Toggles the standard 'dark' class for Tailwind
         htmlElement.classList.add('dark');
         sunIcon.classList.remove('hidden');
         moonIcon.classList.add('hidden');
@@ -180,11 +179,9 @@
         moonIcon.classList.remove('hidden');
         sunIcon.classList.add('hidden');
       }
-     
     }
 
     const saved = localStorage.getItem('theme');
-    // Check for saved theme or system preference
     if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       applyTheme('dark');
     } else {
@@ -192,11 +189,38 @@
     }
 
     themeToggle.addEventListener('click', () => {
-      // Check for the presence of the 'dark' class
       const isDark = htmlElement.classList.contains('dark');
       applyTheme(isDark ? 'light' : 'dark');
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
     });
+
+    // CLEAN & CONSISTENT DATE FORMAT: 25 Nov 2025
+    function formatDate(dateInput) {
+      if (!dateInput) return 'No date';
+
+      let date;
+      if (typeof dateInput === 'string') {
+        // Handle Google Sheets format: "11/25/2025"
+        if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateInput.trim())) {
+          const [month, day, year] = dateInput.trim().split('/');
+          date = new Date(year, month - 1, day);
+        } else {
+          date = new Date(dateInput);
+        }
+      } else if (dateInput instanceof Date) {
+        date = dateInput;
+      } else {
+        return 'No date';
+      }
+
+      if (isNaN(date.getTime())) return 'Invalid date';
+
+      return date.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      }).replace(/ /g, ' ');
+    }
 
     // Fetch Posts
     async function load() {
@@ -224,14 +248,13 @@
       list.forEach(p => {
         const cover = (p.imageurls && p.imageurls[0]) || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
         const card = document.createElement('article');
-        // 'card' class uses CSS variables, but shadow/hover effects are Tailwind
         card.className = 'card rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border';
         card.onclick = () => openPost(p);
         card.innerHTML = `
           <img src="${cover}" alt="${p.title}" class="w-full h-56 object-cover" loading="lazy">
           <div class="p-6">
             <div class="flex justify-between text-sm text-muted mb-3">
-              <span>${p.date || 'Recent'}</span>
+              <span>${formatDate(p.date)}</span>
               <span>by ${p.author}</span>
             </div>
             <h2 class="text-2xl font-bold mb-3 line-clamp-2">${p.title}</h2>
@@ -249,20 +272,20 @@
       const gallery = (post.imageurls && post.imageurls.length > 0) ? `
         <div class="gallery">
           ${post.imageurls.map(src => `
-            <img src="${src}" alt="Post image" class="w-full h-64 object-cover" onclick="event.stopPropagation(); window.open('${src}', '_blank')">
+            <img src="${src}" alt="Post image" class="w-full h-64 object-cover cursor-pointer hover:opacity-90 transition" onclick="event.stopPropagation(); window.open('${src}', '_blank')">
           `).join('')}
         </div>
       ` : '';
 
       document.getElementById('modalContent').innerHTML = `
         <div class="flex flex-wrap gap-4 text-sm text-muted mb-8 pb-6 border-b" style="border-color: var(--border);">
-          <span>${post.date || 'Recent'}</span>
+          <span>${formatDate(post.date)}</span>
           <span>•</span>
           <span>by <strong>${post.author}</strong></span>
           <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full">${post.category}</span>
         </div>
         ${gallery}
-        <div class="markdown">
+        <div class="markdown prose prose-lg dark:prose-invert max-w-none">
           ${marked.parse(post.content || '')}
         </div>
       `;
@@ -300,9 +323,12 @@
       );
       render(filtered);
     };
-    // Default selected filter button
-    document.querySelector('[data-cat="all"]').classList.add('bg-[#821917]', 'text-white');
+
+    // Default selected filter
+    document.querySelector('[data-cat="all"]')?.classList.add('bg-[#821917]', 'text-white');
+
+    // Load posts on start
     load();
-  </script>
+</script>
 </body>
 </html>

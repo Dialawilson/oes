@@ -229,8 +229,37 @@
     </div>
 
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzJfflkV6BID7xkV1YNYCcgR3y9wOqXn34l-tD5WdChnw7v93jeKFfitk1t_le9aa7ReQ/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzzjNBoI5HLP74wijH0enNGK-g0Lfah8tq4s3oNc8fsnh-Q_pf8jrH1wpZO1hZSIYceHg/exec';
     let allPosts = [], currentEditId = null, deletePostId = null, uploadedImages = [];
+
+    // Updated: Short month format → 25 Nov 2025
+    function formatDate(dateInput) {
+        if (!dateInput) return 'No date';
+
+        let date;
+        if (typeof dateInput === 'string') {
+            // Handle Google Sheets format: "11/25/2025"
+            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateInput.trim())) {
+                const [month, day, year] = dateInput.trim().split('/');
+                date = new Date(year, month - 1, day);
+            } else {
+                date = new Date(dateInput);
+            }
+        } else if (dateInput instanceof Date) {
+            date = dateInput;
+        } else {
+            return 'No date';
+        }
+
+        if (isNaN(date.getTime())) return 'Invalid date';
+
+        // Short format: 25 Nov 2025
+        return date.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        }).replace(/ /g, ' '); // Ensures consistent spacing
+    }
 
     window.addEventListener('DOMContentLoaded', loadPosts);
 
@@ -246,7 +275,11 @@
 
             allPosts = (data.posts || []).sort((a, b) => (b.id || 0) - (a.id || 0));
             document.getElementById('totalPosts').textContent = allPosts.length;
-            document.getElementById('latestPost').textContent = allPosts[0]?.title || 'None';
+
+            const latest = allPosts[0];
+            document.getElementById('latestPost').textContent = latest
+                ? `${latest.title} • ${formatDate(latest.date)}`
+                : 'None';
 
             if (allPosts.length === 0) {
                 document.getElementById('emptyState').classList.remove('hidden');
@@ -287,8 +320,8 @@
                 </div>
                 <div class="p-4 flex-1 flex flex-col">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="px-2.5 py-1 ${colors[p.category] || 'bg-gray-100 text-gray-800'} text-xs font-medium rounded-full">${p.category}</span>
-                        <span class="text-xs text-gray-500">${p.date || 'No date'}</span>
+                        <span class="px-2.5 py-1 text-xs font-medium rounded-full ${colors[p.category] || 'bg-gray-100 text-gray-800'}">${p.category}</span>
+                        <span class="text-xs text-gray-500">${formatDate(p.date)}</span>
                     </div>
                     <h3 class="font-bold text-gray-900 line-clamp-2 text-sm mb-1">${p.title}</h3>
                     <p class="text-xs text-gray-600 line-clamp-2 flex-1">${p.excerpt}</p>
@@ -391,7 +424,6 @@
         document.getElementById('postModal').classList.remove('hidden');
     }
 
-    // FIXED SUBMIT HANDLER (this was the main fix for saving + the syntax error is gone)
     document.getElementById('postForm').addEventListener('submit', async e => {
         e.preventDefault();
         const btn = document.getElementById('submitBtn'), 
@@ -407,12 +439,10 @@
             formData.append('excerpt', document.getElementById('excerpt').value.trim());
             formData.append('content', document.getElementById('content').value.trim());
 
-            // Send new images (repeated field)
             uploadedImages
                 .filter(img => img.base64)
                 .forEach(img => formData.append('base64Images', img.base64));
 
-            // Send kept existing images
             const existingUrls = uploadedImages
                 .filter(img => img.url)
                 .map(img => img.url);
