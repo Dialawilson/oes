@@ -3,16 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TechFlow Blog</title>
+  <title>Blog | Ogoni summit</title>
   <link rel="icon" href="data:,">
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          // You can add your custom colors or utility classes here
+        },
+      },
+    };
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; }
 
-    /* LIGHT MODE */
-    .light-mode {
+    /* 🌟 UPDATED: Base variables (Light Mode) on the root */
+    :root {
       --bg: #f8fafc;
       --card: #ffffff;
       --text: #1e293b;
@@ -21,8 +31,8 @@
       --accent: #3b82f6;
     }
 
-    /* DEEP DARK MODE */
-    .dark-mode {
+    /* 🌟 UPDATED: Dark Mode variables applied when 'dark' class is present on <html> or <body> */
+    .dark { /* Tailwind applies this class */
       --bg: #0f172a;
       --card: #1e293b;
       --text: #f1f5f9;
@@ -31,16 +41,20 @@
       --accent: #60a5fa;
     }
 
+    /* Variable Application */
     body { background-color: var(--bg); color: var(--text); }
     .card, .modal-content { background-color: var(--card); border-color: var(--border); }
     .text-muted { color: var(--text-muted); }
 
+    /* General Transitions */
     * { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
 
+    /* Modal Styling */
     .modal { transition: opacity 0.3s ease; }
     .modal-content { animation: slideUp 0.4s ease-out; }
     @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+    /* Gallery Styling */
     .gallery { 
       display: grid; 
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
@@ -52,6 +66,7 @@
       border-color: var(--border);
     }
 
+    /* Markdown Styling (Using @apply for Tailwind utilities) */
     .markdown h1 { @apply text-4xl font-bold mt-10 mb-5; }
     .markdown h2 { @apply text-3xl font-bold mt-9 mb-4; }
     .markdown h3 { @apply text-2xl font-semibold mt-8 mb-3; }
@@ -64,7 +79,6 @@
 </head>
 <body class="min-h-screen">
 
-  <!-- Header -->
   <header class="shadow-lg sticky top-0 z-50 border-b" style="background-color: var(--card); border-color: var(--border);">
     <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
       <div class="flex items-center space-x-4">
@@ -73,57 +87,55 @@
                         <img src="../img/logo.png" alt="">
                     </div>
         </div>
-                   <h1 class="text-3xl font-bold mb-4">
-                    <span class="text-[#0d4e0d]">Ogoni</span>
-                    <span class="bg-gradient-to-r from-[#821917] to-[#f9a133] text-transparent bg-clip-text">Summit Blog</span>
+                   <h1 class="text-3xl font-bold mb-4 hidden md:inline-block">
+                    <span class="text-[#0d4e0d] dark:text-white ">Ogoni</span>
+                    <span class="bg-gradient-to-r from-[#821917] to-[#f9a133] text-transparent dark:text-white bg-clip-text">Summit Blog</span>
                 </h1>
       </div>
-      <button id="themeToggle" class="p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+      <button id="themeToggle" class="p-3 rounded-xl  transition">
         <svg id="sun" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
         </svg>
         <svg id="moon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+          <path stroke-linecap="" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
         </svg>
       </button>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-24">
+  <section class="bg-gradient-to-r from-[#f93] to-[#821917] text-white py-24">
     <div class="max-w-7xl mx-auto px-6 text-center">
-      <h2 class="text-5xl md:text-6xl font-bold mb-4">TechFlow Blog</h2>
+      <h2 class="text-5xl md:text-6xl font-bold mb-4">Ogoni Summit Blog</h2>
       <p class="text-xl opacity-90">Latest insights on tech, design, and innovation</p>
     </div>
   </section>
 
-  <!-- Filters & Search -->
   <div class="max-w-7xl mx-auto px-6 py-10">
     <div class="flex flex-col lg:flex-row gap-6 items-center justify-between">
-      <div class="flex flex-wrap gap-3">
-        <button data-cat="all" class="filter-btn px-6 py-3 rounded-full font-semibold bg-blue-600 text-white shadow-md">All Posts</button>
-        <button data-cat="Technology" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700">Technology</button>
-        <button data-cat="Lifestyle" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700">Lifestyle</button>
-        <button data-cat="Travel" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700">Travel</button>
-        <button data-cat="Business" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700">Business</button>
+      <div class="flex flex-wrap gap-3 text-center items-center justify-center lg:justify-start block">
+        <button data-cat="all" class="filter-btn px-6 py-3 rounded-full font-semibold text-white  hover:bg-opacity-90 transition-colors">All Post</button>
+        <button data-cat="Press Releases" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors hover:text-[#821917] dark:hover:text-[#f9a133]">Press Releases</button>
+        <button data-cat="Activity Upadte" class="filter-btn px-6 py-3 rounded-full font-semibold dark:hover:bg-gray-700/50 transition-colors hover:bg-gray-100  hover:text-[#821917] dark:hover:text-[#f9a133]">Activity Update</button>
+        <button data-cat="Entrepreneurshipa and Business Development" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-[#821917] transition-colors dark:hover:text-[#f9a133]">Entrepreneurship & Busines Development</button>
+        <button data-cat="Career Growth and Professional Development" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 hover:text-[#821917] dark:hover:bg-gray-700/50 transition-colors dark:hover:text-[#f9a133]">Career Growth and Professional Development</button>
+        <button data-cat="Mentorship and Funding" class="filter-btn px-6 py-3 rounded-full font-semibold hover:bg-gray-100 hover:text-[#821917] dark:hover:bg-gray-700/50 transition-colors dark:hover:text-[#f9a133]">Mentorship and Funding</button>
+        <button data-cat="Impact Stories" class="filter-btn px-6 py-3 rounded-full  font-semibold dark:hover:bg-gray-700/50 transition-colors hover:bg-gray-100 hover:text-[#821917] dark:hover:text-[#f9a133]">Impact Stories</button>
       </div>
-      <input type="text" id="search" placeholder="Search posts..." class="px-6 py-3 rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 w-full lg:w-96 focus:outline-none focus:border-blue-500">
+      <input type="text" id="search" placeholder="Search posts..." class="px-6 py-3 rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-600 text-gray-900 dark:text-white w-full lg:w-96 focus:outline-none focus:border-[#821917] dark:focus:border-[#f9a133] text-[#821917] transition-colors">
     </div>
   </div>
 
-  <!-- Posts Grid -->
   <main class="max-w-7xl mx-auto px-6 pb-24">
     <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     <div id="empty" class="hidden text-center py-32">
       <p class="text-3xl font-light text-gray-500">No posts found</p>
     </div>
     <div id="loading" class="text-center py-32">
-      <div class="inline-block w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      <div class="inline-block w-12 h-12 border-4 border-[#821917] border-t-transparent rounded-full animate-spin"></div>
       <p class="mt-4 text-gray-600 dark:text-gray-400">Loading posts...</p>
     </div>
   </main>
 
-  <!-- Modal -->
   <div id="modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="modal-content rounded-3xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-y-auto">
       <div class="sticky top-0 border-b px-8 py-6 flex justify-between items-center" style="background-color: var(--card); border-color: var(--border);">
@@ -140,10 +152,10 @@
     </div>
   </div>
 
-  <!-- Footer -->
   <footer class="py-12 mt-24 text-center text-gray-500" style="background-color: var(--card);">
     <div class="max-w-7xl mx-auto px-6">
-      <p>Made with love • Powered by Google Sheets + Cloudinary</p>
+      <p><a href="admin_dashboard.html">&copy;</a> 2025 Ogoni</a> Entrepreneurship Summit. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 
@@ -155,22 +167,24 @@
     const themeToggle = document.getElementById('themeToggle');
     const sunIcon = document.getElementById('sun');
     const moonIcon = document.getElementById('moon');
+    const htmlElement = document.documentElement; // Reference the <html> tag
 
     function applyTheme(theme) {
       if (theme === 'dark') {
-        document.documentElement.classList.add('dark-mode');
-        document.documentElement.classList.remove('light-mode');
+        // 🌟 Toggles the standard 'dark' class for Tailwind
+        htmlElement.classList.add('dark');
         sunIcon.classList.remove('hidden');
         moonIcon.classList.add('hidden');
       } else {
-        document.documentElement.classList.add('light-mode');
-        document.documentElement.classList.remove('dark-mode');
+        htmlElement.classList.remove('dark');
         moonIcon.classList.remove('hidden');
         sunIcon.classList.add('hidden');
       }
+     
     }
 
     const saved = localStorage.getItem('theme');
+    // Check for saved theme or system preference
     if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       applyTheme('dark');
     } else {
@@ -178,7 +192,8 @@
     }
 
     themeToggle.addEventListener('click', () => {
-      const isDark = document.documentElement.classList.contains('dark-mode');
+      // Check for the presence of the 'dark' class
+      const isDark = htmlElement.classList.contains('dark');
       applyTheme(isDark ? 'light' : 'dark');
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
     });
@@ -209,6 +224,7 @@
       list.forEach(p => {
         const cover = (p.imageurls && p.imageurls[0]) || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
         const card = document.createElement('article');
+        // 'card' class uses CSS variables, but shadow/hover effects are Tailwind
         card.className = 'card rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border';
         card.onclick = () => openPost(p);
         card.innerHTML = `
@@ -268,8 +284,8 @@
     // Filters & Search
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.onclick = () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('bg-blue-600', 'text-white'));
-        btn.classList.add('bg-blue-600', 'text-white');
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('bg-[#821917]', 'text-white'));
+        btn.classList.add('bg-[#821917]', 'text-white');
         const cat = btn.dataset.cat;
         render(cat === 'all' ? posts : posts.filter(p => p.category === cat));
       };
@@ -284,7 +300,8 @@
       );
       render(filtered);
     };
-    document.querySelector('[data-cat="all"]').classList.add('bg-blue-600', 'text-white');
+    // Default selected filter button
+    document.querySelector('[data-cat="all"]').classList.add('bg-[#821917]', 'text-white');
     load();
   </script>
 </body>
