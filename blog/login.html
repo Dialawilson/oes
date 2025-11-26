@@ -6,16 +6,16 @@
     <title>Admin Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gradient-to-r from-[#821917] to-[#f9a133] min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-md">
         <!-- Card Container -->
         <div class="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 md:p-10">
             <!-- Header -->
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                    </svg>
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center">
+                        <img src="../img/logo.png" alt="">
+                    </div>
                 </div>
                 <h1 class="text-3xl font-bold text-white mb-2">Admin Access</h1>
                 <p class="text-gray-300">Sign in to your account</p>
@@ -35,7 +35,7 @@
                             id="username" 
                             name="username" 
                             placeholder="Enter username"
-                            class="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition"
+                            class="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#821917] focus:ring-2 focus:ring-blue-400/30 transition"
                             required
                         >
                     </div>
@@ -53,7 +53,7 @@
                             id="password" 
                             name="password" 
                             placeholder="••••••••"
-                            class="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition"
+                            class="w-full pl-10 pr-10 py-2.5 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#821917] focus:ring-2 focus:ring-blue-400/30 transition"
                             required
                         >
                         <button 
@@ -73,7 +73,7 @@
                 <button 
                     type="submit" 
                     id="submitBtn"
-                    class="w-full py-2.5 px-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+                    class="w-full py-2.5 px-4 bg-[#821917] text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
                 >
                     <span id="buttonText">Sign In</span>
                     <svg id="spinner" class="hidden w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,13 +87,13 @@
             </form>
 
             <!-- Demo Credentials Info -->
-            <div class="mt-8 p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
+            <!-- <div class="mt-8 p-4 bg-yellow-500/20 border border-yellow-500/50 rounded-lg">
                 <p class="text-sm text-yellow-200">
                     <strong>Demo Credentials:</strong><br>
                     Username: admin<br>
                     Password: admin123
                 </p>
-            </div>
+            </div> -->
         </div>
 
         <!-- Footer -->
@@ -104,7 +104,7 @@
 
     <script>
         // Configuration - Update this with your deployed Apps Script URL
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzkkT9XU4g2YBO0HgOXOzBaEQVrND7W8MuIbE-6lj6eThNSH_sy2yrWb7wOlZtrFUtz/exec";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2P4cT2FMU6FvUGpH19GYJHokJRLNThRDMwxslKnOKV63WywNTVNuN6wBNGIdmOrah/exec";
 
         // Password Toggle
         const togglePassword = document.getElementById('togglePassword');
