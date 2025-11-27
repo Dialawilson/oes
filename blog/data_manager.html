@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Ogoni Summit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --accent: #821917; --accent-light: #f9a133; }
+    .dark { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --text-muted: #94a3b8; --border: #334155; --accent: #f9a133; --accent-light: #821917; }
+
+    * { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+    body { background-color: var(--bg); color: var(--text); }
+    .card { background-color: var(--card); border-color: var(--border); }
+    table { background-color: var(--card); color: var(--text); }
+    th, td { border-color: var(--border); padding: 1rem; }
+    th { background-color: var(--accent); color: white; font-weight: 600; }
+    tr:hover { background-color: var(--border); }
+    select, input { background-color: var(--card); color: var(--text); border-color: var(--border); }
+    
+    .btn-primary { background: linear-gradient(135deg, #821917, #f9a133); color: white; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(130, 25, 23, 0.3); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    
+    .btn-secondary { background: transparent; color: var(--text); border: 2px solid var(--border); transition: all 0.2s; }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-secondary.active { background: linear-gradient(135deg, #821917, #f9a133); color: white; border: none; }
+
+    .badge-approved { background-color: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }
+    .badge-pending { background-color: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }
+
+    .checkbox { cursor: pointer; width: 1.25rem; height: 1.25rem; }
+    .modal { transition: opacity 0.3s ease; }
+    .modal-content { background-color: var(--card); animation: slideUp 0.4s ease-out; }
+    @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    
+    .search-input { background-color: var(--card); border: 2px solid var(--border); transition: all 0.3s; }
+    .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(130, 25, 23, 0.1); }
+
+    .stat-card { background: linear-gradient(135deg, rgba(130, 25, 23, 0.05), rgba(249, 161, 51, 0.05)); border: 2px solid var(--border); }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <main class="max-w-7xl mx-auto px-6 py-12">
+    <!-- Header -->
+    <div class="mb-12">
+      <h1 class="text-5xl font-bold mb-3">Admin Dashboard</h1>
+      <p class="text-xl text-gray-600 dark:text-gray-400">Manage registration approvals and candidate data</p>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+      <div class="stat-card card border rounded-2xl p-6">
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pending Review</p>
+        <p id="statPending" class="text-4xl font-bold text-[#821917]">0</p>
+      </div>
+      <div class="stat-card card border rounded-2xl p-6">
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Approved</p>
+        <p id="statApproved" class="text-4xl font-bold text-green-600">0</p>
+      </div>
+      <div class="stat-card card border rounded-2xl p-6">
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Total Candidates</p>
+        <p id="statTotal" class="text-4xl font-bold text-[#f9a133]">0</p>
+      </div>
+      <div class="stat-card card border rounded-2xl p-6">
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Current LGA</p>
+        <p id="currentLGADisplay" class="text-2xl font-bold text-[#821917]">All</p>
+      </div>
+    </div>
+
+    <!-- Controls Section -->
+    <div class="card border rounded-2xl p-8 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Search -->
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Search</label>
+          <div class="relative">
+            <svg class="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search by name or phone number..." class="search-input w-full pl-12 pr-4 py-3 rounded-xl font-medium focus:outline-none">
+          </div>
+        </div>
+
+        <!-- LGA Filter -->
+        <div>
+          <label class="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Filter by LGA</label>
+          <select id="lgaSelect" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none font-medium" style="border-color: var(--border); background-color: var(--card);">
+            <option value="">All LGAs</option>
+            <option value="Khana">Khana</option>
+            <option value="Gokana">Gokana</option>
+            <option value="Tai">Tai</option>
+            <option value="Eleme">Eleme</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="flex flex-wrap gap-3 mb-8 pb-8 border-b" style="border-color: var(--border);">
+        <button id="tabPendingBtn" class="btn-secondary px-8 py-3 rounded-xl font-semibold active">Pending Approvals</button>
+        <button id="tabVerifiedBtn" class="btn-secondary px-8 py-3 rounded-xl font-semibold">Verified Attendees</button>
+        <button id="tabStatsBtn" class="btn-secondary px-8 py-3 rounded-xl font-semibold">LGA Statistics</button>
+      </div>
+
+      <!-- Download Buttons -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <a href="#" id="downloadPending" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download Pending</a>
+        <a href="#" id="downloadApproved" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download Approved</a>
+        <a href="#" id="downloadLGA" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download LGA</a>
+        <a href="#" id="downloadAll" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download All</a>
+        <button id="approveSelectedBtn" class="btn-primary px-6 py-3 rounded-xl font-semibold text-sm" disabled>Approve Selected</button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="text-center py-32">
+      <div class="inline-block w-12 h-12 border-4 border-[#821917] border-t-transparent rounded-full animate-spin"></div>
+      <p class="mt-4 text-gray-600 dark:text-gray-400">Loading data...</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="hidden text-center py-32">
+      <p class="text-xl text-red-500 mb-4" id="error-message"></p>
+      <button onclick="load()" class="px-6 py-3 bg-[#821917] text-white rounded-lg hover:bg-[#a02620]">Retry</button>
+    </div>
+
+    <!-- Content -->
+    <div id="content" class="hidden">
+      <!-- Pending Tab -->
+      <div id="pendingTab" class="tab-content">
+        <div class="card border rounded-2xl overflow-hidden table-container">
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th class="w-8"><input type="checkbox" id="selectAllPending" class="checkbox"></th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>LGA</th>
+                <th>Phone</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="pendingTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Verified Tab -->
+      <div id="verifiedTab" class="tab-content hidden">
+        <div class="card border rounded-2xl overflow-hidden table-container">
+          <table class="w-full">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>LGA</th>
+                <th>Phone</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="verifiedTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Stats Tab -->
+      <div id="statsTab" class="tab-content hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="statsGrid"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Approval Modal -->
+  <div id="approvalModal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-md w-full">
+      <div class="border-b px-6 py-6 flex justify-between items-center" style="background-color: var(--card); border-color: var(--border);">
+        <h2 class="text-2xl font-bold">Generate Attendance Codes</h2>
+        <button onclick="closeApprovalModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="px-6 py-8">
+        <p class="text-gray-600 dark:text-gray-400 mb-6">You are about to approve <span id="approvalCount" class="font-bold text-[#821917]">0</span> candidate(s) and send them attendance codes.</p>
+        <div class="flex gap-4">
+          <button onclick="closeApprovalModal()" class="flex-1 px-4 py-2 border-2 rounded-lg font-semibold" style="border-color: var(--border); color: var(--text);">Cancel</button>
+          <button id="confirmApprovalBtn" class="flex-1 btn-primary px-4 py-2 rounded-lg font-semibold">Proceed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://script.google.com/macros/s/AKfycbzsUbO-VEmw9LF4WzEnZwTGwjUfmqKdQ_6Y7lV7DIatjK13rjh12tUSArpHAE9_aozI/exec';
+
+    let pendingRecords = [];
+    let verifiedRecords = [];
+    let allRecords = [];
+    let selectedPending = new Set();
+    let currentTab = 'pending';
+    let currentLGA = '';
+    let searchQuery = '';
+
+    // Theme toggle
+    const htmlElement = document.documentElement;
+    const currentTheme = localStorage.getItem("theme") || "light";
+    if (currentTheme === "dark") htmlElement.classList.add("dark");
+
+    // Tab switching
+    document.getElementById('tabPendingBtn').addEventListener('click', () => switchTab('pending'));
+    document.getElementById('tabVerifiedBtn').addEventListener('click', () => switchTab('verified'));
+    document.getElementById('tabStatsBtn').addEventListener('click', () => switchTab('stats'));
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('#tabPendingBtn, #tabVerifiedBtn, #tabStatsBtn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      const btnMap = { pending: 'tabPendingBtn', verified: 'tabVerifiedBtn', stats: 'tabStatsBtn' };
+      document.getElementById(btnMap[tab]).classList.add('active');
+
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      
+      if (tab === 'pending') {
+        document.getElementById('pendingTab').classList.remove('hidden');
+        document.getElementById('approveSelectedBtn').style.display = 'block';
+      } else if (tab === 'verified') {
+        document.getElementById('verifiedTab').classList.remove('hidden');
+        document.getElementById('approveSelectedBtn').style.display = 'none';
+      } else {
+        document.getElementById('statsTab').classList.remove('hidden');
+        document.getElementById('approveSelectedBtn').style.display = 'none';
+        loadStats();
+      }
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase();
+      renderPending();
+      renderVerified();
+    });
+
+    // LGA filter
+    document.getElementById('lgaSelect').addEventListener('change', (e) => {
+      currentLGA = e.target.value;
+      document.getElementById('currentLGADisplay').textContent = currentLGA || 'All';
+      renderPending();
+      renderVerified();
+      updateStats();
+    });
+
+    function generateCode() {
+      return Math.floor(1000 + Math.random() * 9000).toString();
+    }
+
+    async function load() {
+      const loading = document.getElementById('loading');
+      const error = document.getElementById('error');
+      const content = document.getElementById('content');
+      loading.classList.remove('hidden');
+      error.classList.add('hidden');
+      content.classList.add('hidden');
+
+      try {
+        const [pendingRes, verifiedRes] = await Promise.all([
+          fetch(`${API}?type=pending`),
+          fetch(`${API}?type=verified`)
+        ]);
+
+        const pendingData = await pendingRes.json();
+        const verifiedData = await verifiedRes.json();
+
+        pendingRecords = Array.isArray(pendingData.records) ? pendingData.records : [];
+        verifiedRecords = Array.isArray(verifiedData.records) ? verifiedData.records : [];
+        allRecords = [...pendingRecords, ...verifiedRecords];
+
+        updateStats();
+        renderPending();
+        renderVerified();
+        content.classList.remove('hidden');
+      } catch (err) {
+        document.getElementById('error-message').textContent = 'Failed to load: ' + err.message;
+        error.classList.remove('hidden');
+      } finally {
+        loading.classList.add('hidden');
+      }
+    }
+
+    function filterRecords(records) {
+      return records.filter(r => {
+        const matchesSearch = !searchQuery || 
+          (r.fullname && r.fullname.toLowerCase().includes(searchQuery)) ||
+          (r.phonenumber && r.phonenumber.includes(searchQuery));
+        
+        const matchesLGA = !currentLGA || (r.lgaoforigin === currentLGA);
+        
+        return matchesSearch && matchesLGA;
+      });
+    }
+
+    function renderPending() {
+      const tbody = document.getElementById('pendingTableBody');
+      tbody.innerHTML = '';
+      const filtered = filterRecords(pendingRecords);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No pending records found</td></tr>';
+        return;
+      }
+
+      filtered.forEach(r => {
+        const key = `${r.email}|||${r.timestamp}`;
+        tbody.innerHTML += `
+          <tr>
+            <td><input type="checkbox" class="checkbox pending-check" data-key="${key}" onchange="updatePendingSelection()"></td>
+            <td>${r.fullname || ''}</td>
+            <td>${r.email || ''}</td>
+            <td>${r.lgaoforigin || ''}</td>
+            <td>${r.phonenumber || ''}</td>
+            <td><span class="badge-pending">Pending</span></td>
+          </tr>`;
+      });
+      updatePendingSelection();
+    }
+
+    function renderVerified() {
+      const tbody = document.getElementById('verifiedTableBody');
+      tbody.innerHTML = '';
+      const filtered = filterRecords(verifiedRecords);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No verified records found</td></tr>';
+        return;
+      }
+
+      filtered.forEach(r => {
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${r['4digitcode'] || 'N/A'}</strong></td>
+            <td>${r.fullname || ''}</td>
+            <td>${r.email || ''}</td>
+            <td>${r.lgaoforigin || ''}</td>
+            <td>${r.phonenumber || ''}</td>
+            <td><span class="badge-approved">Verified</span></td>
+          </tr>`;
+      });
+    }
+
+    function updatePendingSelection() {
+      selectedPending.clear();
+      document.querySelectorAll('.pending-check:checked').forEach(cb => selectedPending.add(cb.dataset.key));
+      document.getElementById('approveSelectedBtn').disabled = selectedPending.size === 0;
+    }
+
+    function updateStats() {
+      const filtered = filterRecords(pendingRecords);
+      const verifiedFiltered = filterRecords(verifiedRecords);
+      
+      document.getElementById('statPending').textContent = filtered.length;
+      document.getElementById('statApproved').textContent = verifiedFiltered.length;
+      document.getElementById('statTotal').textContent = filtered.length + verifiedFiltered.length;
+    }
+
+    function loadStats() {
+      const statsGrid = document.getElementById('statsGrid');
+      statsGrid.innerHTML = '';
+      
+      const lgas = ['Khana', 'Gokana', 'Tai', 'Eleme'];
+      lgas.forEach(lga => {
+        const pending = pendingRecords.filter(r => r.lgaoforigin === lga).length;
+        const verified = verifiedRecords.filter(r => r.lgaoforigin === lga).length;
+        const total = pending + verified;
+
+        statsGrid.innerHTML += `
+          <div class="card border rounded-2xl p-6">
+            <h3 class="text-lg font-bold mb-4 text-[#821917]">${lga}</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Total</span>
+                <span class="font-bold text-[#f9a133]">${total}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Pending</span>
+                <span class="font-bold text-yellow-600">${pending}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">Approved</span>
+                <span class="font-bold text-green-600">${verified}</span>
+              </div>
+            </div>
+          </div>`;
+      });
+    }
+
+    // Download functionality (placeholder - add your actual download links)
+    document.getElementById('downloadPending').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Add your pending sheet download link here');
+      // window.location.href = 'YOUR_PENDING_LINK';
+    });
+
+    document.getElementById('downloadApproved').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Add your approved sheet download link here');
+      // window.location.href = 'YOUR_APPROVED_LINK';
+    });
+
+    document.getElementById('downloadLGA').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!currentLGA) {
+        alert('Please select an LGA first');
+        return;
+      }
+      alert(`Add your ${currentLGA} sheet download link here`);
+      // window.location.href = 'YOUR_LGA_LINK';
+    });
+
+    document.getElementById('downloadAll').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('Add your complete worksheet download link here');
+      // window.location.href = 'YOUR_ALL_DATA_LINK';
+    });
+
+    // Approval
+    document.getElementById('approveSelectedBtn').onclick = () => {
+      if (selectedPending.size === 0) return;
+      document.getElementById('approvalCount').textContent = selectedPending.size;
+      document.getElementById('approvalModal').classList.remove('hidden');
+    };
+
+    function closeApprovalModal() {
+      document.getElementById('approvalModal').classList.add('hidden');
+    }
+
+    document.getElementById('confirmApprovalBtn').onclick = async () => {
+      closeApprovalModal();
+      
+      for (const key of selectedPending) {
+        const [email, timestamp] = key.split('|||');
+        const record = pendingRecords.find(r => r.email === email && r.timestamp === timestamp);
+        if (!record) continue;
+
+        const code = generateCode();
+        try {
+          await fetch(API, {
+            method: 'POST',
+            body: new URLSearchParams({
+              action: 'approve',
+              attendanceCode: code,
+              lga: record.lgaoforigin,
+              email: record.email,
+              timestamp: record.timestamp
+            })
+          });
+        } catch (e) {
+          console.error('Approval failed', e);
+        }
+      }
+
+      selectedPending.clear();
+      load();
+    };
+
+    load();
+  </script>
+</body>
+</html>

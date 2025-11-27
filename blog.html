@@ -1,349 +1,558 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Blog</title>
+  <title>Blog | Ogoni Summit</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #821917;
+      --accent-light: #f9a133;
+    }
+
+    .dark {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --accent: #f9a133;
+      --accent-light: #821917;
+    }
+
+    * {
+      font-family: 'Inter', sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    .card {
+      background-color: var(--card);
+      border-color: var(--border);
+    }
+
+    .text-muted {
+      color: var(--text-muted);
+    }
+
+    .modal {
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-content {
+      background-color: var(--card);
+      animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(60px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .post-image {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .post-image img {
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .post-image:hover img {
+      transform: scale(1.1);
+    }
+
+    .category-badge {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: white;
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #821917, #f9a133);
+      -webkit-text-fill-color: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .gallery img {
+      border-radius: 0.75rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .hamburger.active .bar-1 {
+      transform: translateY(8px) rotate(45deg);
+    }
+    .hamburger.active .bar-2 {
+      opacity: 0;
+    }
+    .hamburger.active .bar-3 {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .markdown h1, .markdown h2, .markdown h3 {
+      color: var(--text);
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .markdown p {
+      color: var(--text);
+      line-height: 1.8;
+      margin: 1.5rem 0;
+    }
+
+    .markdown ul, .markdown ol {
+      color: var(--text);
+      margin: 1.5rem 0;
+      padding-left: 2rem;
+    }
+
+    .markdown li {
+      margin-bottom: 0.5rem;
+    }
+
+    .filter-btn {
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, #821917, #f9a133);
+      color: white;
+    }
+
+    .filter-btn:not(.active) {
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .category-dropdown {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 768px) {
+      .filter-btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem !important;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-  
-  <!-- Header -->
-  <header class="bg-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-            </svg>
-          </div>
-          <div>
-            <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              TechBlog
-            </h1>
-            <p class="text-slate-500 text-sm">Exploring Ideas & Stories</p>
-          </div>
-        </div>
-        
-        <!-- Navigation -->
-        <nav class="hidden md:flex items-center gap-6">
-          <a href="#" onclick="filterPosts('all')" class="text-slate-700 hover:text-blue-600 font-medium transition">All</a>
-          <a href="#" onclick="filterPosts('Technology')" class="text-slate-700 hover:text-blue-600 font-medium transition">Technology</a>
-          <a href="#" onclick="filterPosts('Lifestyle')" class="text-slate-700 hover:text-blue-600 font-medium transition">Lifestyle</a>
-          <a href="#" onclick="filterPosts('Travel')" class="text-slate-700 hover:text-blue-600 font-medium transition">Travel</a>
-        </nav>
+<body class="min-h-screen">
 
-        <!-- Mobile Menu Button -->
-        <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-slate-100">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-          </svg>
-        </button>
+  <!-- Navigation Bar -->
+  <nav class="flex shadow-xl justify-between items-center px-8 md:px-12 py-6 bg-white sticky top-0 z-50 transition-colors duration-300 dark:bg-[#1a1d2e] md:shadow-sm">
+    <img src="../img/logo.png" alt="Logo" class="w-[50px] h-auto" />
+
+    <ul class="hidden md:flex gap-10 items-center list-none">
+      <li>
+        <a href="index.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-base font-medium transition-colors">Home</a>
+      </li>
+      <li>
+        <a href="about.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-base font-medium transition-colors">About</a>
+      </li>
+      <li>
+        <a href="./blog.html" class="text-[#821917] dark:text-[#f9a133] text-base font-medium transition-colors">Blog</a>
+      </li>
+      <li>
+        <a href="./registrationform.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-base font-medium transition-colors">Register</a>
+      </li>
+      <li>
+        <a href="./contactus.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-base font-medium transition-colors">Contact</a>
+      </li>
+      <button class="theme-toggle bg-transparent border-none text-slate-600 text-xl cursor-pointer hover:rotate-180 transition-transform duration-300 dark:text-slate-300">
+        🌙
+      </button>
+    </ul>
+
+    <div class="md:hidden flex gap-4">
+      <button class="theme-toggle-mobile text-slate-600 text-xl hover:rotate-180 transition-transform duration-300 dark:text-slate-300">
+        🌙
+      </button>
+      <div class="hamburger md:hidden cursor-pointer p-1 z-50 group">
+        <span class="bar-1 block w-[25px] h-[3px] my-[5px] mx-auto bg-slate-600 rounded transition-all duration-300 ease-in-out dark:bg-slate-300"></span>
+        <span class="bar-2 block w-[25px] h-[3px] my-[5px] mx-auto bg-slate-600 rounded transition-all duration-300 ease-in-out dark:bg-slate-300"></span>
+        <span class="bar-3 block w-[25px] h-[3px] my-[5px] mx-auto bg-slate-600 rounded transition-all duration-300 ease-in-out dark:bg-slate-300"></span>
       </div>
-
-      <!-- Mobile Menu -->
-      <nav id="mobileMenu" class="hidden md:hidden mt-4 pt-4 border-t border-slate-200 space-y-2">
-        <a href="#" onclick="filterPosts('all')" class="block text-slate-700 hover:text-blue-600 font-medium py-2">All</a>
-        <a href="#" onclick="filterPosts('Technology')" class="block text-slate-700 hover:text-blue-600 font-medium py-2">Technology</a>
-        <a href="#" onclick="filterPosts('Lifestyle')" class="block text-slate-700 hover:text-blue-600 font-medium py-2">Lifestyle</a>
-        <a href="#" onclick="filterPosts('Travel')" class="block text-slate-700 hover:text-blue-600 font-medium py-2">Travel</a>
-      </nav>
     </div>
-  </header>
+
+    <div id="mobile-menu" class="fixed inset-0 top-[73px] bg-white dark:bg-[#1a1d2e] flex flex-col items-center justify-start pt-16 gap-8 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden border-t border-slate-100 dark:border-white/5">
+      <a href="index.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-xl font-medium transition-colors">Home</a>
+      <a href="about.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-xl font-medium transition-colors">About</a>
+      <a href="./blog/viewer.html" class="text-[#821917] dark:text-[#f9a133] text-xl font-medium transition-colors">Blog</a>
+      <a href="registrationform.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-xl font-medium transition-colors">Register</a>
+      <a href="contactus.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-xl font-medium transition-colors">Contact</a>
+    </div>
+  </nav>
 
   <!-- Hero Section -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl overflow-hidden shadow-2xl">
-      <div class="grid md:grid-cols-2 gap-8 items-center p-8 md:p-12">
-        <div class="text-white">
-          <h2 class="text-4xl md:text-5xl font-bold mb-4">Welcome to Our Blog</h2>
-          <p class="text-lg text-blue-100 mb-6">Discover stories, insights, and perspectives from our community of writers.</p>
-          <button onclick="document.getElementById('postsSection').scrollIntoView({behavior: 'smooth'})" class="bg-white text-blue-600 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition shadow-lg">
-            Explore Posts
-          </button>
-        </div>
-        <div class="hidden md:block">
-          <img src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600" alt="Blog" class="rounded-2xl shadow-2xl">
-        </div>
-      </div>
+  <section class="bg-gradient-to-r from-[#821917] via-[#f9a133] to-[#0d4e0d] text-white py-20 md:py-28">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <h2 class="text-5xl md:text-6xl font-bold mb-4">Ogoni Summit Blog</h2>
+      <p class="text-xl opacity-90">Insights, Stories & Inspirations</p>
     </div>
   </section>
 
-  <!-- Search & Filter -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-      <div class="relative w-full md:w-96">
-        <input 
-          type="text" 
-          id="searchInput" 
-          onkeyup="searchPosts()"
-          placeholder="Search posts..." 
-          class="w-full pl-12 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-sm"
-        >
-        <svg class="w-5 h-5 text-slate-400 absolute left-4 top-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-      </div>
+  <!-- Search & Filters -->
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <div class="space-y-6">
+      <!-- Search Bar -->
+      <input type="text" id="search" placeholder="Search posts..." class="w-full px-6 py-3 rounded-xl border-2 focus:outline-none transition focus:ring-2 focus:ring-[#821917]"
+        style="border-color: var(--border); background-color: var(--card); color: var(--text);">
       
-      <div class="flex gap-2">
-        <button onclick="filterPosts('all')" class="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow-sm">
-          All Posts
+      <!-- Desktop Category Filters -->
+      <div class="hidden md:flex flex-wrap gap-3">
+        <button data-cat="all" class="filter-btn px-6 py-3 rounded-full font-semibold active hover:shadow-lg transition-all">All Posts</button>
+        <button data-cat="Press Release" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Press Release</button>
+        <button data-cat="Updates" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Updates</button>
+        <button data-cat="Mentorship" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Mentorship</button>
+        <button data-cat="Testimonials" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Testimonials</button>
+        <button data-cat="Resources" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Resources</button>
+      </div>
+
+      <!-- Mobile Category Dropdown -->
+      <div class="md:hidden">
+        <button id="mobileMenuBtn" class="w-full px-6 py-3 rounded-xl font-semibold flex items-center justify-between" style="background-color: var(--card); border: 1px solid var(--border);">
+          <span>Select Category</span>
+          <svg id="dropdownIcon" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+          </svg>
         </button>
-        <button onclick="sortPosts('latest')" class="px-6 py-2 bg-white text-slate-700 rounded-xl hover:bg-slate-100 transition border border-slate-200 shadow-sm">
-          Latest First
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Blog Posts Grid -->
-  <section id="postsSection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h2 class="text-3xl font-bold text-slate-800 mb-8">Latest Articles</h2>
-    <div id="postsContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-slate-900 text-white mt-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid md:grid-cols-4 gap-8">
-        <div class="md:col-span-2">
-          <h3 class="text-2xl font-bold mb-4">TechBlog</h3>
-          <p class="text-slate-400 mb-4">Sharing knowledge and inspiring ideas through thoughtful content.</p>
-          <div class="flex gap-4">
-            <a href="#" class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-            </a>
-            <a href="#" class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-              </svg>
-            </a>
-            <a href="#" class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition">
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.441 16.892c-2.102.144-6.784.144-8.883 0C5.282 16.736 5.017 15.622 5 12c.017-3.629.285-4.736 2.558-4.892 2.099-.144 6.782-.144 8.883 0C18.718 7.264 18.982 8.378 19 12c-.018 3.629-.285 4.736-2.559 4.892zM10 9.658l4.917 2.338L10 14.342V9.658z"/>
-              </svg>
-            </a>
-          </div>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-4">Quick Links</h4>
-          <ul class="space-y-2 text-slate-400">
-            <li><a href="#" class="hover:text-white transition">About Us</a></li>
-            <li><a href="#" class="hover:text-white transition">Contact</a></li>
-            <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
-            <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-4">Categories</h4>
-          <ul class="space-y-2 text-slate-400">
-            <li><a href="#" class="hover:text-white transition">Technology</a></li>
-            <li><a href="#" class="hover:text-white transition">Lifestyle</a></li>
-            <li><a href="#" class="hover:text-white transition">Travel</a></li>
-            <li><a href="#" class="hover:text-white transition">Business</a></li>
-          </ul>
+        <div id="mobileMenu" class="hidden mt-2 rounded-xl overflow-hidden border category-dropdown" style="background-color: var(--card); border-color: var(--border);">
+          <button data-cat="all" class="filter-btn w-full px-6 py-3 text-left font-semibold active hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none">All Posts</button>
+          <button data-cat="Press Release" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Press Release</button>
+          <button data-cat="Updates" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Updates</button>
+          <button data-cat="Mentorship" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Mentorship</button>
+          <button data-cat="Testimonials" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Testimonials</button>
+          <button data-cat="Resources" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Resources</button>
         </div>
       </div>
-      <div class="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
-        <p>&copy; 2024 TechBlog. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Modal for Full Post -->
-  <div id="postModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeModal(event)">
-    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" onclick="event.stopPropagation()">
-      <div id="modalContent"></div>
     </div>
   </div>
 
+  <!-- Blog Grid -->
+  <main class="max-w-7xl mx-auto px-6 pb-24">
+    <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    
+    <div id="empty" class="hidden text-center py-32">
+      <p class="text-3xl font-light text-gray-500">No posts found</p>
+    </div>
+    
+    <div id="loading" class="text-center py-32">
+      <div class="inline-block w-12 h-12 border-4 border-[#821917] border-t-transparent rounded-full animate-spin"></div>
+      <p class="mt-4 text-gray-600 dark:text-gray-400">Loading posts...</p>
+    </div>
+
+    <div id="error" class="hidden text-center py-32">
+      <p class="text-xl text-red-500" id="error-message"></p>
+      <button onclick="load()" class="mt-4 px-6 py-2 bg-[#821917] text-white rounded-lg hover:bg-[#a02620]">Retry</button>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="modal-content rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
+      <div class="sticky top-0 border-b px-6 md:px-8 py-6 flex justify-between items-center" style="background-color: var(--card); border-color: var(--border);">
+        <h2 id="modalTitle" class="text-2xl md:text-3xl font-bold"></h2>
+        <button id="closeModal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition flex-shrink-0">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="px-6 md:px-8 py-8">
+        <div class="flex flex-wrap gap-4 text-sm text-muted mb-6 pb-6 border-b" style="border-color: var(--border);">
+          <span id="modalDate"></span>
+          <span>•</span>
+          <span id="modalAuthor"></span>
+          <span id="modalCategory" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full"></span>
+        </div>
+        <div id="gallery" class="gallery mb-8"></div>
+        <div id="modalContent" class="markdown prose dark:prose-invert max-w-none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="py-12 text-center text-gray-500 border-t mt-20" style="background-color: var(--card); border-color: var(--border);">
+    <div class="max-w-7xl mx-auto px-6">
+      <p><a href="">&copy;</a> 2025 Ogoni Entrepreneurship Summit. All rights reserved.</p>
+    </div>
+  </footer>
+
   <script>
-    const posts = [
-      {
-        id: 1,
-        title: 'The Future of Artificial Intelligence',
-        excerpt: 'Exploring how AI is reshaping our world and what it means for the future of humanity.',
-        content: 'Artificial Intelligence has become one of the most transformative technologies of our time. From healthcare to transportation, AI is revolutionizing how we live and work. This article explores the latest developments in AI technology and its potential impact on society.\n\nMachine learning algorithms are now capable of processing vast amounts of data and making predictions with unprecedented accuracy. As we continue to advance in this field, we must also consider the ethical implications and ensure that AI development aligns with human values.',
-        image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800',
-        author: 'Sarah Johnson',
-        date: 'Nov 20, 2024',
-        readTime: '5 min read',
-        category: 'Technology'
-      },
-      {
-        id: 2,
-        title: 'Minimalist Living: Less is More',
-        excerpt: 'Discover the art of living with less and finding joy in simplicity.',
-        content: 'Minimalism is more than just decluttering your home; it\'s a philosophy that can transform your entire life. By focusing on what truly matters and eliminating excess, you can find greater peace, clarity, and satisfaction.\n\nThis lifestyle encourages us to be intentional with our possessions, relationships, and commitments. When we remove the unnecessary, we make room for the things that bring us genuine happiness and fulfillment.',
-        image: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800',
-        author: 'Michael Chen',
-        date: 'Nov 18, 2024',
-        readTime: '4 min read',
-        category: 'Lifestyle'
-      },
-      {
-        id: 3,
-        title: 'Hidden Gems of Southeast Asia',
-        excerpt: 'Uncover breathtaking destinations off the beaten path in Southeast Asia.',
-        content: 'Southeast Asia is home to countless beautiful destinations that remain relatively undiscovered by mass tourism. From pristine beaches to ancient temples, this region offers incredible experiences for adventurous travelers.\n\nIn this guide, we explore some of the most stunning hidden gems, including remote islands in the Philippines, tranquil mountain villages in Vietnam, and sacred sites in Myanmar. These destinations offer authentic cultural experiences and natural beauty without the crowds.',
-        image: 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800',
-        author: 'Emma Rodriguez',
-        date: 'Nov 15, 2024',
-        readTime: '7 min read',
-        category: 'Travel'
-      },
-      {
-        id: 4,
-        title: 'The Rise of Remote Work Culture',
-        excerpt: 'How remote work is changing the traditional workplace landscape.',
-        content: 'The shift to remote work has fundamentally changed how we think about employment and productivity. Companies worldwide are embracing flexible work arrangements, leading to a reimagining of office culture.\n\nThis transformation brings both opportunities and challenges. While remote work offers greater flexibility and work-life balance, it also requires new approaches to collaboration, communication, and maintaining company culture.',
-        image: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800',
-        author: 'David Park',
-        date: 'Nov 12, 2024',
-        readTime: '6 min read',
-        category: 'Technology'
-      },
-      {
-        id: 5,
-        title: 'Plant-Based Cooking Made Easy',
-        excerpt: 'Simple recipes and tips for delicious plant-based meals.',
-        content: 'Transitioning to a plant-based diet doesn\'t have to be complicated. With the right recipes and techniques, you can create delicious, nutritious meals that satisfy your taste buds and nourish your body.\n\nThis guide covers essential ingredients, cooking methods, and meal planning strategies to help you succeed with plant-based eating. Whether you\'re fully vegan or just looking to add more plants to your diet, these tips will help you along the way.',
-        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
-        author: 'Lisa Thompson',
-        date: 'Nov 10, 2024',
-        readTime: '5 min read',
-        category: 'Lifestyle'
-      },
-      {
-        id: 6,
-        title: 'Sustainable Travel: A Guide',
-        excerpt: 'Learn how to explore the world while minimizing your environmental impact.',
-        content: 'Sustainable travel is about making conscious choices that reduce your environmental footprint while still enjoying amazing experiences around the globe. From choosing eco-friendly accommodations to supporting local communities, every decision matters.\n\nThis comprehensive guide provides practical tips for traveling more sustainably, including how to reduce waste, choose responsible tour operators, and make choices that benefit both the environment and local populations.',
-        image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800',
-        author: 'Alex Martinez',
-        date: 'Nov 8, 2024',
-        readTime: '8 min read',
-        category: 'Travel'
-      }
-    ];
+    const API = 'https://script.google.com/macros/s/AKfycbwooOn6nNRw_s7kweRmlzOYImNrC0QKnii1cWiib_fVKtOkug6ZX4zG4uxeEtehIQNq/exec';
+    
+    let posts = [];
+    const htmlElement = document.documentElement;
+    const themeToggles = document.querySelectorAll(".theme-toggle, .theme-toggle-mobile");
+    const hamburger = document.querySelector(".hamburger");
+    const navMenu = document.querySelector("#mobile-menu");
 
-    let filteredPosts = [...posts];
-
-    function renderPosts() {
-      const container = document.getElementById('postsContainer');
-      container.innerHTML = filteredPosts.map(post => `
-        <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer" onclick="openModal(${post.id})">
-          <div class="relative overflow-hidden h-56">
-            <img src="${post.image}" alt="${post.title}" class="w-full h-full object-cover transform hover:scale-110 transition duration-500">
-            <div class="absolute top-4 right-4">
-              <span class="bg-white px-3 py-1 rounded-full text-sm font-semibold text-blue-600 shadow-lg">${post.category}</span>
-            </div>
-          </div>
-          <div class="p-6">
-            <div class="flex items-center gap-3 text-sm text-slate-500 mb-3">
-              <span class="flex items-center gap-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-                ${post.author}
-              </span>
-              <span>•</span>
-              <span>${post.date}</span>
-              <span>•</span>
-              <span>${post.readTime}</span>
-            </div>
-            <h3 class="text-xl font-bold text-slate-800 mb-3 hover:text-blue-600 transition">${post.title}</h3>
-            <p class="text-slate-600 leading-relaxed mb-4">${post.excerpt}</p>
-            <button class="text-blue-600 font-semibold flex items-center gap-2 hover:gap-3 transition-all">
-              Read More
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </button>
-          </div>
-        </article>
-      `).join('');
+    // Initialize theme
+    const currentTheme = localStorage.getItem("theme") || "light";
+    if (currentTheme === "dark") {
+      htmlElement.classList.add("dark");
+      themeToggles.forEach((btn) => (btn.textContent = "☀️"));
     }
 
-    function openModal(id) {
-      const post = posts.find(p => p.id === id);
-      if (post) {
-        const modalContent = document.getElementById('modalContent');
-        modalContent.innerHTML = `
-          <button onclick="closeModal()" class="absolute top-4 right-4 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center hover:bg-slate-200 transition z-10">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-          <img src="${post.image}" alt="${post.title}" class="w-full h-96 object-cover">
-          <div class="p-8">
-            <span class="inline-block bg-blue-100 text-blue-600 px-4 py-1 rounded-full text-sm font-semibold mb-4">${post.category}</span>
-            <h2 class="text-4xl font-bold text-slate-800 mb-4">${post.title}</h2>
-            <div class="flex items-center gap-4 text-slate-500 mb-6 pb-6 border-b border-slate-200">
-              <span class="flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-                ${post.author}
-              </span>
-              <span>•</span>
-              <span>${post.date}</span>
-              <span>•</span>
-              <span>${post.readTime}</span>
+    // Theme toggle functionality
+    themeToggles.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        htmlElement.classList.toggle("dark");
+        const isDark = htmlElement.classList.contains("dark");
+        themeToggles.forEach((b) => (b.textContent = isDark ? "☀️" : "🌙"));
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+      });
+    });
+
+    // Hamburger menu toggle
+    hamburger.addEventListener("click", () => {
+      hamburger.classList.toggle("active");
+      if (navMenu.classList.contains("translate-x-full")) {
+        navMenu.classList.remove("translate-x-full");
+        navMenu.classList.add("translate-x-0");
+      } else {
+        navMenu.classList.add("translate-x-full");
+        navMenu.classList.remove("translate-x-0");
+      }
+    });
+
+    // Close menu on link click
+    navMenu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        hamburger.classList.remove("active");
+        navMenu.classList.add("translate-x-full");
+        navMenu.classList.remove("translate-x-0");
+      });
+    });
+
+    // Mobile menu dropdown
+    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+      const menu = document.getElementById('mobileMenu');
+      const icon = document.getElementById('dropdownIcon');
+      menu.classList.toggle('hidden');
+      icon.style.transform = menu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+    });
+
+    // Format Date
+    function formatDate(dateInput) {
+      if (!dateInput) return 'No date';
+
+      let date;
+      if (typeof dateInput === 'string') {
+        if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateInput.trim())) {
+          const [month, day, year] = dateInput.trim().split('/');
+          date = new Date(year, month - 1, day);
+        } else {
+          date = new Date(dateInput);
+        }
+      } else if (dateInput instanceof Date) {
+        date = dateInput;
+      } else {
+        return 'No date';
+      }
+
+      if (isNaN(date.getTime())) return 'Invalid date';
+
+      return date.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+    }
+
+    // Fetch Posts
+    async function load() {
+      const loadingEl = document.getElementById('loading');
+      const errorEl = document.getElementById('error');
+      const errorMsg = document.getElementById('error-message');
+      
+      loadingEl.classList.remove('hidden');
+      errorEl.classList.add('hidden');
+
+      try {
+        const response = await fetch(API);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (!data || !data.posts) {
+          throw new Error('Invalid response format from API');
+        }
+
+        posts = Array.isArray(data.posts) ? data.posts : [];
+        
+        // Sort posts by ID in descending order (newest first)
+        posts.sort((a, b) => {
+          const idA = parseInt(a.id) || 0;
+          const idB = parseInt(b.id) || 0;
+          return idB - idA;
+        });
+
+        render(posts);
+      } catch (error) {
+        console.error('Error loading posts:', error);
+        errorMsg.textContent = `Failed to load posts: ${error.message}`;
+        errorEl.classList.remove('hidden');
+        document.getElementById('grid').innerHTML = '';
+        document.getElementById('empty').classList.add('hidden');
+      } finally {
+        loadingEl.classList.add('hidden');
+      }
+    }
+
+    // Render Posts
+    function render(list) {
+      const grid = document.getElementById('grid');
+      const emptyEl = document.getElementById('empty');
+      
+      grid.innerHTML = '';
+
+      if (!list || list.length === 0) {
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+      
+      emptyEl.classList.add('hidden');
+
+      list.forEach(post => {
+        const cover = (post.imageurls && post.imageurls[0]) || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
+        const card = document.createElement('article');
+        card.className = 'card rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border';
+        card.onclick = () => openPost(post);
+        card.innerHTML = `
+          <div class="post-image h-48 relative">
+            <img src="${cover}" alt="${post.title || 'Post'}" loading="lazy" onerror="this.src='https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image'">
+            <span class="category-badge">${post.category || 'Uncategorized'}</span>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-3">
+              <span class="text-sm text-muted">${formatDate(post.date)}</span>
+              <span class="text-xs font-semibold px-2 py-1">by ${post.author || 'Anonymous'}</span>
             </div>
-            <div class="prose prose-lg max-w-none">
-              <p class="text-slate-600 leading-relaxed whitespace-pre-line">${post.content}</p>
+            <h2 class="text-xl font-bold mb-3 line-clamp-2">${post.title || 'Untitled'}</h2>
+            <p class="text-muted line-clamp-2 mb-4">${post.excerpt || ''}</p>
+            <div class="flex items-center gap-2 font-semibold" style="color: var(--accent);">
+              Read More
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
             </div>
           </div>
         `;
-        document.getElementById('postModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-      }
+        grid.appendChild(card);
+      });
     }
 
-    function closeModal(event) {
-      if (!event || event.target.id === 'postModal') {
-        document.getElementById('postModal').classList.add('hidden');
+    // Open Modal
+    function openPost(post) {
+      document.getElementById('modalTitle').textContent = post.title || 'Untitled';
+      document.getElementById('modalDate').textContent = formatDate(post.date);
+      document.getElementById('modalAuthor').textContent = `by ${post.author || 'Anonymous'}`;
+      document.getElementById('modalCategory').textContent = post.category || 'Uncategorized';
+
+      const galleryDiv = document.getElementById('gallery');
+      galleryDiv.innerHTML = (post.imageurls && Array.isArray(post.imageurls) && post.imageurls.length > 0)
+        ? post.imageurls.map((src, idx) => `<img src="${src}" alt="Post image ${idx + 1}" onerror="this.src='https://placehold.co/600x400/e5e7eb/6b7280?text=Image+Error'" style="cursor: pointer;" onclick="event.stopPropagation(); window.open('${src}', '_blank')">`).join('')
+        : '';
+
+      document.getElementById('modalContent').innerHTML = marked.parse(post.content || '');
+      document.getElementById('modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close Modal
+    document.getElementById('closeModal').onclick = () => {
+      document.getElementById('modal').classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    };
+
+    document.getElementById('modal').onclick = e => {
+      if (e.target.id === 'modal') {
+        document.getElementById('modal').classList.add('hidden');
         document.body.style.overflow = 'auto';
       }
-    }
+    };
 
-    function filterPosts(category) {
-      if (category === 'all') {
-        filteredPosts = [...posts];
-      } else {
-        filteredPosts = posts.filter(post => post.category === category);
-      }
-      renderPosts();
-    }
+    // Filter Posts
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const cat = btn.dataset.cat;
+        render(cat === 'all' ? posts : posts.filter(p => p.category === cat));
+        
+        // Close mobile menu after selection
+        if (window.innerWidth < 768) {
+          const menu = document.getElementById('mobileMenu');
+          const icon = document.getElementById('dropdownIcon');
+          menu.classList.add('hidden');
+          icon.style.transform = 'rotate(0deg)';
+        }
+      };
+    });
 
-    function searchPosts() {
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-      filteredPosts = posts.filter(post => 
-        post.title.toLowerCase().includes(searchTerm) ||
-        post.excerpt.toLowerCase().includes(searchTerm) ||
-        post.content.toLowerCase().includes(searchTerm)
+    // Search Posts
+    document.getElementById('search').oninput = e => {
+      const term = e.target.value.toLowerCase();
+      const filtered = posts.filter(p =>
+        (p.title && p.title.toLowerCase().includes(term)) ||
+        (p.excerpt && p.excerpt.toLowerCase().includes(term)) ||
+        (p.content && p.content.toLowerCase().includes(term))
       );
-      renderPosts();
-    }
+      render(filtered);
+    };
 
-    function sortPosts(order) {
-      if (order === 'latest') {
-        filteredPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
-      }
-      renderPosts();
-    }
-
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobileMenu');
-      menu.classList.toggle('hidden');
-    }
-
-    // Initialize
-    renderPosts();
+    // Load posts on page load
+    load();
   </script>
 </body>
 </html>
