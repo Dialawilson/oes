@@ -8,7 +8,6 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    
     :root {
       --bg: #f8fafc;
       --card: #ffffff;
@@ -18,7 +17,6 @@
       --accent: #821917;
       --accent-light: #f9a133;
     }
-
     .dark {
       --bg: #0f172a;
       --card: #1e293b;
@@ -28,208 +26,68 @@
       --accent: #f9a133;
       --accent-light: #821917;
     }
-
-    * {
-      font-family: 'Inter', sans-serif;
-      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-    }
-
-    .card {
-      background-color: var(--card);
-      border-color: var(--border);
-    }
-
-    .text-muted {
-      color: var(--text-muted);
-    }
-
-    .modal {
-      transition: opacity 0.3s ease;
-    }
-
-    .modal-content {
-      background-color: var(--card);
-      animation: slideUp 0.4s ease-out;
-    }
-
-    @keyframes slideUp {
-      from {
-        transform: translateY(60px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .post-image {
-      overflow: hidden;
-      position: relative;
-    }
-
-    .post-image img {
-      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .post-image:hover img {
-      transform: scale(1.1);
-    }
-
+    * { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
+    body { background-color: var(--bg); color: var(--text); }
+    .card { background-color: var(--card); border-color: var(--border); }
+    .text-muted { color: var(--text-muted); }
+    .modal-content { background-color: var(--card); animation: slideUp 0.4s ease-out; }
+    @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .post-image img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; height: 100%; object-fit: cover; }
+    .post-image:hover img { transform: scale(1.1); }
     .category-badge {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: white;
-      padding: 0.375rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      background: linear-gradient(135deg, #821917, #f9a133);
-      -webkit-text-fill-color: white;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: absolute; top: 4px; right: 4px; background: linear-gradient(135deg, #821917, #f9a133);
+      -webkit-text-fill-color: white; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+    .gallery img { border-radius: 0.75rem; cursor: pointer; border: 1px solid var(--border); transition: all 0.3s ease; width: 100%; height: 300px; object-fit: cover; }
+    .gallery img:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .pdf-preview { border-radius: 1rem; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    .youtube-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    .youtube-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    .markdown h1, .markdown h2, .markdown h3 { color: var(--text); margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 700; }
+    .markdown p { line-height: 1.8; margin: 1.5rem 0; }
+    
+    /* PDF Preview Styles */
+    .pdf-section { margin: 2rem 0; }
+    .pdf-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
+    
+    /* YouTube Video Styles */
+    .video-section { margin: 2rem 0; text-align: center; }
+    .video-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); }
 
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin: 2rem 0;
-    }
-
-    .gallery img {
-      border-radius: 0.75rem;
-      cursor: pointer;
-      border: 1px solid var(--border);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      width: 100%;
-      height: 300px;
-      object-fit: cover;
-    }
-
-    .gallery img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .hamburger.active .bar-1 {
-      transform: translateY(8px) rotate(45deg);
-    }
-    .hamburger.active .bar-2 {
-      opacity: 0;
-    }
-    .hamburger.active .bar-3 {
-      transform: translateY(-8px) rotate(-45deg);
-    }
-
-    .markdown h1, .markdown h2, .markdown h3 {
-      color: var(--text);
-      margin-top: 1.5rem;
-      margin-bottom: 1rem;
-      font-weight: 700;
-    }
-
-    .markdown p {
-      color: var(--text);
-      line-height: 1.8;
-      margin: 1.5rem 0;
-    }
-
-    .markdown ul, .markdown ol {
-      color: var(--text);
-      margin: 1.5rem 0;
-      padding-left: 2rem;
-    }
-
-    .markdown li {
-      margin-bottom: 0.5rem;
-    }
-
-    .filter-btn {
-      position: relative;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .filter-btn.active {
-      background: linear-gradient(135deg, #821917, #f9a133);
-      color: white;
-    }
-
-    .filter-btn:not(.active) {
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .category-dropdown {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    @media (max-width: 768px) {
-      .filter-btn {
-        font-size: 0.875rem;
-        padding: 0.5rem 1rem !important;
-      }
+    /* Download button fix */
+    .download-btn { display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    
+    /* Enhanced PDF Viewer */
+    .pdf-viewer-container { margin: 2rem 0; }
+    .pdf-viewer-iframe { 
+      width: 100%; 
+      height: 600px; 
+      border: 1px solid var(--border); 
+      border-radius: 0.75rem; 
+      background: var(--bg);
     }
   </style>
 </head>
 <body class="min-h-screen">
-
-  <!-- Navigation Bar -->
-  <nav class="flex shadow-xl justify-between items-center px-8 md:px-12 py-6 bg-white sticky top-0 z-50 transition-colors duration-300 dark:bg-[#1a1d2e] md:shadow-sm">
+  <!-- Navigation -->
+  <nav class="flex shadow-xl justify-between items-center px-8 md:px-12 py-6 bg-white sticky top-0 z-50 dark:bg-[#1a1d2e]">
     <img src="../img/logo.png" alt="Logo" class="w-[50px] h-auto" />
-
     <ul class="hidden md:flex gap-10 items-center list-none">
-      <li>
-        <a href="index.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-base font-medium transition-colors">Home</a>
-      </li>
-      <li>
-        <a href="about.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-base font-medium transition-colors">About</a>
-      </li>
-      <li>
-        <a href="./blog.html" class="text-[#821917] dark:text-[#f9a133] text-base font-medium transition-colors">Blog</a>
-      </li>
-      <li>
-        <a href="./registrationform.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-base font-medium transition-colors">Register</a>
-      </li>
-      <li>
-        <a href="./contactus.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-base font-medium transition-colors">Contact</a>
-      </li>
-      <button class="theme-toggle bg-transparent border-none text-slate-600 text-xl cursor-pointer hover:rotate-180 transition-transform duration-300 dark:text-slate-300">
-        🌙
-      </button>
+      <li><a href="index.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] font-medium">Home</a></li>
+      <li><a href="about.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] font-medium">About</a></li>
+      <li><a href="./blog.html" class="text-[#821917] dark:text-[#f9a133] font-medium">Blog</a></li>
+      <li><a href="./registrationform.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] font-medium">Register</a></li>
+      <li><a href="./contactus.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] font-medium">Contact</a></li>
+      <button class="theme-toggle text-xl">🌙</button>
     </ul>
-
     <div class="md:hidden flex gap-4">
-      <button class="theme-toggle-mobile text-slate-600 text-xl hover:rotate-180 transition-transform duration-300 dark:text-slate-300">
-        🌙
-      </button>
-      <div class="hamburger md:hidden cursor-pointer p-1 z-50 group">
-        <span class="bar-1 block w-[25px] h-[3px] my-[5px] mx-auto bg-slate-600 rounded transition-all duration-300 ease-in-out dark:bg-slate-300"></span>
-        <span class="bar-2 block w-[25px] h-[3px] my-[5px] mx-auto bg-slate-600 rounded transition-all duration-300 ease-in-out dark:bg-slate-300"></span>
-        <span class="bar-3 block w-[25px] h-[3px] my-[5px] mx-auto bg-slate-600 rounded transition-all duration-300 ease-in-out dark:bg-slate-300"></span>
-      </div>
-    </div>
-
-    <div id="mobile-menu" class="fixed inset-0 top-[73px] bg-white dark:bg-[#1a1d2e] flex flex-col items-center justify-start pt-16 gap-8 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden border-t border-slate-100 dark:border-white/5">
-      <a href="index.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-xl font-medium transition-colors">Home</a>
-      <a href="about.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-xl font-medium transition-colors">About</a>
-      <a href="./blog/viewer.html" class="text-[#821917] dark:text-[#f9a133] text-xl font-medium transition-colors">Blog</a>
-      <a href="registrationform.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-xl font-medium transition-colors">Register</a>
-      <a href="contactus.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] text-xl font-medium transition-colors">Contact</a>
+      <button class="theme-toggle-mobile text-xl dark:text-slate-300">🌙</button>
+      <div class="hamburger cursor-pointer"><span class="bar-1 block w-6 h-0.5 bg-slate-600 dark:bg-slate-300 my-1"></span><span class="bar-2 block w-6 h-0.5 bg-slate-600 dark:bg-slate-300 my-1"></span><span class="bar-3 block w-6 h-0.5 bg-slate-600 dark:bg-slate-300 my-1"></span></div>
     </div>
   </nav>
 
-  <!-- Hero Section -->
+  <!-- Hero -->
   <section class="bg-gradient-to-r from-[#821917] via-[#f9a133] to-[#0d4e0d] text-white py-20 md:py-28">
     <div class="max-w-7xl mx-auto px-6 text-center">
       <h2 class="text-5xl md:text-6xl font-bold mb-4">Ogoni Summit Blog</h2>
@@ -239,150 +97,85 @@
 
   <!-- Search & Filters -->
   <div class="max-w-7xl mx-auto px-6 py-8">
-    <div class="space-y-6">
-      <!-- Search Bar -->
-      <input type="text" id="search" placeholder="Search posts..." class="w-full px-6 py-3 rounded-xl border-2 focus:outline-none transition focus:ring-2 focus:ring-[#821917]"
-        style="border-color: var(--border); background-color: var(--card); color: var(--text);">
-      
-      <!-- Desktop Category Filters -->
-      <div class="hidden md:flex flex-wrap gap-3">
-        <button data-cat="all" class="filter-btn px-6 py-3 rounded-full font-semibold active hover:shadow-lg transition-all">All Posts</button>
-        <button data-cat="Press Release" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Press Release</button>
-        <button data-cat="Updates" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Updates</button>
-        <button data-cat="Mentorship" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Mentorship</button>
-        <button data-cat="Testimonials" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Testimonials</button>
-        <button data-cat="Resources" class="filter-btn px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all">Resources</button>
-      </div>
-
-      <!-- Mobile Category Dropdown -->
-      <div class="md:hidden">
-        <button id="mobileMenuBtn" class="w-full px-6 py-3 rounded-xl font-semibold flex items-center justify-between" style="background-color: var(--card); border: 1px solid var(--border);">
-          <span>Select Category</span>
-          <svg id="dropdownIcon" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-          </svg>
-        </button>
-        <div id="mobileMenu" class="hidden mt-2 rounded-xl overflow-hidden border category-dropdown" style="background-color: var(--card); border-color: var(--border);">
-          <button data-cat="all" class="filter-btn w-full px-6 py-3 text-left font-semibold active hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none">All Posts</button>
-          <button data-cat="Press Release" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Press Release</button>
-          <button data-cat="Updates" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Updates</button>
-          <button data-cat="Mentorship" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Mentorship</button>
-          <button data-cat="Testimonials" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Testimonials</button>
-          <button data-cat="Resources" class="filter-btn w-full px-6 py-3 text-left font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition-all rounded-none border-t" style="border-color: var(--border);">Resources</button>
-        </div>
-      </div>
+    <input type="text" id="search" placeholder="Search posts..." class="w-full px-6 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#821917]" style="border-color: var(--border); background-color: var(--card); color: var(--text);">
+    <div class="hidden md:flex flex-wrap gap-3 mt-6">
+      <button data-cat="all" class="filter-btn px-6 py-3 rounded-full font-semibold active bg-[#821917] text-white">All Posts</button>
+      <button data-cat="Press Releases" class="filter-btn px-6 py-3 rounded-full font-semibold">Press Releases</button>
+      <button data-cat="Updates" class="filter-btn px-6 py-3 rounded-full font-semibold">Updates</button>
+      <button data-cat="Mentorship" class="filter-btn px-6 py-3 rounded-full font-semibold">Mentorship</button>
+      <button data-cat="Testimonials" class="filter-btn px-6 py-3 rounded-full font-semibold">Testimonials</button>
+      <button data-cat="Resources" class="filter-btn px-6 py-3 rounded-full font-semibold">Resources</button>
     </div>
   </div>
 
   <!-- Blog Grid -->
   <main class="max-w-7xl mx-auto px-6 pb-24">
     <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-    
-    <div id="empty" class="hidden text-center py-32">
-      <p class="text-3xl font-light text-gray-500">No posts found</p>
-    </div>
-    
-    <div id="loading" class="text-center py-32">
-      <div class="inline-block w-12 h-12 border-4 border-[#821917] border-t-transparent rounded-full animate-spin"></div>
-      <p class="mt-4 text-gray-600 dark:text-gray-400">Loading posts...</p>
-    </div>
-
-    <div id="error" class="hidden text-center py-32">
-      <p class="text-xl text-red-500" id="error-message"></p>
-      <button onclick="load()" class="mt-4 px-6 py-2 bg-[#821917] text-white rounded-lg hover:bg-[#a02620]">Retry</button>
-    </div>
+    <div id="loading" class="text-center py-32"><div class="inline-block w-12 h-12 border-4 border-[#821917] border-t-transparent rounded-full animate-spin"></div><p class="mt-4">Loading posts...</p></div>
   </main>
 
   <!-- Modal -->
   <div id="modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="modal-content rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
-      <div class="sticky top-0 border-b px-6 md:px-8 py-6 flex justify-between items-center" style="background-color: var(--card); border-color: var(--border);">
+      <div class="sticky top-0 border-b px-6 py-6 flex justify-between items-center" style="background-color: var(--card); border-color: var(--border);">
         <h2 id="modalTitle" class="text-2xl md:text-3xl font-bold"></h2>
-        <button id="closeModal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition flex-shrink-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
+        <button id="closeModal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
       </div>
       <div class="px-6 md:px-8 py-8">
         <div class="flex flex-wrap gap-4 text-sm text-muted mb-6 pb-6 border-b" style="border-color: var(--border);">
-          <span id="modalDate"></span>
-          <span>•</span>
-          <span id="modalAuthor"></span>
-          <span id="modalCategory" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full"></span>
+          <span id="modalDate"></span> • <span id="modalAuthor"></span> • <span id="modalCategory" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full"></span>
         </div>
+
+        <!-- Gallery -->
         <div id="gallery" class="gallery mb-8"></div>
+
+        <!-- YouTube Video -->
+        <div id="youtubeSection" class="video-section hidden">
+          <h3 class="video-title">🎥 Watch Video</h3>
+          <div id="youtubeContainer" class="youtube-container"></div>
+        </div>
+
+        <!-- Content -->
         <div id="modalContent" class="markdown prose dark:prose-invert max-w-none"></div>
+
+        <!-- PDF Preview - CLEAN VERSION -->
+        <div id="pdfSection" class="pdf-section hidden">
+          <div class="pdf-header">
+            <h3 class="text-xl font-bold">📄 Attached Document</h3>
+            <div class="flex gap-3">
+              <a id="pdfDownload" href="#" class="download-btn bg-[#821917] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#a02620] flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Download PDF
+              </a>
+            </div>
+          </div>
+          
+          <!-- Single PDF Viewer -->
+          <div class="pdf-viewer-container">
+            <iframe id="pdfViewer" class="pdf-viewer-iframe" src="about:blank"></iframe>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="py-12 text-center text-gray-500 border-t mt-20" style="background-color: var(--card); border-color: var(--border);">
-    <div class="max-w-7xl mx-auto px-6">
-      <p><a href="">&copy;</a> 2025 Ogoni Entrepreneurship Summit. All rights reserved.</p>
-    </div>
-  </footer>
-
   <script>
-    const API = 'https://script.google.com/macros/s/AKfycbwooOn6nNRw_s7kweRmlzOYImNrC0QKnii1cWiib_fVKtOkug6ZX4zG4uxeEtehIQNq/exec';
-    
+    const API = 'https://script.google.com/macros/s/AKfycbyLW4iZp2aJaC-zEcUp3SaaBTUkV37_hhBAThq8mLoLfU401HDtRiSA-YI6XzAnmbpaSg/exec';
     let posts = [];
-    const htmlElement = document.documentElement;
-    const themeToggles = document.querySelectorAll(".theme-toggle, .theme-toggle-mobile");
-    const hamburger = document.querySelector(".hamburger");
-    const navMenu = document.querySelector("#mobile-menu");
 
-    // Initialize theme
-    const currentTheme = localStorage.getItem("theme") || "light";
-    if (currentTheme === "dark") {
-      htmlElement.classList.add("dark");
-      themeToggles.forEach((btn) => (btn.textContent = "☀️"));
-    }
-
-    // Theme toggle functionality
-    themeToggles.forEach((btn) => {
+    // Theme & Mobile Menu
+    document.querySelectorAll(".theme-toggle, .theme-toggle-mobile").forEach(btn => {
       btn.addEventListener("click", () => {
-        htmlElement.classList.toggle("dark");
-        const isDark = htmlElement.classList.contains("dark");
-        themeToggles.forEach((b) => (b.textContent = isDark ? "☀️" : "🌙"));
-        localStorage.setItem("theme", isDark ? "dark" : "light");
+        document.documentElement.classList.toggle("dark");
+        btn.textContent = document.documentElement.classList.contains("dark") ? "☀" : "🌙";
+        localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
       });
     });
-
-    // Hamburger menu toggle
-    hamburger.addEventListener("click", () => {
-      hamburger.classList.toggle("active");
-      if (navMenu.classList.contains("translate-x-full")) {
-        navMenu.classList.remove("translate-x-full");
-        navMenu.classList.add("translate-x-0");
-      } else {
-        navMenu.classList.add("translate-x-full");
-        navMenu.classList.remove("translate-x-0");
-      }
-    });
-
-    // Close menu on link click
-    navMenu.querySelectorAll("a").forEach((link) => {
-      link.addEventListener("click", () => {
-        hamburger.classList.remove("active");
-        navMenu.classList.add("translate-x-full");
-        navMenu.classList.remove("translate-x-0");
-      });
-    });
-
-    // Mobile menu dropdown
-    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
-      const menu = document.getElementById('mobileMenu');
-      const icon = document.getElementById('dropdownIcon');
-      menu.classList.toggle('hidden');
-      icon.style.transform = menu.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
-    });
+    if (localStorage.getItem("theme") === "dark") document.documentElement.classList.add("dark");
 
     // Format Date
     function formatDate(dateInput) {
       if (!dateInput) return 'No date';
-
       let date;
       if (typeof dateInput === 'string') {
         if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateInput.trim())) {
@@ -396,95 +189,84 @@
       } else {
         return 'No date';
       }
-
       if (isNaN(date.getTime())) return 'Invalid date';
-
-      return date.toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      });
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
-    // Fetch Posts
-    async function load() {
-      const loadingEl = document.getElementById('loading');
-      const errorEl = document.getElementById('error');
-      const errorMsg = document.getElementById('error-message');
+    // Extract YouTube ID - FIXED VERSION
+    function getYouTubeId(url) {
+      if (!url) return null;
       
-      loadingEl.classList.remove('hidden');
-      errorEl.classList.add('hidden');
+      // Handle various YouTube URL formats
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+        /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
+      ];
+      
+      for (let pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) {
+          return match[1];
+        }
+      }
+      
+      return null;
+    }
 
+    async function load() {
+      document.getElementById('loading').classList.remove('hidden');
       try {
-        const response = await fetch(API);
+        const res = await fetch(API);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        if (!data || !data.posts) {
-          throw new Error('Invalid response format from API');
-        }
-
-        posts = Array.isArray(data.posts) ? data.posts : [];
-        
-        // Sort posts by ID in descending order (newest first)
-        posts.sort((a, b) => {
-          const idA = parseInt(a.id) || 0;
-          const idB = parseInt(b.id) || 0;
-          return idB - idA;
-        });
-
+        posts = (data.posts || []).sort((a, b) => (b.id || 0) - (a.id || 0));
         render(posts);
-      } catch (error) {
-        console.error('Error loading posts:', error);
-        errorMsg.textContent = `Failed to load posts: ${error.message}`;
-        errorEl.classList.remove('hidden');
-        document.getElementById('grid').innerHTML = '';
-        document.getElementById('empty').classList.add('hidden');
+      } catch (e) {
+        console.error('Error loading posts:', e);
+        document.getElementById('grid').innerHTML = '<div class="col-span-3 text-center py-16 text-red-600">Error loading posts: ' + e.message + '</div>';
       } finally {
-        loadingEl.classList.add('hidden');
+        document.getElementById('loading').classList.add('hidden');
       }
     }
 
-    // Render Posts
     function render(list) {
       const grid = document.getElementById('grid');
-      const emptyEl = document.getElementById('empty');
-      
       grid.innerHTML = '';
-
-      if (!list || list.length === 0) {
-        emptyEl.classList.remove('hidden');
+      
+      if (list.length === 0) {
+        grid.innerHTML = '<div class="col-span-3 text-center py-16 text-muted">No posts found</div>';
         return;
       }
       
-      emptyEl.classList.add('hidden');
-
       list.forEach(post => {
-        const cover = (post.imageurls && post.imageurls[0]) || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
+        // Handle image URLs - could be string or array
+        let imageUrls = [];
+        if (typeof post.imageurls === 'string') {
+          try {
+            imageUrls = JSON.parse(post.imageurls);
+          } catch (e) {
+            imageUrls = [post.imageurls];
+          }
+        } else if (Array.isArray(post.imageurls)) {
+          imageUrls = post.imageurls;
+        }
+        
+        const cover = imageUrls[0] || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
         const card = document.createElement('article');
         card.className = 'card rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border';
         card.onclick = () => openPost(post);
         card.innerHTML = `
-          <div class="post-image h-48 relative">
-            <img src="${cover}" alt="${post.title || 'Post'}" loading="lazy" onerror="this.src='https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image'">
-            <span class="category-badge">${post.category || 'Uncategorized'}</span>
+          <div class="post-image h-48 relative overflow-hidden">
+            <img src="${cover}" alt="${post.title}" loading="lazy">
+            <span class="category-badge">${post.category || 'General'}</span>
           </div>
           <div class="p-6">
-            <div class="flex justify-between items-start mb-3">
-              <span class="text-sm text-muted">${formatDate(post.date)}</span>
-              <span class="text-xs font-semibold px-2 py-1">by ${post.author || 'Anonymous'}</span>
-            </div>
-            <h2 class="text-xl font-bold mb-3 line-clamp-2">${post.title || 'Untitled'}</h2>
-            <p class="text-muted line-clamp-2 mb-4">${post.excerpt || ''}</p>
-            <div class="flex items-center gap-2 font-semibold" style="color: var(--accent);">
-              Read More
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-              </svg>
+            <span class="text-sm text-muted">${formatDate(post.date)}</span>
+            <h2 class="text-xl font-bold mt-2 mb-3 line-clamp-2">${post.title}</h2>
+            <p class="text-muted line-clamp-2">${post.excerpt || ''}</p>
+            <div class="mt-4 flex items-center gap-2 font-semibold text-[#821917]">
+              Read More → 
             </div>
           </div>
         `;
@@ -492,66 +274,205 @@
       });
     }
 
-    // Open Modal
     function openPost(post) {
-      document.getElementById('modalTitle').textContent = post.title || 'Untitled';
+      console.log('Opening post:', post);
+      
+      document.getElementById('modalTitle').textContent = post.title;
       document.getElementById('modalDate').textContent = formatDate(post.date);
       document.getElementById('modalAuthor').textContent = `by ${post.author || 'Anonymous'}`;
-      document.getElementById('modalCategory').textContent = post.category || 'Uncategorized';
+      document.getElementById('modalCategory').textContent = post.category || 'General';
 
-      const galleryDiv = document.getElementById('gallery');
-      galleryDiv.innerHTML = (post.imageurls && Array.isArray(post.imageurls) && post.imageurls.length > 0)
-        ? post.imageurls.map((src, idx) => `<img src="${src}" alt="Post image ${idx + 1}" onerror="this.src='https://placehold.co/600x400/e5e7eb/6b7280?text=Image+Error'" style="cursor: pointer;" onclick="event.stopPropagation(); window.open('${src}', '_blank')">`).join('')
-        : '';
+      // Gallery
+      const gallery = document.getElementById('gallery');
+      let imageUrls = [];
+      
+      if (typeof post.imageurls === 'string') {
+        try {
+          imageUrls = JSON.parse(post.imageurls);
+        } catch (e) {
+          imageUrls = [post.imageurls];
+        }
+      } else if (Array.isArray(post.imageurls)) {
+        imageUrls = post.imageurls;
+      }
+      
+      if (imageUrls && imageUrls.length > 0) {
+        gallery.innerHTML = imageUrls.map(src => 
+          `<img src="${src}" onclick="window.open('${src}', '_blank')" alt="Gallery image">`
+        ).join('');
+      } else {
+        gallery.innerHTML = '';
+      }
 
+      // Content
       document.getElementById('modalContent').innerHTML = marked.parse(post.content || '');
+
+      // YouTube Video
+      const youtubeSection = document.getElementById('youtubeSection');
+      const youtubeContainer = document.getElementById('youtubeContainer');
+      
+      youtubeSection.classList.add('hidden');
+      youtubeContainer.innerHTML = '';
+      
+      if (post.youtubeurl) {
+        const videoId = getYouTubeId(post.youtubeurl);
+        console.log('YouTube URL:', post.youtubeurl, 'Video ID:', videoId);
+        
+        if (videoId) {
+          youtubeContainer.innerHTML = `
+            <iframe 
+              src="https://www.youtube.com/embed/${videoId}" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+            </iframe>
+          `;
+          youtubeSection.classList.remove('hidden');
+        }
+      }
+
+      // PDF Section - CLEAN IMPLEMENTATION
+      const pdfSection = document.getElementById('pdfSection');
+      const pdfDownload = document.getElementById('pdfDownload');
+      const pdfViewer = document.getElementById('pdfViewer');
+      
+      pdfSection.classList.add('hidden');
+      
+      // Check for PDF using the new backend structure
+      if (post.drivefileid && post.drivefileid.trim() !== '') {
+        console.log('PDF found with Drive File ID:', post.drivefileid);
+        
+        // Generate the Google Drive preview URL
+        const previewUrl = `https://drive.google.com/file/d/${post.drivefileid}/preview`;
+        
+        // Set PDF preview iframe
+        pdfViewer.src = previewUrl;
+        
+        // Set download URL
+        let downloadUrl = post.pdfurl;
+        if (!downloadUrl && post.drivefileid) {
+          downloadUrl = `https://drive.google.com/uc?export=download&id=${post.drivefileid}`;
+        }
+        
+        if (downloadUrl) {
+          pdfDownload.href = downloadUrl;
+          pdfDownload.setAttribute('download', `${post.title || 'document'}.pdf`);
+        }
+        
+        // Show PDF section
+        pdfSection.classList.remove('hidden');
+        
+      } else if (post.pdfurl && post.pdfurl.trim() !== '') {
+        // Fallback for old structure
+        console.log('PDF found with direct URL:', post.pdfurl);
+        
+        // Extract file ID from Google Drive URL for preview
+        const fileId = extractFileId(post.pdfurl);
+        if (fileId) {
+          const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+          pdfViewer.src = previewUrl;
+          pdfDownload.href = post.pdfurl;
+          pdfDownload.setAttribute('download', `${post.title || 'document'}.pdf`);
+          pdfSection.classList.remove('hidden');
+        }
+      }
+
+      // Update URL with slug
+      if (post.slug) {
+        history.pushState(null, post.title, `/blog/${post.slug}`);
+      } else {
+        history.pushState(null, post.title, `/blog/post-${post.id}`);
+      }
+
       document.getElementById('modal').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     }
 
-    // Close Modal
+    // Helper function to extract file ID from Google Drive URL
+    function extractFileId(url) {
+      if (!url) return '';
+      
+      // Handle different Google Drive URL formats
+      const patterns = [
+        /\/d\/([^\/]+)/, // /d/FILE_ID/
+        /id=([^&]+)/,    // id=FILE_ID
+        /\/file\/d\/([^\/]+)/ // /file/d/FILE_ID/
+      ];
+      
+      for (let pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) {
+          return match[1];
+        }
+      }
+      
+      return '';
+    }
+
+    // Close modal function
     document.getElementById('closeModal').onclick = () => {
       document.getElementById('modal').classList.add('hidden');
       document.body.style.overflow = 'auto';
+      history.pushState(null, '', '/blog.html');
     };
 
-    document.getElementById('modal').onclick = e => {
-      if (e.target.id === 'modal') {
+    // Close modal when clicking on backdrop
+    document.getElementById('modal').onclick = (e) => {
+      if (e.target === document.getElementById('modal')) {
         document.getElementById('modal').classList.add('hidden');
         document.body.style.overflow = 'auto';
+        history.pushState(null, '', '/blog.html');
       }
     };
 
-    // Filter Posts
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.onclick = () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const cat = btn.dataset.cat;
-        render(cat === 'all' ? posts : posts.filter(p => p.category === cat));
-        
-        // Close mobile menu after selection
-        if (window.innerWidth < 768) {
-          const menu = document.getElementById('mobileMenu');
-          const icon = document.getElementById('dropdownIcon');
-          menu.classList.add('hidden');
-          icon.style.transform = 'rotate(0deg)';
-        }
-      };
-    });
+    // Prevent modal content clicks from closing modal
+    document.querySelector('.modal-content').onclick = (e) => {
+      e.stopPropagation();
+    };
 
-    // Search Posts
     document.getElementById('search').oninput = e => {
       const term = e.target.value.toLowerCase();
-      const filtered = posts.filter(p =>
-        (p.title && p.title.toLowerCase().includes(term)) ||
-        (p.excerpt && p.excerpt.toLowerCase().includes(term)) ||
-        (p.content && p.content.toLowerCase().includes(term))
+      const filtered = posts.filter(p => 
+        p.title?.toLowerCase().includes(term) || 
+        p.excerpt?.toLowerCase().includes(term) || 
+        p.content?.toLowerCase().includes(term) ||
+        p.author?.toLowerCase().includes(term) ||
+        p.category?.toLowerCase().includes(term)
       );
       render(filtered);
     };
 
-    // Load posts on page load
+    // Filter buttons functionality
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Remove active classes from all buttons
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.classList.remove('active', 'bg-[#821917]', 'text-white');
+          b.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        });
+        
+        // Add active class to clicked button
+        btn.classList.add('active', 'bg-[#821917]', 'text-white');
+        btn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        
+        const category = btn.dataset.cat;
+        if (category === 'all') {
+          render(posts);
+        } else {
+          const filtered = posts.filter(p => p.category === category);
+          render(filtered);
+        }
+      });
+    });
+
+    // Initialize active state for filter buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      const allButton = document.querySelector('[data-cat="all"]');
+      if (allButton) {
+        allButton.classList.add('bg-[#821917]', 'text-white');
+        allButton.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+      }
+    });
+
     load();
   </script>
 </body>

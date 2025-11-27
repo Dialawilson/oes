@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Admin Dashboard</title>
+    <link rel="icon" href="data:,">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .image-upload-area { transition: all 0.3s ease; }
+        .image-upload-area:hover { border-color: #f9a133; background-color: #f8f9ff; }
+        .image-upload-area.dragover { border-color: #821917; background-color: #eef2ff; }
+        .uploading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #f9a133;
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .modal-content { animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .post-card { 
+            transition: all 0.3s ease; 
+            scroll-snap-align: start; 
+            min-width: 300px; 
+        }
+        .post-card:hover { transform: translateY(-6px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
+
+        #postsGrid {
+            display: flex; 
+            flex-wrap: nowrap; 
+            gap: 1.5rem; 
+            padding: 1rem 0;
+            flex-direction: column;
+            scroll-snap-type: x mandatory; 
+            scrollbar-width: thin;
+        }
+        
+        @media (min-width: 1024px) {
+            #postsGrid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr); 
+                flex-wrap: wrap; 
+                overflow-x: hidden;
+                padding: 0;
+                scroll-snap-type: none;
+            }
+            .post-card {
+                min-width: unset; 
+                max-width: unset;
+                scroll-snap-align: none;
+            }
+        }
+
+        #postsGrid::-webkit-scrollbar { height: 8px; }
+        #postsGrid::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        #postsGrid::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        #postsGrid::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <header class="bg-white shadow-sm border-b sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center">
+                        <a href="../index.html">
+                            <img src="../img/logo.png" alt="">
+                        </a>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gray-900">Blog Admin</h1>
+                </div>
+                <button onclick="showCreateModal()" class="bg-gradient-to-br from-[#f9a133] to-[#821917] text-white px-6 py-2.5 rounded-xl font-semibold hover:opacity-90 transition flex items-center space-x-2 shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span>New Post</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-600">Total Posts</p>
+                    <p id="totalPosts" class="text-3xl font-bold text-gray-900 mt-1">0</p>
+                </div>
+                <div class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-600">Categories</p>
+                    <p id="totalCategories" class="text-3xl font-bold text-gray-900 mt-1">5</p>
+                </div>
+                <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-600">Latest Post</p>
+                        <p id="latestPost" class="text-lg font-semibold text-gray-900 mt-1 line-clamp-2 break-words">Loading...</p>
+                    </div>
+                    <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">All Posts</h2>
+                <button onclick="loadPosts()" class="text-gray-700 hover:text-[#821917] font-medium flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    <span>Refresh</span>
+                </button>
+            </div>
+
+            <div id="loadingState" class="flex flex-col items-center justify-center py-16">
+                <div class="uploading-spinner mb-4 text-gray-400"></div>
+                <p class="text-gray-600">Loading posts...</p>
+            </div>
+
+            <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16">
+                <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <p class="text-gray-600 text-lg font-medium mb-2">No posts yet</p>
+                <p class="text-gray-500 mb-4">Create your first blog post to get started</p>
+                <button onclick="showCreateModal()" class="bg-[#821917] text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-[#a0231e] transition">Create Post</button>
+            </div>
+
+            <div id="postsGrid" class="hidden"></div>
+        </div>
+    </main>
+
+    <!-- Post Modal -->
+    <div id="postModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
+                <h3 id="modalTitle" class="text-2xl font-bold text-gray-900">Create New Post</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form id="postForm" class="p-6 space-y-6">
+                <input type="hidden" id="postId">
+                
+                <!-- Images -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">Cover & Gallery Images (Optional - First = Cover)</label>
+                    <div class="image-upload-area border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer" onclick="document.getElementById('imageInput').click()">
+                        <input type="file" id="imageInput" accept="image/*" multiple class="hidden" onchange="handleImageSelect(event)">
+                        <div id="uploadPlaceholder">
+                            <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <p class="text-gray-600 font-medium">Drop images or click to upload</p>
+                            <p class="text-gray-400 text-sm mt-1">Multiple images • First image = Cover</p>
+                        </div>
+                        <div id="imagePreview" class="hidden mt-6"><div id="imagePreviewContainer" class="flex flex-wrap gap-4 justify-center"></div></div>
+                    </div>
+                </div>
+
+                <!-- PDF Upload -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">PDF Document (Optional)</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer" onclick="document.getElementById('pdfInput').click()">
+                        <input type="file" id="pdfInput" accept=".pdf" class="hidden" onchange="handlePDFSelect(event)">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        <p class="text-gray-600 font-medium">Drop PDF or click to upload</p>
+                        <p class="text-gray-400 text-sm mt-1">Single PDF file • Max 10MB</p>
+                        <div id="pdfPreview" class="hidden mt-4 p-4 bg-blue-50 rounded-lg">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0015.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"></path></svg>
+                                <span id="pdfFileName" class="font-medium text-blue-900"></span>
+                                <button type="button" onclick="removePDF()" class="ml-auto text-red-600 hover:text-red-800">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- YouTube URL -->
+                <div>
+                    <label for="youtubeURL" class="block text-sm font-semibold text-gray-700 mb-2">YouTube Video URL (Optional)</label>
+                    <input type="url" id="youtubeURL" placeholder="https://youtube.com/watch?v=... or https://youtu.be/..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+                    <p class="text-gray-500 text-sm mt-2">Paste full YouTube link or short youtu.be link</p>
+                    <div id="youtubePreview" class="hidden mt-3 p-3 bg-red-50 rounded-lg text-sm text-red-900">✓ YouTube video will be embedded</div>
+                </div>
+
+                <!-- Basic Fields -->
+                <div><label for="title" class="block text-sm font-semibold text-gray-700 mb-2">Title *</label><input type="text" id="title" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label for="author" class="block text-sm font-semibold text-gray-700 mb-2">Author *</label><input type="text" id="author" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></div>
+                    <div><label for="category" class="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+                        <select id="category" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
+                            <option value="Press Releases">Press Releases</option>
+                            <option value="Updates">Updates</option>
+                            <option value="Resources">Resources</option>
+                            <option value="Mentorship">Mentorship</option>
+                            <option value="Testimonials">Testimonials</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div><label for="excerpt" class="block text-sm font-semibold text-gray-700 mb-2">Excerpt *</label><textarea id="excerpt" rows="3" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></textarea></div>
+                
+                <div><label for="content" class="block text-sm font-semibold text-gray-700 mb-2">Content (Markdown supported) *</label><textarea id="content" rows="10" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition font-mono text-sm"></textarea></div>
+                
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeModal()" class="px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
+                    <button type="submit" id="submitBtn" class="px-6 py-3 bg-[#821917] text-white rounded-xl font-semibold hover:bg-[#a0231e] transition flex items-center space-x-2">
+                        <span id="submitText">Publish Post</span>
+                        <div id="submitSpinner" class="hidden uploading-spinner" style="width:30px;height:30px;border-width:3px;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Delete Post?</h3>
+            <p class="text-gray-600 mb-6">This action cannot be undone.</p>
+            <div class="flex space-x-3">
+                <button onclick="closeDeleteModal()" class="flex-1 px-4 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition">Cancel</button>
+                <button onclick="confirmDelete()" class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed bottom-6 right-6 bg-white rounded-xl shadow-2xl p-4 max-w-sm border-l-4 z-50">
+        <div class="flex items-start space-x-3">
+            <div id="toastIcon"></div>
+            <div class="flex-1"><p id="toastMessage" class="font-semibold text-gray-900"></p></div>
+            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+    </div>
+
+    <script>
+        // NOTE: Replace this with your actual deployed Google Apps Script URL
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyLW4iZp2aJaC-zEcUp3SaaBTUkV37_hhBAThq8mLoLfU401HDtRiSA-YI6XzAnmbpaSg/exec';
+        
+        let allPosts = [], currentEditId = null, deletePostId = null;
+        
+        // These will store the base64 content for new uploads, and the existing URLs for updates.
+        let newBase64Images = []; // Base64 data of freshly selected images
+        let existingImageURLs = []; // URLs of images already on Cloudinary (for updates)
+        let uploadedPDF = null; // Base64 data of the PDF file
+
+        function formatDate(dateInput) {
+            if (!dateInput) return 'No date';
+            let date;
+            if (typeof dateInput === 'string') {
+                if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateInput.trim())) {
+                    const [month, day, year] = dateInput.trim().split('/');
+                    date = new Date(year, month - 1, day);
+                } else {
+                    date = new Date(dateInput);
+                }
+            } else if (dateInput instanceof Date) {
+                date = dateInput;
+            } else {
+                return 'No date';
+            }
+            if (isNaN(date.getTime())) return 'Invalid date';
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        window.addEventListener('DOMContentLoaded', loadPosts);
+
+        async function loadPosts() {
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('postsGrid').classList.add('hidden');
+
+            try {
+                // Since the Apps Script uses doGet to fetch data, we just use a GET request
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                allPosts = (data.posts || []).sort((a, b) => (b.id || 0) - (a.id || 0));
+                document.getElementById('totalPosts').textContent = allPosts.length;
+
+                const latest = allPosts[0];
+                document.getElementById('latestPost').textContent = latest
+                    ? `${latest.title} • ${formatDate(latest.date)}`
+                    : 'None';
+
+                if (allPosts.length === 0) {
+                    document.getElementById('emptyState').classList.remove('hidden');
+                } else {
+                    renderPosts();
+                    document.getElementById('postsGrid').classList.remove('hidden');
+                }
+            } catch (e) {
+                showToast('Load error: ' + e.message, 'error');
+            } finally {
+                document.getElementById('loadingState').classList.add('hidden');
+            }
+        }
+
+        function renderPosts() {
+            const grid = document.getElementById('postsGrid');
+            grid.innerHTML = '';
+
+            allPosts.slice(0, 30).forEach(p => {
+                // Ensure p.imageurls is an array of strings, filtering out placeholders
+                const imgs = Array.isArray(p.imageurls) ? p.imageurls.filter(url => !url.includes('placehold.co')) : [];
+                const cover = imgs[0] || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
+                const extra = imgs.length > 1 ? `+${imgs.length - 1}` : '';
+
+                const card = document.createElement('div');
+                card.className = 'post-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col snap-start';
+                card.innerHTML = `
+                    <div class="relative">
+                        <img src="${cover}" alt="${p.title}" class="w-full h-50 object-cover">
+                        ${extra ? `<div class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded-full">${extra}</div>` : ''}
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-1 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800">${p.category}</span>
+                            <span class="text-xs text-gray-500">${formatDate(p.date)}</span>
+                        </div>
+                        <h3 class="font-bold text-gray-900 line-clamp-2 text-sm mb-1">${p.title}</h3>
+                        <p class="text-xs text-gray-600 line-clamp-2 flex-1">${p.excerpt}</p>
+                        <div class="mt-3 pt-3 border-t flex items-center justify-between">
+                            <span class="text-xs text-gray-500">by ${p.author}</span>
+                            <div class="flex space-x-1">
+                                <button onclick="editPost(${p.id})" class="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                                <button onclick="showDeleteModal(${p.id})" class="p-1.5 text-red-600 hover:bg-red-50 rounded transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function showCreateModal() {
+            currentEditId = null;
+            newBase64Images = [];
+            existingImageURLs = [];
+            uploadedPDF = null;
+
+            document.getElementById('modalTitle').textContent = 'Create New Post';
+            document.getElementById('postForm').reset();
+            document.getElementById('postId').value = '';
+            
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imagePreview').classList.add('hidden');
+            document.getElementById('imagePreviewContainer').innerHTML = '';
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            
+            document.getElementById('pdfInput').value = '';
+            document.getElementById('pdfPreview').classList.add('hidden');
+            
+            document.getElementById('youtubeURL').value = '';
+            document.getElementById('youtubePreview').classList.add('hidden');
+            
+            document.getElementById('submitText').textContent = 'Publish Post';
+            document.getElementById('postModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('postModal').classList.add('hidden');
+        }
+
+        function editPost(id) {
+            const post = allPosts.find(p => p.id === id);
+            if (!post) return;
+
+            currentEditId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Post';
+            document.getElementById('postId').value = id;
+            document.getElementById('title').value = post.title || '';
+            document.getElementById('author').value = post.author || '';
+            document.getElementById('category').value = post.category || 'Press Releases';
+            document.getElementById('excerpt').value = post.excerpt || '';
+            document.getElementById('content').value = post.content || '';
+            document.getElementById('youtubeURL').value = post.youtubeurl || '';
+
+            // Store existing image URLs and reset new base64 images
+            existingImageURLs = Array.isArray(post.imageurls) ? [...post.imageurls] : [];
+            newBase64Images = [];
+
+            // The backend returns a Drive Preview URL, which is currently stored in `pdfpreviewurl`
+            // We use the presence of this URL to indicate an existing PDF.
+            uploadedPDF = post.pdfpreviewurl || null; 
+
+            if (existingImageURLs.length > 0) {
+                displayImagePreviews();
+            } else {
+                 document.getElementById('imagePreview').classList.add('hidden');
+                 document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            }
+
+            if (uploadedPDF) {
+                document.getElementById('pdfPreview').classList.remove('hidden');
+                document.getElementById('pdfFileName').textContent = 'Existing PDF Document';
+            } else {
+                 document.getElementById('pdfPreview').classList.add('hidden');
+            }
+
+            document.getElementById('youtubePreview').classList.toggle('hidden', !post.youtubeurl);
+
+            document.getElementById('submitText').textContent = 'Update Post';
+            document.getElementById('postModal').classList.remove('hidden');
+        }
+
+        async function handleImageSelect(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) continue;
+                const base64 = await fileToBase64(file);
+                // Add new base64 images to the temporary array
+                newBase64Images.push(base64);
+            }
+
+            displayImagePreviews();
+        }
+
+        function displayImagePreviews() {
+            const container = document.getElementById('imagePreviewContainer');
+            container.innerHTML = '';
+            
+            // Combine existing URLs and new Base64 images for display
+            const allImagesForDisplay = existingImageURLs.concat(newBase64Images);
+
+            allImagesForDisplay.forEach((img, i) => {
+                const isBase64 = img.startsWith('data:');
+                
+                const div = document.createElement('div');
+                div.className = 'relative w-24 h-24';
+                div.innerHTML = `
+                    <img src="${img}" class="w-full h-full object-cover rounded-lg border-2 ${i === 0 ? 'border-indigo-500' : 'border-gray-300'}">
+                    ${i === 0 ? '<div class="absolute -top-2 -right-2 bg-indigo-500 text-white text-xs px-2 py-0.5 rounded-full">Cover</div>' : ''}
+                    <button type="button" onclick="removeImage(${i})" class="absolute -top-2 -left-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600">×</button>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('uploadPlaceholder').classList.add('hidden');
+            document.getElementById('imagePreview').classList.remove('hidden');
+        }
+
+        function removeImage(index) {
+            const totalImages = existingImageURLs.length + newBase64Images.length;
+            
+            if (index < existingImageURLs.length) {
+                // Remove from existing URLs array
+                existingImageURLs.splice(index, 1);
+            } else {
+                // Remove from new base64 images array (adjust index)
+                const newImageIndex = index - existingImageURLs.length;
+                newBase64Images.splice(newImageIndex, 1);
+            }
+
+            if (existingImageURLs.length + newBase64Images.length === 0) {
+                document.getElementById('imagePreview').classList.add('hidden');
+                document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            } else {
+                displayImagePreviews();
+            }
+        }
+
+        async function handlePDFSelect(e) {
+            const file = e.target.files[0];
+            if (!file || file.type !== 'application/pdf') return;
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('PDF must be under 10MB', 'error');
+                return;
+            }
+
+            // Store the base64 content
+            uploadedPDF = await fileToBase64(file); 
+            document.getElementById('pdfFileName').textContent = file.name;
+            document.getElementById('pdfPreview').classList.remove('hidden');
+        }
+
+        function removePDF() {
+            // Reset uploadedPDF to null (which tells the backend not to upload/update)
+            uploadedPDF = null; 
+            document.getElementById('pdfInput').value = '';
+            document.getElementById('pdfPreview').classList.add('hidden');
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        document.getElementById('youtubeURL').addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            document.getElementById('youtubePreview').classList.toggle('hidden', !val);
+        });
+
+        document.getElementById('postForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const text = document.getElementById('submitText');
+            const spinner = document.getElementById('submitSpinner');
+
+            btn.disabled = true;
+            text.textContent = 'Saving...';
+            spinner.classList.remove('hidden');
+            
+            // 1. Prepare data for Apps Script
+            const action = currentEditId ? 'update' : 'create';
+            
+            const payload = {
+                action: action,
+                // Use postId for update, not 'id'
+                postId: currentEditId || undefined, 
+                title: document.getElementById('title').value,
+                author: document.getElementById('author').value,
+                category: document.getElementById('category').value,
+                excerpt: document.getElementById('excerpt').value,
+                content: document.getElementById('content').value,
+                youtubeURL: document.getElementById('youtubeURL').value, // Correct case for backend
+                
+                // New images to upload (Base64)
+                base64Images: newBase64Images, 
+                
+                // Existing Cloudinary URLs (only for update)
+                existingImageURLs: action === 'update' ? JSON.stringify(existingImageURLs) : undefined, 
+                
+                // PDF Base64 (only sent if a new PDF was selected or if it's a create action with a PDF)
+                base64PDF: uploadedPDF && uploadedPDF.startsWith('data:') ? uploadedPDF : undefined,
+                
+                // If it's an update and no new PDF was uploaded, we don't send base64PDF.
+            };
+
+            // Remove undefined keys for clean payload
+            Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+
+            try {
+                // 2. Send data using form data simulation (required by Google Apps Script doPost)
+                const formData = new URLSearchParams();
+                for (const key in payload) {
+                    // Array values must be serialized, or handled as multiple fields
+                    if (Array.isArray(payload[key])) {
+                        payload[key].forEach(item => formData.append(key, item));
+                    } else {
+                        formData.append(key, payload[key]);
+                    }
+                }
+                
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    // Note: Google Apps Script requires content-type 'application/x-www-form-urlencoded' 
+                    // or multipart/form-data for e.parameter to work correctly, or we send raw string and 
+                    // parse it server-side. The most compatible way for file uploads is often treating it 
+                    // like a form submission via URLSearchParams if the data is simple. Since we are 
+                    // sending Base64 strings, URLSearchParams/POST body is safer than JSON.
+                    body: formData.toString(),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+                
+                const data = await res.json();
+
+                if (data.status === 'success') { // Backend returns status: 'success'
+                    showToast(currentEditId ? 'Post updated!' : 'Post published!', 'success');
+                    closeModal();
+                    // Clear temporary stores on success
+                    newBase64Images = [];
+                    existingImageURLs = [];
+                    uploadedPDF = null;
+                    loadPosts();
+                } else {
+                    throw new Error(data.error || 'Save failed');
+                }
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                text.textContent = currentEditId ? 'Update Post' : 'Publish Post';
+                spinner.classList.add('hidden');
+            }
+        });
+
+        function showDeleteModal(id) {
+            deletePostId = id;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            deletePostId = null;
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        async function confirmDelete() {
+            if (!deletePostId) return;
+
+            try {
+                // Send data using form data simulation (required by Google Apps Script doPost)
+                const formData = new URLSearchParams();
+                formData.append('action', 'delete');
+                formData.append('postId', deletePostId);
+
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData.toString(),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+                
+                const data = await res.json();
+
+                if (data.status === 'success') { // Backend returns status: 'success'
+                    showToast('Post deleted', 'success');
+                    closeDeleteModal();
+                    loadPosts();
+                } else {
+                    throw new Error(data.error || 'Delete failed');
+                }
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+        }
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const message = document.getElementById('toastMessage');
+
+            message.textContent = msg;
+            
+            if (type === 'success') {
+                toast.className = 'fixed bottom-6 right-6 bg-white rounded-xl shadow-2xl p-4 max-w-sm border-l-4 border-green-500 z-50';
+                icon.innerHTML = '<svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+            } else {
+                toast.className = 'fixed bottom-6 right-6 bg-white rounded-xl shadow-2xl p-4 max-w-sm border-l-4 border-red-500 z-50';
+                icon.innerHTML = '<svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+            }
+
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function hideToast() {
+            document.getElementById('toast').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
