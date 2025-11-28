@@ -39,6 +39,9 @@
             scroll-snap-type: x mandatory; 
             scrollbar-width: thin;
         }
+        @media (max-width: 640px) {
+        .mobile-hidden-text { display: none; }
+    }
         
         @media (min-width: 1024px) {
             #postsGrid {
@@ -63,42 +66,71 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
+<header class="bg-white shadow-sm border-b sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex justify-between items-center">
 
-    <header class="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center">
-                        <a href="../index.html">
-                            <img src="../img/logo.png" alt="">
-                        </a>
-                    </div>
-                    <h1 class="text-2xl font-bold text-gray-900">Blog Admin</h1>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <a href="./data_manager.html" class="bg-white border-2 border-gray-300 text-gray-700 px-5 py-2.5 rounded-xl font-semibold hover:border-[#821917] hover:text-[#821917] transition flex items-center space-x-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <span>Registrations</span>
-                    </a>
-                    <button onclick="showCreateModal()" class="bg-gradient-to-br from-[#f9a133] to-[#821917] text-white px-6 py-2.5 rounded-xl font-semibold hover:opacity-90 transition flex items-center space-x-2 shadow-lg">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                        </svg>
-                        <span>New Post</span>
-                    </button>
-                    <a href="/blog/login.html" onclick="if(confirm('Are you sure you want to log out?')) { localStorage.clear(); sessionStorage.clear(); window.location.href = '../login.html'; } return false;" 
-                       class="bg-gray-100 border-2 border-gray-300 text-gray-700 px-5 py-2.5 rounded-xl font-semibold hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition flex items-center space-x-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        <span>Logout</span>
-                    </a>
-                </div>
+            <!-- Logo + Title -->
+            <div class="flex items-center space-x-3">
+                <a href="../index.html" class="flex-shrink-0">
+                    <img src="../img/logo.png" alt="Logo" class="h-10 w-10 rounded-xl">
+                </a>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900 hidden sm:block">Blog Admin</h1>
+                <h1 class="text-xl font-bold text-gray-900 sm:hidden">Admin</h1>
+            </div>
+
+            <!-- Action Buttons – Clean & No Duplicates -->
+            <div class="flex items-center gap-3">
+
+                <!-- Registrations – Mobile: Icon only -->
+                <a href="./data_manager.html" 
+                   class="sm:hidden w-12 h-12 bg-white border-2 border-gray-300 rounded-xl hover:border-[#821917] hover:text-[#821917] transition flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </a>
+
+                <!-- Registrations – Tablet & Desktop: Full text -->
+                <a href="./data_manager.html" 
+                   class="hidden sm:flex items-center gap-2 bg-white border-2 border-gray-300 text-gray-700 px-4 py-2.5 rounded-xl font-semibold hover:border-[#821917] hover:text-[#821917] transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>Registrations</span>
+                </a>
+
+                <!-- New Post Button – Same size on mobile -->
+                <button onclick="showCreateModal()"
+                        class="w-12 h-12 bg-gradient-to-br from-[#f9a133] to-[#821917] text-white rounded-xl font-bold text-3xl shadow-lg hover:opacity-90 transition flex items-center justify-center
+                               sm:w-auto sm:px-6 sm:py-2.5 sm:text-base sm:font-semibold sm:gap-2">
+                    <span class="sm:hidden">+</span>
+                    <span class="hidden sm:inline">New Post</span>
+                    <svg class="hidden sm:block w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                </button>
+
+                <!-- Logout – ONE button only (icon on mobile, text on larger screens) -->
+                <a href="/ADMIN/login.html"
+                   onclick="if(confirm('Are you sure you want to log out?')) { localStorage.clear(); sessionStorage.clear(); window.location.href = '/ADMIN/login.html'; } return false;"
+                   class="w-12 h-12 sm:w-auto sm:px-5 sm:py-2.5 
+                          bg-gray-100 border-2 border-gray-300 
+                          rounded-xl font-semibold text-gray-700 
+                          hover:bg-red-50 hover:border-red-400 hover:text-red-600 
+                          transition flex items-center justify-center sm:gap-2">
+                    <svg class="w-6 h-6 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    <span class="hidden sm:inline">Logout</span>
+                </a>
+
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
