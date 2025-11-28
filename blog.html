@@ -6,68 +6,140 @@
   <title>Blog | Ogoni Summit</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    :root {
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --accent: #821917;
-      --accent-light: #f9a133;
-    }
-    .dark {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border: #334155;
-      --accent: #f9a133;
-      --accent-light: #821917;
-    }
-    * { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
-    body { background-color: var(--bg); color: var(--text); }
-    .card { background-color: var(--card); border-color: var(--border); }
-    .text-muted { color: var(--text-muted); }
-    .modal-content { background-color: var(--card); animation: slideUp 0.4s ease-out; }
-    @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-    .post-image img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; height: 100%; object-fit: cover; }
-    .post-image:hover img { transform: scale(1.1); }
-    .category-badge {
-      position: absolute; top: 4px; right: 4px; background: linear-gradient(135deg, #821917, #f9a133);
-      -webkit-text-fill-color: white; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
-    .gallery img { border-radius: 0.75rem; cursor: pointer; border: 1px solid var(--border); transition: all 0.3s ease; width: 100%; height: 300px; object-fit: cover; }
-    .gallery img:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-    .pdf-preview { border-radius: 1rem; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
-    .youtube-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
-    .youtube-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
-    .markdown h1, .markdown h2, .markdown h3 { color: var(--text); margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 700; }
-    .markdown p { line-height: 1.8; margin: 1.5rem 0; }
-    
-    /* PDF Preview Styles */
-    .pdf-section { margin: 2rem 0; }
-    .pdf-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
-    
-    /* YouTube Video Styles */
-    .video-section { margin: 2rem 0; text-align: center; }
-    .video-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--text); }
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  :root {
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --accent: #821917;
+    --accent-light: #f9a133;
+  }
+  .dark {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: #334155;
+    --accent: #f9a133;
+    --accent-light: #821917;
+  }
+  * { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
+  body { background-color: var(--bg); color: var(--text); overflow-x: hidden; } /* Prevent body horizontal scroll */
+  .card { background-color: var(--card); border-color: var(--border); }
+  .text-muted { color: var(--text-muted); }
 
-    /* Download button fix */
-    .download-btn { display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; }
-    
-    /* Enhanced PDF Viewer */
-    .pdf-viewer-container { margin: 2rem 0; }
-    .pdf-viewer-iframe { 
-      width: 100%; 
-      height: 600px; 
-      border: 1px solid var(--border); 
-      border-radius: 0.75rem; 
-      background: var(--bg);
+  /* Modal Fixes */
+  .modal-content { 
+    background-color: var(--card); 
+    animation: slideUp 0.4s ease-out; 
+    max-width: 95vw;
+    width: 100%;
+    max-height: 95vh;
+    overflow: hidden; /* Contain everything */
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* Prevent any text overflow from breaking layout */
+  .modal-body {
+    overflow-y: auto;
+    overflow-x: hidden; /* Critical fix */
+    padding-top: 1rem;
+    flex: 1;
+  }
+  .markdown {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+/* Smaller & Centered PDF Viewer on Desktop */
+/* NARROWER & CENTERED PDF Viewer – Desktop Only */
+.pdf-viewer-container { 
+  margin: 2.5rem auto;           /* More breathing room + centered */
+  width: 100%;
+  max-width: 720px;            /* Reduced from full width → looks premium */
+  height: 58vh;
+  min-height: 400px;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  background: #fff;
+  border: 1px solid var(--border);
+}
+
+@media (min-width: 768px) {
+  .pdf-viewer-container { 
+    height: 68vh;
+    max-height: 620px;
+  }
+}
+
+.pdf-viewer-iframe { 
+  width: 100%; 
+  height: 100%;
+  border: none;
+  background: #f9fafb;
+}
+
+/* YouTube stays full-width (as requested) */
+.youtube-container { 
+  position: relative; 
+  padding-bottom: 56.25%; 
+  height: 0; 
+  /* Keeps aspect ratio */
+  overflow: hidden; 
+  border-radius: 1rem; 
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+  margin: 2.5rem 0;
+  width: 100%;
+}
+.youtube-container iframe { 
+  position: absolute; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  border: 0; 
+}
+  @media (min-width: 768px) {
+    .youtube-container {
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
     }
-  </style>
+  }
+
+  /* Restore original compact download button */
+  .pdf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    border-radius: 0.75rem;
+  }
+
+  /* Rest of your existing styles (unchanged) */
+  .post-image img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; height: 100%; object-fit: cover; }
+  .post-image:hover img { transform: scale(1.1); }
+  .category-badge { position: absolute; top: 4px; right: 4px; background: linear-gradient(135deg, #821917, #f9a133); color: white; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+  .gallery img { border-radius: 0.75rem; cursor: pointer; border: 1px solid var(--border); width: 100%; height: 280px; object-fit: cover; transition: all 0.3s ease; }
+  .gallery img:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+  .markdown h1, .markdown h2, .markdown h3 { color: var(--text); margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 700; }
+  .markdown p { line-height: 1.8; margin: 1.5rem 0; }
+</style>
 </head>
 <body class="min-h-screen">
   <!-- Navigation -->
@@ -115,52 +187,59 @@
   </main>
 
   <!-- Modal -->
-  <div id="modal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="modal-content rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
-      <div class="sticky top-0 border-b px-6 py-6 flex justify-between items-center" style="background-color: var(--card); border-color: var(--border);">
-        <h2 id="modalTitle" class="text-2xl md:text-3xl font-bold"></h2>
-        <button id="closeModal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+<div id="modal" class="modal hidden fixed inset-overflow fixed inset-0 bg-black bg-opacity-75 z-50 flex items-start justify-center p-4 overflow-y-auto">
+  <div class="modal-content rounded-2xl shadow-2xl w-full max-w-4xl my-8">
+    <!-- Sticky Header -->
+    <div class="sticky top-0 bg-[var(--card)] border-b px-6 py-6 flex justify-between items-center z-10" style="border-color: var(--border);">
+      <h2 id="modalTitle" class="text-2xl md:text-3xl font-bold pr-8"></h2>
+      <button id="closeModal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Scrollable Body -->
+    <div class="modal-body px-6 md:px-8 py-8 overflow-y-auto" style="max-height: calc(95vh - 100px);">
+      <div class="flex flex-wrap gap-4 text-sm text-muted mb-6 pb-6 border-b" style="border-color: var(--border);">
+        <span id="modalDate"></span> • <span id="modalAuthor"></span> • <span id="modalCategory" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full"></span>
       </div>
-      <div class="px-6 md:px-8 py-8">
-        <div class="flex flex-wrap gap-4 text-sm text-muted mb-6 pb-6 border-b" style="border-color: var(--border);">
-          <span id="modalDate"></span> • <span id="modalAuthor"></span> • <span id="modalCategory" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full"></span>
+
+      <!-- Gallery -->
+      <div id="gallery" class="gallery mb-8"></div>
+
+      <!-- YouTube Video -->
+      <div id="youtubeSection" class="video-section hidden">
+        <h3 class="text-xl font-bold mb-4">Watch Video</h3>
+        <div id="youtubeContainer" class="youtube-container"></div>
+      </div>
+
+      <!-- Content -->
+      <div id="modalContent" class="markdown prose dark:prose-invert max-w-none mb-8"></div>
+
+
+      <!-- PDF Section (updated) -->
+      <div id="pdfSection" class="pdf-section hidden">
+        <div class="pdf-header mb-6">
+          <h3 class="text-xl font-bold">Attached Document</h3>
+          <a id="pdfDownload" href="#" class="download-btn bg-[#821917] hover:bg-[#9a2018] text-white font-semibold flex items-center gap-2 px-5 py-3 rounded-xl transition">
+            Download PDF
+          </a>
         </div>
-
-        <!-- Gallery -->
-        <div id="gallery" class="gallery mb-8"></div>
-
-        <!-- YouTube Video -->
-        <div id="youtubeSection" class="video-section hidden">
-          <h3 class="video-title">🎥 Watch Video</h3>
-          <div id="youtubeContainer" class="youtube-container"></div>
-        </div>
-
-        <!-- Content -->
-        <div id="modalContent" class="markdown prose dark:prose-invert max-w-none"></div>
-
-        <!-- PDF Preview - CLEAN VERSION -->
-        <div id="pdfSection" class="pdf-section hidden">
-          <div class="pdf-header">
-            <h3 class="text-xl font-bold">📄 Attached Document</h3>
-            <div class="flex gap-3">
-              <a id="pdfDownload" href="#" class="download-btn bg-[#821917] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#a02620] flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                Download PDF
-              </a>
-            </div>
-          </div>
-          
-          <!-- Single PDF Viewer -->
-          <div class="pdf-viewer-container">
-            <iframe id="pdfViewer" class="pdf-viewer-iframe" src="about:blank"></iframe>
-          </div>
+        <div class="pdf-viewer-container">
+          <iframe id="pdfViewer" class="pdf-viewer-iframe" src="about:blank" allowfullscreen></iframe>
         </div>
       </div>
     </div>
   </div>
-
+</div>
+  <footer class="py-12 mt-24 text-center text-gray-500" style="background-color: var(--card);">
+    <div class="max-w-7xl mx-auto px-6">
+      <p><a href="login.html">&copy;</a> 2025 Ogoni</a> Entrepreneurship Summit. All rights reserved.</p>
+    </div>
+  </footer>
   <script>
-    const API = 'https://script.google.com/macros/s/AKfycbyLW4iZp2aJaC-zEcUp3SaaBTUkV37_hhBAThq8mLoLfU401HDtRiSA-YI6XzAnmbpaSg/exec';
+    const API = 'https://script.google.com/macros/s/AKfycbwAFfRNcbzg65MXHylpZtvFmGpPm5TODEXPe5HZAB0Ev2TzTg14UkFu8KhnARY7nBGDdA/exec';
     let posts = [];
 
     // Theme & Mobile Menu

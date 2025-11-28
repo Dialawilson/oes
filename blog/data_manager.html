@@ -7,52 +7,59 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
     :root { --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --accent: #821917; --accent-light: #f9a133; }
     .dark { --bg: #0f172a; --card: #1e293b; --text: #f1f5f9; --text-muted: #94a3b8; --border: #334155; --accent: #f9a133; --accent-light: #821917; }
-
     * { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
     body { background-color: var(--bg); color: var(--text); }
     .card { background-color: var(--card); border-color: var(--border); }
     table { background-color: var(--card); color: var(--text); }
     th, td { border-color: var(--border); padding: 1rem; }
     th { background-color: var(--accent); color: white; font-weight: 600; }
+   
     tr:hover { background-color: var(--border); }
+    tr.bg-indigo-50 {
+        background-color: #eef2ff !important;
+    }
+    .dark tr.dark\:bg-indigo-900\/50 {
+        background-color: rgba(67, 56, 202, 0.2) !important;
+    }
     select, input { background-color: var(--card); color: var(--text); border-color: var(--border); }
-    
+   
     .btn-primary { background: linear-gradient(135deg, #821917, #f9a133); color: white; transition: transform 0.2s, box-shadow 0.2s; }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(130, 25, 23, 0.3); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    
+    .btn-primary:disabled, .btn-primary.opacity-60 { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
     .btn-secondary { background: transparent; color: var(--text); border: 2px solid var(--border); transition: all 0.2s; }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
     .btn-secondary.active { background: linear-gradient(135deg, #821917, #f9a133); color: white; border: none; }
-
     .badge-approved { background-color: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }
     .badge-pending { background-color: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }
-
     .checkbox { cursor: pointer; width: 1.25rem; height: 1.25rem; }
     .modal { transition: opacity 0.3s ease; }
     .modal-content { background-color: var(--card); animation: slideUp 0.4s ease-out; }
     @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    
+   
     .search-input { background-color: var(--card); border: 2px solid var(--border); transition: all 0.3s; }
     .search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(130, 25, 23, 0.1); }
-
     .stat-card { background: linear-gradient(135deg, rgba(130, 25, 23, 0.05), rgba(249, 161, 51, 0.05)); border: 2px solid var(--border); }
   </style>
 </head>
 <body class="min-h-screen">
-
   <main class="max-w-7xl mx-auto px-6 py-12">
-    <!-- Header -->
+    <div class="mb-8">
+      <a href="./admin_dashboard.html" id="backButton" class="inline-flex items-center gap-2 px-4 py-2 text-[#821917] hover:text-[#f9a133] font-semibold transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Admin Dashboard
+      </a>
+    </div>
     <div class="mb-12">
-      <h1 class="text-5xl font-bold mb-3">Admin Dashboard</h1>
-      <p class="text-xl text-gray-600 dark:text-gray-400">Manage registration approvals and candidate data</p>
+      <h1 class="text-5xl text-center font-bold mb-3">Registration Manager</h1>
+      <p class="text-xl text-center text-gray-600 dark:text-gray-400">Manage registration approvals and candidate data</p>
     </div>
 
-    <!-- Stats Row -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
       <div class="stat-card card border rounded-2xl p-6">
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Pending Review</p>
@@ -72,10 +79,8 @@
       </div>
     </div>
 
-    <!-- Controls Section -->
     <div class="card border rounded-2xl p-8 mb-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- Search -->
         <div class="md:col-span-2">
           <label class="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Search</label>
           <div class="relative">
@@ -85,8 +90,6 @@
             <input type="text" id="searchInput" placeholder="Search by name or phone number..." class="search-input w-full pl-12 pr-4 py-3 rounded-xl font-medium focus:outline-none">
           </div>
         </div>
-
-        <!-- LGA Filter -->
         <div>
           <label class="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Filter by LGA</label>
           <select id="lgaSelect" class="w-full px-4 py-3 rounded-xl border-2 focus:outline-none font-medium" style="border-color: var(--border); background-color: var(--card);">
@@ -99,44 +102,37 @@
         </div>
       </div>
 
-      <!-- Tab Buttons -->
       <div class="flex flex-wrap gap-3 mb-8 pb-8 border-b" style="border-color: var(--border);">
         <button id="tabPendingBtn" class="btn-secondary px-8 py-3 rounded-xl font-semibold active">Pending Approvals</button>
         <button id="tabVerifiedBtn" class="btn-secondary px-8 py-3 rounded-xl font-semibold">Verified Attendees</button>
         <button id="tabStatsBtn" class="btn-secondary px-8 py-3 rounded-xl font-semibold">LGA Statistics</button>
       </div>
 
-      <!-- Download Buttons -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <a href="#" id="downloadPending" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download Pending</a>
-        <a href="#" id="downloadApproved" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download Approved</a>
-        <a href="#" id="downloadLGA" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download LGA</a>
-        <a href="#" id="downloadAll" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download All</a>
+        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRitj_oQeT2pNPtPh7hkEPenTzzFUU4MX5HqzOi9MUc9bebo7pdGXmwX7dkFZ-FTnoo2AP2dmlBsFNs/pub?gid=1595464002&single=true&output=csv" id="downloadPending" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download Pending</a>
+        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRitj_oQeT2pNPtPh7hkEPenTzzFUU4MX5HqzOi9MUc9bebo7pdGXmwX7dkFZ-FTnoo2AP2dmlBsFNs/pub?gid=916770248&single=true&output=csv" id="downloadApproved" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download Approved</a>
+        <a href="#" id="downloadLGA" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm opacity-60">Download LGA</a>
+        <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRitj_oQeT2pNPtPh7hkEPenTzzFUU4MX5HqzOi9MUc9bebo7pdGXmwX7dkFZ-FTnoo2AP2dmlBsFNs/pub?output=xlsx" id="downloadAll" class="btn-primary px-6 py-3 rounded-xl font-semibold text-center text-sm">Download All</a>
         <button id="approveSelectedBtn" class="btn-primary px-6 py-3 rounded-xl font-semibold text-sm" disabled>Approve Selected</button>
       </div>
     </div>
 
-    <!-- Loading State -->
     <div id="loading" class="text-center py-32">
       <div class="inline-block w-12 h-12 border-4 border-[#821917] border-t-transparent rounded-full animate-spin"></div>
       <p class="mt-4 text-gray-600 dark:text-gray-400">Loading data...</p>
     </div>
-
-    <!-- Error State -->
     <div id="error" class="hidden text-center py-32">
       <p class="text-xl text-red-500 mb-4" id="error-message"></p>
       <button onclick="load()" class="px-6 py-3 bg-[#821917] text-white rounded-lg hover:bg-[#a02620]">Retry</button>
     </div>
 
-    <!-- Content -->
     <div id="content" class="hidden">
-      <!-- Pending Tab -->
       <div id="pendingTab" class="tab-content">
         <div class="card border rounded-2xl overflow-hidden table-container">
           <table class="w-full">
             <thead>
               <tr>
-                <th class="w-8"><input type="checkbox" id="selectAllPending" class="checkbox"></th>
+                <th class="w-8"><input type="checkbox" onchange="toggleHighlight(this)" id="selectAllPending" class="checkbox"></th>
                 <th>Full Name</th>
                 <th>Email</th>
                 <th>LGA</th>
@@ -149,7 +145,6 @@
         </div>
       </div>
 
-      <!-- Verified Tab -->
       <div id="verifiedTab" class="tab-content hidden">
         <div class="card border rounded-2xl overflow-hidden table-container">
           <table class="w-full">
@@ -168,14 +163,12 @@
         </div>
       </div>
 
-      <!-- Stats Tab -->
       <div id="statsTab" class="tab-content hidden">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="statsGrid"></div>
       </div>
     </div>
   </main>
 
-  <!-- Approval Modal -->
   <div id="approvalModal" class="modal hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
     <div class="modal-content rounded-2xl shadow-2xl max-w-md w-full">
       <div class="border-b px-6 py-6 flex justify-between items-center" style="background-color: var(--card); border-color: var(--border);">
@@ -196,7 +189,6 @@
 
   <script>
     const API = 'https://script.google.com/macros/s/AKfycbxn1MtmRiq3LwvRAx0lGyD-RifdVAiMvcTbQ4RnSt92MOkjfmRTGAqPfUbFis6XfwcW/exec';
-
     let pendingRecords = [];
     let verifiedRecords = [];
     let allRecords = [];
@@ -204,6 +196,14 @@
     let currentTab = 'pending';
     let currentLGA = '';
     let searchQuery = '';
+
+    // Dynamic LGA Download Links - UPDATE THESE GIDs IF NEEDED
+    const LGA_DOWNLOAD_LINKS = {
+      'Khana': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRitj_oQeT2pNPtPh7hkEPenTzzFUU4MX5HqzOi9MUc9bebo7pdGXmwX7dkFZ-FTnoo2AP2dmlBsFNs/pub?gid=1296163984&single=true&output=csv', // Replace GID
+      'Gokana': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRitj_oQeT2pNPtPh7hkEPenTzzFUU4MX5HqzOi9MUc9bebo7pdGXmwX7dkFZ-FTnoo2AP2dmlBsFNs/pub?gid=1389858453&single=true&output=csv', // Replace GID
+      'Tai': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRitj_oQeT2pNPtPh7hkEPenTzzFUU4MX5HqzOi9MUc9bebo7pdGXmwX7dkFZ-FTnoo2AP2dmlBsFNs/pub?gid=758862781&single=true&output=csv',    // Replace GID
+      'Eleme': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRitj_oQeT2pNPtPh7hkEPenTzzFUU4MX5HqzOi9MUc9bebo7pdGXmwX7dkFZ-FTnoo2AP2dmlBsFNs/pub?gid=1982324320&single=true&output=csv'  // Replace GID
+    };
 
     // Theme toggle
     const htmlElement = document.documentElement;
@@ -217,15 +217,10 @@
 
     function switchTab(tab) {
       currentTab = tab;
-      document.querySelectorAll('#tabPendingBtn, #tabVerifiedBtn, #tabStatsBtn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      
+      document.querySelectorAll('#tabPendingBtn, #tabVerifiedBtn, #tabStatsBtn').forEach(btn => btn.classList.remove('active'));
       const btnMap = { pending: 'tabPendingBtn', verified: 'tabVerifiedBtn', stats: 'tabStatsBtn' };
       document.getElementById(btnMap[tab]).classList.add('active');
-
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      
       if (tab === 'pending') {
         document.getElementById('pendingTab').classList.remove('hidden');
         document.getElementById('approveSelectedBtn').style.display = 'block';
@@ -239,21 +234,51 @@
       }
     }
 
-    // Search functionality
+    // Search
+// Search
     document.getElementById('searchInput').addEventListener('input', (e) => {
       searchQuery = e.target.value.toLowerCase();
-      renderPending();
-      renderVerified();
+      updateStats();
+      if (currentTab === 'pending') {
+        renderPending();
+      } else if (currentTab === 'verified') {
+        renderVerified();
+      }
     });
-
-    // LGA filter
+    // LGA Filter + Update Download Button
     document.getElementById('lgaSelect').addEventListener('change', (e) => {
       currentLGA = e.target.value;
       document.getElementById('currentLGADisplay').textContent = currentLGA || 'All';
       renderPending();
       renderVerified();
       updateStats();
+      updateDownloadLGALink(); // This is the key update
     });
+
+    function updateDownloadLGALink() {
+      const selectedLGA = document.getElementById('lgaSelect').value;
+      const btn = document.getElementById('downloadLGA');
+
+      if (!selectedLGA) {
+        btn.href = '#';
+        btn.textContent = 'Download LGA';
+        btn.classList.add('opacity-60');
+        btn.onclick = (e) => { e.preventDefault(); alert('Please select an LGA first'); };
+      } else {
+        const link = LGA_DOWNLOAD_LINKS[selectedLGA];
+        if (link && link.includes('gid=')) {
+          btn.href = link;
+          btn.textContent = `Download ${selectedLGA}`;
+          btn.classList.remove('opacity-60');
+          btn.onclick = null;
+        } else {
+          btn.href = '#';
+          btn.textContent = 'Link Not Set';
+          btn.classList.add('opacity-60');
+          btn.onclick = e => { e.preventDefault(); alert(`No link configured for ${selectedLGA}`); };
+        }
+      }
+    }
 
     function generateCode() {
       return Math.floor(1000 + Math.random() * 9000).toString();
@@ -272,10 +297,8 @@
           fetch(`${API}?type=pending`),
           fetch(`${API}?type=verified`)
         ]);
-
         const pendingData = await pendingRes.json();
         const verifiedData = await verifiedRes.json();
-
         pendingRecords = Array.isArray(pendingData.records) ? pendingData.records : [];
         verifiedRecords = Array.isArray(verifiedData.records) ? verifiedData.records : [];
         allRecords = [...pendingRecords, ...verifiedRecords];
@@ -283,6 +306,7 @@
         updateStats();
         renderPending();
         renderVerified();
+        updateDownloadLGALink(); // Ensure button state on load
         content.classList.remove('hidden');
       } catch (err) {
         document.getElementById('error-message').textContent = 'Failed to load: ' + err.message;
@@ -294,20 +318,25 @@
 
     function filterRecords(records) {
       return records.filter(r => {
-        const matchesSearch = !searchQuery || 
+        const matchesSearch = !searchQuery ||
           (r.fullname && r.fullname.toLowerCase().includes(searchQuery)) ||
-          (r.phonenumber && r.phonenumber.includes(searchQuery));
-        
+          (r.phonenumber && String(r.phonenumber).includes(searchQuery));
         const matchesLGA = !currentLGA || (r.lgaoforigin === currentLGA);
-        
         return matchesSearch && matchesLGA;
       });
+    }
+
+    function toggleHighlight(selectAllCheckbox) {
+      const isChecked = selectAllCheckbox.checked;
+      document.querySelectorAll('#pendingTableBody .pending-check').forEach(cb => cb.checked = isChecked);
+      updatePendingSelection();
     }
 
     function renderPending() {
       const tbody = document.getElementById('pendingTableBody');
       tbody.innerHTML = '';
       const filtered = filterRecords(pendingRecords);
+      document.getElementById('selectAllPending').checked = false;
 
       if (filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No pending records found</td></tr>';
@@ -316,9 +345,11 @@
 
       filtered.forEach(r => {
         const key = `${r.email}|||${r.timestamp}`;
+        const isSelected = selectedPending.has(key);
+        const rowClass = isSelected ? 'bg-indigo-50 dark:dark:bg-indigo-900/50' : '';
         tbody.innerHTML += `
-          <tr>
-            <td><input type="checkbox" class="checkbox pending-check" data-key="${key}" onchange="updatePendingSelection()"></td>
+          <tr data-key="${key}" class="${rowClass}">
+            <td><input type="checkbox" class="checkbox pending-check" data-key="${key}" onchange="updatePendingSelection()" ${isSelected ? 'checked' : ''}></td>
             <td>${r.fullname || ''}</td>
             <td>${r.email || ''}</td>
             <td>${r.lgaoforigin || ''}</td>
@@ -329,16 +360,35 @@
       updatePendingSelection();
     }
 
+    function updatePendingSelection() {
+      selectedPending.clear();
+      const allRowCheckboxes = document.querySelectorAll('.pending-check');
+      const selectAllHeader = document.getElementById('selectAllPending');
+      let allChecked = true;
+
+      allRowCheckboxes.forEach(cb => {
+        const row = cb.closest('tr');
+        if (cb.checked) {
+          selectedPending.add(cb.dataset.key);
+          row.classList.add('bg-indigo-50', 'dark:dark:bg-indigo-900/50');
+        } else {
+          row.classList.remove('bg-indigo-50', 'dark:dark:bg-indigo-900/50');
+          allChecked = false;
+        }
+      });
+
+      if (selectAllHeader) selectAllHeader.checked = allRowCheckboxes.length > 0 && allChecked;
+      document.getElementById('approveSelectedBtn').disabled = selectedPending.size === 0;
+    }
+
     function renderVerified() {
       const tbody = document.getElementById('verifiedTableBody');
       tbody.innerHTML = '';
       const filtered = filterRecords(verifiedRecords);
-
       if (filtered.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No verified records found</td></tr>';
         return;
       }
-
       filtered.forEach(r => {
         tbody.innerHTML += `
           <tr>
@@ -352,82 +402,35 @@
       });
     }
 
-    function updatePendingSelection() {
-      selectedPending.clear();
-      document.querySelectorAll('.pending-check:checked').forEach(cb => selectedPending.add(cb.dataset.key));
-      document.getElementById('approveSelectedBtn').disabled = selectedPending.size === 0;
-    }
-
     function updateStats() {
-      const filtered = filterRecords(pendingRecords);
-      const verifiedFiltered = filterRecords(verifiedRecords);
-      
-      document.getElementById('statPending').textContent = filtered.length;
-      document.getElementById('statApproved').textContent = verifiedFiltered.length;
-      document.getElementById('statTotal').textContent = filtered.length + verifiedFiltered.length;
+      const filteredPending = filterRecords(pendingRecords);
+      const filteredVerified = filterRecords(verifiedRecords);
+      document.getElementById('statPending').textContent = filteredPending.length;
+      document.getElementById('statApproved').textContent = filteredVerified.length;
+      document.getElementById('statTotal').textContent = filteredPending.length + filteredVerified.length;
     }
 
     function loadStats() {
       const statsGrid = document.getElementById('statsGrid');
       statsGrid.innerHTML = '';
-      
       const lgas = ['Khana', 'Gokana', 'Tai', 'Eleme'];
       lgas.forEach(lga => {
         const pending = pendingRecords.filter(r => r.lgaoforigin === lga).length;
         const verified = verifiedRecords.filter(r => r.lgaoforigin === lga).length;
         const total = pending + verified;
-
         statsGrid.innerHTML += `
           <div class="card border rounded-2xl p-6">
             <h3 class="text-lg font-bold mb-4 text-[#821917]">${lga}</h3>
             <div class="space-y-3">
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Total</span>
-                <span class="font-bold text-[#f9a133]">${total}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Pending</span>
-                <span class="font-bold text-yellow-600">${pending}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Approved</span>
-                <span class="font-bold text-green-600">${verified}</span>
-              </div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Total</span><span class="font-bold text-[#f9a133]">${total}</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Pending</span><span class="font-bold text-yellow-600">${pending}</span></div>
+              <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-400">Approved</span><span class="font-bold text-green-600">${verified}</span></div>
             </div>
           </div>`;
       });
     }
 
-    // Download functionality (placeholder - add your actual download links)
-    document.getElementById('downloadPending').addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Add your pending sheet download link here');
-      // window.location.href = 'YOUR_PENDING_LINK';
-    });
-
-    document.getElementById('downloadApproved').addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Add your approved sheet download link here');
-      // window.location.href = 'YOUR_APPROVED_LINK';
-    });
-
-    document.getElementById('downloadLGA').addEventListener('click', (e) => {
-      e.preventDefault();
-      if (!currentLGA) {
-        alert('Please select an LGA first');
-        return;
-      }
-      alert(`Add your ${currentLGA} sheet download link here`);
-      // window.location.href = 'YOUR_LGA_LINK';
-    });
-
-    document.getElementById('downloadAll').addEventListener('click', (e) => {
-      e.preventDefault();
-      alert('Add your complete worksheet download link here');
-      // window.location.href = 'YOUR_ALL_DATA_LINK';
-    });
-
-    // Approval
+    // Approval Modal
     document.getElementById('approveSelectedBtn').onclick = () => {
       if (selectedPending.size === 0) return;
       document.getElementById('approvalCount').textContent = selectedPending.size;
@@ -440,12 +443,10 @@
 
     document.getElementById('confirmApprovalBtn').onclick = async () => {
       closeApprovalModal();
-      
       for (const key of selectedPending) {
         const [email, timestamp] = key.split('|||');
         const record = pendingRecords.find(r => r.email === email && r.timestamp === timestamp);
         if (!record) continue;
-
         const code = generateCode();
         try {
           await fetch(API, {
@@ -462,12 +463,13 @@
           console.error('Approval failed', e);
         }
       }
-
       selectedPending.clear();
       load();
     };
 
+    // Initial load
     load();
+    updateDownloadLGALink(); // Ensure correct state on first load
   </script>
 </body>
 </html>

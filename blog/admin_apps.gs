@@ -1,18 +1,13 @@
 /**
  * Blog Admin Dashboard Backend (Google Apps Script)
- * * Handles requests from the HTML frontend (doGet, doPost) to manage blog posts
- * stored in a Google Sheet and uploads images to Cloudinary.
- * * IMPORTANT: Replace placeholder values for Cloudinary in the Properties Service setup.
+ * Enhanced with PDF upload to Google Drive, public sharing, and unique post URLs.
  */
-
-// --- Configuration ---
 
 const SHEET_NAME = 'Posts';
 const PROPERTIES = PropertiesService.getScriptProperties();
-// Retrieve the Cloudinary credentials from script properties (Set these via Script Editor -> Project Settings -> Script Properties)
+// Keeping Cloudinary credentials for image uploads, as requested in the original code.
 const CLOUDINARY_CLOUD_NAME = PROPERTIES.getProperty('CLOUDINARY_CLOUD_NAME') || 'your_cloud_name';
 const CLOUDINARY_UPLOAD_PRESET = PROPERTIES.getProperty('CLOUDINARY_UPLOAD_PRESET') || 'your_upload_preset';
-// The ID of the spreadsheet to use (optional, uses the script's bound spreadsheet by default)
 const SPREADSHEET_ID = PROPERTIES.getProperty('SPREADSHEET_ID');
 
 /**
@@ -24,7 +19,8 @@ function setupSheets() {
   
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    const headers = ['ID', 'Date', 'Title', 'Author', 'Category', 'Excerpt', 'Content', 'ImageURLs'];
+    // UPDATED HEADERS: Replaced PDFUrl with DriveFileId and PDFPreviewURL
+    const headers = ['ID', 'Date', 'Title', 'Author', 'Category', 'Excerpt', 'Content', 'ImageURLs', 'DriveFileId', 'PDFPreviewURL', 'YouTubeURL', 'Slug'];
     sheet.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
     Logger.log('Created new sheet: ' + SHEET_NAME);
   }
@@ -33,17 +29,11 @@ function setupSheets() {
 
 // --- Main Request Handlers ---
 
-/**
- * Handles GET requests to retrieve all blog posts.
- * @param {object} e The event parameter for a GET request.
- * @returns {object} JSON response of all posts.
- */
 function doGet(e) {
   try {
     const sheet = setupSheets();
     const data = sheet.getDataRange().getValues();
     
-    // Check if only headers exist
     if (data.length <= 1) {
       return createJsonResponse({ posts: [] });
     }
@@ -55,10 +45,9 @@ function doGet(e) {
         let value = row[i];
         if (header === 'ImageURLs' && value) {
           try {
-            // ImageURLs are stored as a JSON string array
             value = JSON.parse(value);
           } catch (err) {
-            value = []; // Handle parsing error
+            value = [];
             Logger.log('Error parsing ImageURLs: ' + err.message);
           }
         }
@@ -75,13 +64,9 @@ function doGet(e) {
   }
 }
 
-/**
- * Handles POST requests to create, update, or delete blog posts.
- * @param {object} e The event parameter for a POST request.
- * @returns {object} JSON response confirming success or reporting error.
- */
 function doPost(e) {
   try {
+    // Ensure all data is processed, especially for files
     const params = e.parameter;
     const action = params.action || 'create';
     const sheet = setupSheets();
@@ -104,37 +89,44 @@ function doPost(e) {
 
 // --- Action Handlers ---
 
-/**
- * Handles the creation of a new blog post.
- * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet The target sheet.
- * @param {object} params The POST request parameters.
- */
 function handleCreate(sheet, params) {
-  const newId = sheet.getLastRow(); // Get last row index (1-based), new ID will be index + 1
-  const nextId = newId === 0 ? 1 : newId; // Use 1 if sheet is empty (only headers)
+  const newId = sheet.getLastRow();
+  // If the sheet is empty (only header row exists), nextId is 1. Otherwise, it's the last row index.
+  const nextId = newId === 0 ? 1 : newId; 
 
   const imageURLs = uploadImages(params.base64Images);
+  const slug = generateSlug(params.title || 'untitled-post');
+  const youtubeURL = extractYouTubeID(params.youtubeURL) || '';
+
+  // NEW: Upload PDF to Google Drive
+  const pdfInfo = uploadPDFToDrive(params.base64PDF, params.title || 'Untitled Post');
+  const driveFileId = pdfInfo.fileId;
+  const pdfPreviewURL = pdfInfo.previewUrl;
 
   const rowData = [
-    nextId, // ID
-    new Date().toLocaleDateString('en-US'), // Date
-    params.title || 'Untitled Post', // Title
-    params.author || 'Anonymous', // Author
-    params.category || 'Press Releases', // Category
-    params.excerpt || '', // Excerpt
-    params.content || '', // Content
-    JSON.stringify(imageURLs) // ImageURLs (Stored as JSON string)
+    nextId,
+    new Date().toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+    params.title || 'Untitled Post',
+    params.author || 'Anonymous',
+    params.category || 'Press Releases',
+    params.excerpt || '',
+    params.content || '',
+    JSON.stringify(imageURLs),
+    driveFileId,      // New Column: Drive File ID
+    pdfPreviewURL,    // New Column: Public Preview URL
+    youtubeURL,
+    slug
   ];
 
   sheet.appendRow(rowData);
-  return createJsonResponse({ status: 'success', message: 'Post created successfully', id: nextId });
+  return createJsonResponse({ 
+    status: 'success', 
+    message: 'Post created successfully', 
+    id: nextId,
+    slug: slug 
+  });
 }
 
-/**
- * Handles the update of an existing blog post.
- * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet The target sheet.
- * @param {object} params The POST request parameters.
- */
 function handleUpdate(sheet, params) {
   const postId = parseInt(params.postId);
   if (isNaN(postId)) {
@@ -142,71 +134,81 @@ function handleUpdate(sheet, params) {
   }
 
   const allData = sheet.getDataRange().getValues();
-  // Row index is postId (since we start ID from 1 and data starts at row 2)
+  // Row index in sheet is postId (since ID starts at 1)
   const rowIdx = postId;
 
   if (rowIdx < 1 || rowIdx >= allData.length) {
     return createErrorResponse('Post not found.', 404);
   }
   
-  // 1. Handle Images
   let existingUrls = [];
   if (params.existingImageURLs) {
-      try {
-          // existingImageURLs is sent as a JSON string array from frontend
-          existingUrls = JSON.parse(params.existingImageURLs);
-      } catch (e) {
-          Logger.log('Error parsing existingImageURLs: ' + e.message);
-          return createErrorResponse('Invalid existing image URL format.', 400);
-      }
+    try {
+      existingUrls = JSON.parse(params.existingImageURLs);
+    } catch (e) {
+      Logger.log('Error parsing existingImageURLs: ' + e.message);
+      return createErrorResponse('Invalid existing image URL format.', 400);
+    }
   }
 
-  // Upload any new base64 images
   const newImageURLs = uploadImages(params.base64Images);
-  
-  // Combine existing (kept) and newly uploaded URLs
   const finalImageURLs = existingUrls.concat(newImageURLs);
 
+  // Column Indices (0-based):
+  // 8: DriveFileId, 9: PDFPreviewURL, 10: YouTubeURL, 11: Slug
 
-  // 2. Prepare new data array
+  // Handle PDF: keep existing or upload new
+  let driveFileId = allData[rowIdx][8] || '';    // Existing DriveFileId
+  let pdfPreviewURL = allData[rowIdx][9] || '';  // Existing PDFPreviewURL
+
+  if (params.base64PDF) {
+    // If a new PDF is uploaded, upload it to Drive
+    const pdfInfo = uploadPDFToDrive(params.base64PDF, params.title || 'Untitled Post');
+    driveFileId = pdfInfo.fileId || driveFileId;
+    pdfPreviewURL = pdfInfo.previewUrl || pdfPreviewURL;
+  }
+
+  const youtubeURL = params.youtubeURL ? extractYouTubeID(params.youtubeURL) : (allData[rowIdx][10] || '');
+  const slug = allData[rowIdx][11] || generateSlug(params.title || 'untitled-post');
+
   const updatedData = [
-    postId, // ID (Unchanged)
-    allData[rowIdx][1] || new Date().toLocaleDateString('en-US'), // Date (Keep existing date)
-    params.title || 'Untitled Post', // Title
-    params.author || 'Anonymous', // Author
-    params.category || 'Press Releases', // Category
-    params.excerpt || '', // Excerpt
-    params.content || '', // Content
-    JSON.stringify(finalImageURLs) // ImageURLs (Updated JSON string)
+    postId,
+    allData[rowIdx][1] || new Date().toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+    params.title || 'Untitled Post',
+    params.author || 'Anonymous',
+    params.category || 'Press Releases',
+    params.excerpt || '',
+    params.content || '',
+    JSON.stringify(finalImageURLs),
+    driveFileId,      // Index 8
+    pdfPreviewURL,    // Index 9
+    youtubeURL,       // Index 10
+    slug              // Index 11
   ];
   
-  // Update the row (rowIdx + 1 because sheet is 1-indexed)
   sheet.getRange(rowIdx + 1, 1, 1, updatedData.length).setValues([updatedData]);
   
-  return createJsonResponse({ status: 'success', message: 'Post updated successfully', id: postId });
+  return createJsonResponse({ 
+    status: 'success', 
+    message: 'Post updated successfully', 
+    id: postId,
+    slug: slug 
+  });
 }
 
-/**
- * Handles the deletion of an existing blog post.
- * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet The target sheet.
- * @param {object} params The POST request parameters.
- */
 function handleDelete(sheet, params) {
   const postId = parseInt(params.postId);
   if (isNaN(postId)) {
     return createErrorResponse('Invalid Post ID for delete.', 400);
   }
 
-  // Row index is postId + 1 (1 for headers)
-  // Since IDs are appended sequentially, Row index should match ID + 1.
-  // We need to iterate to find the actual row number (1-based index)
   const data = sheet.getDataRange().getValues();
   let rowToDelete = -1;
   
-  // Find the row number by ID
+  // Find the row index (1-based) where the ID matches
   for (let i = 1; i < data.length; i++) {
     if (data[i][0] === postId) {
-      rowToDelete = i + 1; // Apps Script row index (1-based)
+      rowToDelete = i + 1;
       break;
     }
   }
@@ -216,45 +218,36 @@ function handleDelete(sheet, params) {
   }
 
   sheet.deleteRow(rowToDelete);
-  
-  // NOTE: This leaves a gap in IDs, but the client side uses IDs not row index.
-  // The client side re-sorts by ID on load.
 
   return createJsonResponse({ status: 'success', message: 'Post deleted successfully', id: postId });
 }
 
-// --- Image & Utility Functions ---
+// --- Media Upload Functions ---
 
 /**
- * Uploads an array of base64 images to Cloudinary.
- * @param {string[]|string} base64Images Base64 string(s) of images.
- * @returns {string[]} Array of secure image URLs.
+ * Uploads Base64 images to Cloudinary (Kept from original request for continuity).
  */
 function uploadImages(base64Images) {
   if (!base64Images) return [];
   
-  // Ensure we are working with an array, even if only one image was sent
+  // Assuming a single or array of base64 strings
   const imagesToUpload = Array.isArray(base64Images) ? base64Images : [base64Images];
-  
   const uploadedUrls = [];
   
   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-      Logger.log("Cloudinary credentials not set. Skipping image upload.");
-      return [];
+    Logger.log("Cloudinary credentials not set. Skipping image upload.");
+    return [];
   }
   
   const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
   
   imagesToUpload.forEach(base64Data => {
-    // Clean up the base64 string (remove data prefix)
-    const cleanedBase64 = base64Data.split(',')[1] || base64Data;
-    
-    // Cloudinary requires the full data URI (e.g., 'data:image/png;base64,...')
-    const dataUri = base64Data.startsWith('data:') ? base64Data : `data:image/png;base64,${cleanedBase64}`;
+    // Cloudinary expects data URI format, which might be provided by the client
+    const cleanedBase64 = base64Data.split(',').length > 1 ? base64Data : `data:image/png;base64,${base64Data}`;
 
     const payload = {
       upload_preset: CLOUDINARY_UPLOAD_PRESET,
-      file: dataUri
+      file: cleanedBase64
     };
     
     const options = {
@@ -271,8 +264,10 @@ function uploadImages(base64Images) {
       if (jsonResponse.secure_url) {
         uploadedUrls.push(jsonResponse.secure_url);
         Logger.log('Image uploaded successfully: ' + jsonResponse.secure_url);
-      } else {
+      } else if (jsonResponse.error) {
         Logger.log('Cloudinary upload error: ' + jsonResponse.error.message);
+      } else {
+        Logger.log('Unknown Cloudinary response: ' + response.getContentText());
       }
     } catch (e) {
       Logger.log('Network/Parsing error during Cloudinary fetch: ' + e.message);
@@ -283,19 +278,84 @@ function uploadImages(base64Images) {
 }
 
 /**
- * Creates a standard JSON response.
- * @param {object} data The data object to return.
+ * Uploads a base64 encoded PDF file to Google Drive, sets permissions to public,
+ * and returns the file ID and the public preview URL.
  */
+function uploadPDFToDrive(base64PDF, title) {
+  if (!base64PDF) return { fileId: '', previewUrl: '' };
+
+  try {
+    // 1. Convert Base64 string to Blob
+    const dataParts = base64PDF.split(',');
+    if (dataParts.length < 2) throw new Error('Invalid Base64 format.');
+    
+    const base64Content = dataParts[1];
+    // Attempt to parse mimeType from data URI, default to application/pdf
+    const mimeType = dataParts[0].match(/:(.*?);/)?.[1] || 'application/pdf';
+
+    const blob = Utilities.newBlob(Utilities.base64Decode(base64Content), mimeType, title + '.pdf');
+
+    // 2. Upload to Drive (will go to the root folder by default)
+    const file = DriveApp.createFile(blob);
+    
+    // 3. Make the file publicly accessible (Anyone with the link can view)
+    file.setSharing(DriveApp.Access.ANYONE, DriveApp.Permission.VIEW);
+
+    const fileId = file.getId();
+    // 4. Construct the required Google Preview URL format
+    const previewUrl = `https://drive.google.com/file/d/${fileId}/view`;
+
+    Logger.log('PDF uploaded to Drive successfully. File ID: ' + fileId);
+    return { fileId: fileId, previewUrl: previewUrl };
+
+  } catch (e) {
+    Logger.log('Error during PDF upload to Drive: ' + e.message);
+    return { fileId: '', previewUrl: '' };
+  }
+}
+
+/**
+ * Extracts YouTube video ID from URL
+ */
+function extractYouTubeID(url) {
+  if (!url) return '';
+  
+  // Handle various YouTube URL formats (watch, youtu.be, embed)
+  const patterns = [
+    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\n?#]+)/i,
+    /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
+  ];
+  
+  for (let pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  
+  return '';
+}
+
+/**
+ * Generates URL-friendly slug from title
+ */
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .substring(0, 60); // Limit to 60 characters
+}
+
+// --- Utility Functions ---
+
 function createJsonResponse(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-/**
- * Creates an error JSON response.
- * @param {string} message The error message.
- * @param {number} code The HTTP status code (used for logging/debugging, not actual HTTP status).
- */
 function createErrorResponse(message, code) {
   return ContentService.createTextOutput(JSON.stringify({ 
     error: message, 
