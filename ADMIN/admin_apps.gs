@@ -318,22 +318,30 @@ function uploadPDFToDrive(base64PDF, title) {
  * Extracts YouTube video ID from URL
  */
 function extractYouTubeID(url) {
-  if (!url) return '';
+  if (!url || typeof url !== 'string') return '';
   
-  // Handle various YouTube URL formats (watch, youtu.be, embed)
-  const patterns = [
-    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\n?#]+)/i,
-    /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
+  const trimmed = url.trim();
+  
+  // Comprehensive regex that handles ALL YouTube formats
+  const regex = [
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/i,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/i,
+    /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/i,
+    /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/i,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/i,
+    /youtube\.com\/live\/([a-zA-Z0-9_-]{11})/i,
+    /youtube\.com\/@[^\/]+\/videos\/[^\/]+\/([a-zA-Z0-9_-]{11})/i,
+    /^([a-zA-Z0-9_-]{11})$/  // Direct 11-char ID
   ];
-  
-  for (let pattern of patterns) {
-    const match = url.match(pattern);
+
+  for (let pattern of regex) {
+    const match = trimmed.match(pattern);
     if (match && match[1]) {
-      return match[1];
+      return match[1];  // Always return the clean 11-char ID
     }
   }
-  
-  return '';
+
+  return ''; // Only return empty if truly invalid
 }
 
 /**
