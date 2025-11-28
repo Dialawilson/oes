@@ -7,49 +7,77 @@
   <title>Blog | Ogoni Summit</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class', // Ensure dark mode is set to class strategy
+      theme: {
+        extend: {
+          colors: {
+            'primary-brand': '#821917', // Deep Red/Brown
+            'secondary-brand': '#f9a133', // Orange/Amber
+            'accent-green': '#0d4e0d', // Deep Green
+          },
+        }
+      }
+    }
+  </script>
+  
 <style>
+  /* Inter Font Import */
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-  :root {
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --text: #1e293b;
-    --text-muted: #64748b;
-    --border: #e2e8f0;
-    --accent: #821917;
-    --accent-light: #f9a133;
+  
+  /* ❗ FIX: Reset default margin/padding for browser consistency */
+  html, body { 
+    margin: 0px; 
+    padding: 0px; 
   }
-  .dark {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --text: #f1f5f9;
-    --text-muted: #94a3b8;
-    --border: #334155;
-    --accent: #f9a133;
-    --accent-light: #821917;
-  }
-  * { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
-  body { background-color: var(--bg); color: var(--text); overflow-x: hidden; } /* Prevent body horizontal scroll */
-  .card { background-color: var(--card); border-color: var(--border); }
-  .text-muted { color: var(--text-muted); }
 
-  /* Modal Fixes */
+  /* Apply font and transitions globally */
+  * { 
+    font-family: 'Inter', sans-serif; 
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; 
+  }
+  
+  /* Prevent body horizontal scroll */
+  body { 
+    overflow-x: hidden; 
+  } 
+
+  /* Mobile Menu Styles (Side Drawer) */
+  .mobile-nav-menu {
+    transition: transform 0.4s ease-in-out;
+  }
+  .mobile-nav-menu.hidden-menu {
+    transform: translateX(100%);
+  }
+  .mobile-nav-menu.open-menu {
+    transform: translateX(0);
+  }
+
+  /* Hamburger Animation */
+  .bar-1, .bar-2, .bar-3 { transition: 0.3s ease-in-out; }
+  .hamburger.open .bar-1 { transform: rotate(-45deg) translate(-5px, 6px); }
+  .hamburger.open .bar-2 { opacity: 0; }
+  .hamburger.open .bar-3 { transform: rotate(45deg) translate(-5px, -6px); }
+
+  /* Modal Transition Animation */
   .modal-content { 
-    background-color: var(--card); 
     animation: slideUp 0.4s ease-out; 
     max-width: 95vw;
     width: 100%;
     max-height: 95vh;
-    overflow: hidden; /* Contain everything */
+    overflow: hidden; 
     border-radius: 1rem;
     display: flex;
     flex-direction: column;
   }
   @keyframes slideUp { from { transform: translateY(60px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-  /* Prevent any text overflow from breaking layout */
+  /* Ensure modal body scrolls */
   .modal-body {
     overflow-y: auto;
-    overflow-x: hidden; /* Critical fix */
+    overflow-x: hidden;
     padding-top: 1rem;
     flex: 1;
   }
@@ -58,53 +86,49 @@
     word-break: break-word;
   }
 
-/* Smaller & Centered PDF Viewer on Desktop */
-/* NARROWER & CENTERED PDF Viewer – Desktop Only */
-.pdf-viewer-container { 
-  margin: 2.5rem auto;           /* More breathing room + centered */
-  width: 100%;
-  max-width: 720px;            /* Reduced from full width → looks premium */
-  height: 58vh;
-  min-height: 400px;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-  background: #fff;
-  border: 1px solid var(--border);
-}
-
-@media (min-width: 768px) {
+  /* PDF & YouTube Embed Styles */
   .pdf-viewer-container { 
-    height: 68vh;
-    max-height: 620px;
+    margin: 2.5rem auto;           
+    width: 100%;
+    max-width: 720px;            
+    height: 58vh;
+    min-height: 400px;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    background: #fff;
   }
-}
 
-.pdf-viewer-iframe { 
-  width: 100%; 
-  height: 100%;
-  border: none;
-  background: #f9fafb;
-}
+  @media (min-width: 768px) {
+    .pdf-viewer-container { 
+      height: 68vh;
+      max-height: 620px;
+    }
+  }
 
-/* YouTube stays full-width (as requested) */
-.youtube-container { 
-  position: relative; 
-  padding-bottom: 56.25%; 
-  height: 0; 
-  /* Keeps aspect ratio */
-  overflow: hidden; 
-  border-radius: 1rem; 
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
-  margin: 2.5rem 0;
-  width: 100%;
-}
-.youtube-container iframe { 
-  position: absolute; 
-  top: 0; left: 0; 
-  width: 100%; height: 100%; 
-  border: 0; 
-}
+  .pdf-viewer-iframe { 
+    width: 100%; 
+    height: 100%;
+    border: none;
+    background: #f9fafb;
+  }
+
+  .youtube-container { 
+    position: relative; 
+    padding-bottom: 56.25%; 
+    height: 0; 
+    overflow: hidden; 
+    border-radius: 1rem; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+    margin: 2.5rem 0;
+    width: 100%;
+  }
+  .youtube-container iframe { 
+    position: absolute; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    border: 0; 
+  }
   @media (min-width: 768px) {
     .youtube-container {
       max-width: 800px;
@@ -112,8 +136,16 @@
       margin-right: auto;
     }
   }
-
-  /* Restore original compact download button */
+  
+  /* Rest of your existing styles (not color-related) */
+  .post-image img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; height: 100%; object-fit: cover; }
+  .post-image:hover img { transform: scale(1.1); }
+  .category-badge { position: absolute; top: 4px; right: 4px; color: white; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+  .gallery img { border-radius: 0.75rem; cursor: pointer; border: 1px solid; width: 100%; height: 280px; object-fit: cover; transition: all 0.3s ease; }
+  .gallery img:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+  .markdown h1, .markdown h2, .markdown h3 { margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 700; }
+  .markdown p { line-height: 1.8; margin: 1.5rem 0; }
   .pdf-header {
     display: flex;
     justify-content: space-between;
@@ -130,130 +162,175 @@
     font-size: 0.875rem;
     border-radius: 0.75rem;
   }
-
-  /* Rest of your existing styles (unchanged) */
-  .post-image img { transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; height: 100%; object-fit: cover; }
-  .post-image:hover img { transform: scale(1.1); }
-  .category-badge { position: absolute; top: 4px; right: 4px; background: linear-gradient(135deg, #821917, #f9a133); color: white; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
-  .gallery img { border-radius: 0.75rem; cursor: pointer; border: 1px solid var(--border); width: 100%; height: 280px; object-fit: cover; transition: all 0.3s ease; }
-  .gallery img:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-  .markdown h1, .markdown h2, .markdown h3 { color: var(--text); margin-top: 1.5rem; margin-bottom: 1rem; font-weight: 700; }
-  .markdown p { line-height: 1.8; margin: 1.5rem 0; }
 </style>
 </head>
-<body class="min-h-screen">
-  <!-- Navigation -->
-  <nav class="flex shadow-xl justify-between items-center px-8 md:px-12 py-6 bg-white sticky top-0 z-50 dark:bg-[#1a1d2e]">
+<body class="min-h-screen bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-gray-100">
+  <nav class="flex shadow-xl justify-between items-center px-8 md:px-12 py-6 bg-white sticky top-0 z-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
     <img src="../img/logo.png" alt="Logo" class="w-[50px] h-auto" />
     <ul class="hidden md:flex gap-10 items-center list-none">
-      <li><a href="index.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] font-medium">Home</a></li>
-      <li><a href="about.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] font-medium">About</a></li>
-      <li><a href="./blog.html" class="text-[#821917] dark:text-[#f9a133] font-medium">Blog</a></li>
-      <li><a href="./registrationform.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] font-medium">Register</a></li>
-      <li><a href="./contactus.html" class="text-gray-700 dark:text-slate-300 hover:text-[#821917] font-medium">Contact</a></li>
-      <button class="theme-toggle text-xl">🌙</button>
+      <li><a href="index.html" class="text-gray-700 dark:text-slate-300 hover:text-primary-brand font-medium">Home</a></li>
+      <li><a href="about.html" class="text-gray-700 dark:text-slate-300 hover:text-primary-brand font-medium">About</a></li>
+      <li><a href="./blog.html" class="dark:text-primary-brand hover:text-primary-brand font-medium">Blog</a></li>
+      <li><a href="./registrationform.html" class="text-gray-700 dark:text-slate-300 hover:text-primary-brand font-medium">Register</a></li>
+      <li><a href="./contactus.html" class="text-gray-700 dark:text-slate-300 hover:text-primary-brand font-medium">Contact</a></li>
+      <button class="theme-toggle text-xl text-slate-800 dark:text-slate-300">🌙</button>
     </ul>
-    <div class="md:hidden flex gap-4">
-      <button class="theme-toggle-mobile text-xl dark:text-slate-300">🌙</button>
-      <div class="hamburger cursor-pointer"><span class="bar-1 block w-6 h-0.5 bg-slate-600 dark:bg-slate-300 my-1"></span><span class="bar-2 block w-6 h-0.5 bg-slate-600 dark:bg-slate-300 my-1"></span><span class="bar-3 block w-6 h-0.5 bg-slate-600 dark:bg-slate-300 my-1"></span></div>
+    <div class="md:hidden flex gap-4 items-center">
+      <button class="theme-toggle text-xl text-slate-800 dark:text-slate-300">🌙</button>
+      
+      <button class="hamburger cursor-pointer" id="menu-toggle">
+        <span class="bar-1 block w-6 h-0.5 bg-slate-600 dark:bg-slate-300 my-1"></span>
+        <span class="bar-2 block w-6 h-0.5 bg-slate-600 dark:bg-slate-300 my-1"></span>
+        <span class="bar-3 block w-6 h-0.5 bg-slate-600 dark:bg-slate-300 my-1"></span>
+      </button>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="bg-gradient-to-r from-[#821917] via-[#f9a133] to-[#0d4e0d] text-white py-20 md:py-28">
+  <aside id="mobile-menu" class="mobile-nav-menu hidden-menu fixed top-0 items-center text-center right-0 h-full w-full md:w-80 shadow-2xl z-40 bg-white dark:bg-slate-800 p-8 pt-24 md:hidden border-l border-gray-200 dark:border-slate-700">
+    <ul class="flex flex-col gap-6 items-center list-none text-xl py-12">
+        <li><a href="index.html" class="text-slate-800 dark:text-slate-300 hover:text-primary-brand font-medium">Home</a></li>
+        <li><a href="about.html" class="text-slate-800 dark:text-slate-300 hover:text-primary-brand font-medium">About</a></li>
+        <li><a href="./blog.html" class="text-primary-brand dark:text-secondary-brand font-medium">Blog</a></li>
+        <li><a href="./registrationform.html" class="text-slate-800 dark:text-slate-300 hover:text-primary-brand font-medium">Register</a></li>
+        <li><a href="./contactus.html" class="text-slate-800 dark:text-slate-300 hover:text-primary-brand font-medium">Contact</a></li>
+    </ul>
+    
+  </aside>
+
+  <section class="bg-gradient-to-r from-primary-brand via-secondary-brand to-accent-green text-white py-20 md:py-28">
     <div class="max-w-7xl mx-auto px-6 text-center">
-      <h2 class="text-5xl md:text-6xl font-bold mb-4">Ogoni Summit Blog</h2>
+      <h2 class="text-5xl md:text-6xl font-bold mb-4 ">Ogoni Summit Blog</h2>
       <p class="text-xl opacity-90">Insights, Stories & Inspirations</p>
     </div>
   </section>
 
-  <!-- Search & Filters -->
   <div class="max-w-7xl mx-auto px-6 py-8">
-    <input type="text" id="search" placeholder="Search posts..." class="w-full px-6 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#821917]" style="border-color: var(--border); background-color: var(--card); color: var(--text);">
+    <input 
+      type="text" 
+      id="search" 
+      placeholder="Search posts..." 
+      class="w-full px-6 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-primary-brand 
+             border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-gray-100"
+    >
     <div class="hidden md:flex flex-wrap gap-3 mt-6">
-      <button data-cat="all" class="filter-btn px-6 py-3 rounded-full font-semibold active bg-[#821917] text-white">All Posts</button>
-      <button data-cat="Press Releases" class="filter-btn px-6 py-3 rounded-full font-semibold">Press Releases</button>
-      <button data-cat="Updates" class="filter-btn px-6 py-3 rounded-full font-semibold">Updates</button>
-      <button data-cat="Mentorship" class="filter-btn px-6 py-3 rounded-full font-semibold">Mentorship</button>
-      <button data-cat="Testimonials" class="filter-btn px-6 py-3 rounded-full font-semibold">Testimonials</button>
-      <button data-cat="Resources" class="filter-btn px-6 py-3 rounded-full font-semibold">Resources</button>
+      <button data-cat="all" class="filter-btn px-6 py-3 rounded-full font-semibold active bg-primary-brand text-white">All Posts</button>
+      <button data-cat="Press Releases" class="filter-btn px-6 py-3 rounded-full font-semibold bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-gray-300">Press Releases</button>
+      <button data-cat="Updates" class="filter-btn px-6 py-3 rounded-full font-semibold bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-gray-300">Updates</button>
+      <button data-cat="Mentorship" class="filter-btn px-6 py-3 rounded-full font-semibold bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-gray-300">Mentorship</button>
+      <button data-cat="Testimonials" class="filter-btn px-6 py-3 rounded-full font-semibold bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-gray-300">Testimonials</button>
+      <button data-cat="Resources" class="filter-btn px-6 py-3 rounded-full font-semibold bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-gray-300">Resources</button>
     </div>
   </div>
 
-  <!-- Blog Grid -->
   <main class="max-w-7xl mx-auto px-6 pb-24">
     <div id="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-    <div id="loading" class="text-center py-32"><div class="inline-block w-12 h-12 border-4 border-[#821917] border-t-transparent rounded-full animate-spin"></div><p class="mt-4">Loading posts...</p></div>
+    <div id="loading" class="text-center py-32">
+      <div class="inline-block w-12 h-12 border-4 border-primary-brand border-t-transparent rounded-full animate-spin"></div>
+      <p class="mt-4 text-slate-600 dark:text-slate-300">Loading posts...</p>
+    </div>
   </main>
 
-  <!-- Modal -->
-<div id="modal" class="modal hidden fixed inset-overflow fixed inset-0 bg-black bg-opacity-75 z-50 flex items-start justify-center p-4 overflow-y-auto">
-  <div class="modal-content rounded-2xl shadow-2xl w-full max-w-4xl my-8">
-    <!-- Sticky Header -->
-    <div class="sticky top-0 bg-[var(--card)] border-b px-6 py-6 flex justify-between items-center z-10" style="border-color: var(--border);">
-      <h2 id="modalTitle" class="text-2xl md:text-3xl font-bold pr-8"></h2>
-      <button id="closeModal" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
+  <div id="modal" class="modal hidden fixed inset-overflow fixed inset-0 bg-black bg-opacity-75 z-50 flex items-start justify-center p-4 overflow-y-auto">
+  <div class="modal-content bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl my-8">
+    <div class="sticky top-0 bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 py-6 flex justify-between items-center z-10">
+      <h2 id="modalTitle" class="text-2xl md:text-3xl font-bold pr-8 text-slate-900 dark:text-gray-100"></h2>
+      <button id="closeModal" class="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition text-slate-600 dark:text-gray-300">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     </div>
 
-    <!-- Scrollable Body -->
     <div class="modal-body px-6 md:px-8 py-8 overflow-y-auto" style="max-height: calc(95vh - 100px);">
-      <div class="flex flex-wrap gap-4 text-sm text-muted mb-6 pb-6 border-b" style="border-color: var(--border);">
+      <div class="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400 mb-6 pb-6 border-b border-gray-200 dark:border-slate-700">
         <span id="modalDate"></span> • <span id="modalAuthor"></span> • <span id="modalCategory" class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full"></span>
       </div>
 
-      <!-- Gallery -->
       <div id="gallery" class="gallery mb-8"></div>
 
-      <!-- YouTube Video -->
       <div id="youtubeSection" class="video-section hidden">
-        <h3 class="text-xl font-bold mb-4">Watch Video</h3>
+        <h3 class="text-xl font-bold mb-4 text-slate-900 dark:text-gray-100">Watch Video</h3>
         <div id="youtubeContainer" class="youtube-container"></div>
       </div>
 
-      <!-- Content -->
-      <div id="modalContent" class="markdown prose dark:prose-invert max-w-none mb-8"></div>
+      <div id="modalContent" class="markdown prose dark:prose-invert max-w-none mb-8 text-slate-700 dark:text-gray-300"></div>
 
 
-      <!-- PDF Section (updated) -->
       <div id="pdfSection" class="pdf-section hidden">
         <div class="pdf-header mb-6">
-          <h3 class="text-xl font-bold">Attached Document</h3>
-          <a id="pdfDownload" href="#" class="download-btn bg-[#821917] hover:bg-[#9a2018] text-white font-semibold flex items-center gap-2 px-5 py-3 rounded-xl transition">
+          <h3 class="text-xl font-bold text-slate-900 dark:text-gray-100">Attached Document</h3>
+          <a id="pdfDownload" href="#" class="download-btn bg-primary-brand hover:bg-[#9a2018] text-white font-semibold flex items-center gap-2 px-5 py-3 rounded-xl transition">
             Download PDF
           </a>
         </div>
-        <div class="pdf-viewer-container">
+        <div class="pdf-viewer-container border border-gray-200 dark:border-slate-700">
           <iframe id="pdfViewer" class="pdf-viewer-iframe" src="about:blank" allowfullscreen></iframe>
         </div>
       </div>
     </div>
   </div>
 </div>
-  <footer class="py-12 mt-24 text-center text-gray-500" style="background-color: var(--card);">
+  <footer class="py-12 mt-24 text-center text-gray-500 bg-white dark:bg-slate-800">
     <div class="max-w-7xl mx-auto px-6">
-      <p><a href="login.html">&copy;</a> 2025 Ogoni</a> Entrepreneurship Summit. All rights reserved.</p>
+      <p><a href="login.html" class="hover:text-primary-brand">&copy;</a> 2025 Ogoni Entrepreneurship Summit. All rights reserved.</p>
     </div>
   </footer>
   <script>
     const API = 'https://script.google.com/macros/s/AKfycbwdH1ZlbikzXnufxHlHq8D2aks2vhY-qfRUmK1hBJ8x6IQLKBNc6CZRaJhKG2T3WIpZ/exec';
     let posts = [];
 
-    // Theme & Mobile Menu
+    // ------------------------------------
+    // Mobile Menu Logic
+    // ------------------------------------
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    function toggleMobileMenu() {
+        mobileMenu.classList.toggle('hidden-menu');
+        mobileMenu.classList.toggle('open-menu');
+        menuToggle.classList.toggle('open');
+        // Prevent scrolling when the menu is open
+        document.body.style.overflow = mobileMenu.classList.contains('open-menu') ? 'hidden' : 'auto';
+    }
+    
+    menuToggle.addEventListener('click', toggleMobileMenu);
+
+    // Close menu when a link is clicked
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (mobileMenu.classList.contains('open-menu')) {
+                toggleMobileMenu();
+            }
+        });
+    });
+
+    // ------------------------------------
+    // Theme Toggle Logic
+    // ------------------------------------
     document.querySelectorAll(".theme-toggle, .theme-toggle-mobile").forEach(btn => {
       btn.addEventListener("click", () => {
-        document.documentElement.classList.toggle("dark");
-        btn.textContent = document.documentElement.classList.contains("dark") ? "☀" : "🌙";
-        localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+        const isDark = document.documentElement.classList.toggle("dark");
+        const icon = isDark ? "☀️" : "🌙";
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+
+        // Update all theme toggle buttons text/icons
+        document.querySelectorAll(".theme-toggle").forEach(t => t.textContent = icon);
+        document.querySelectorAll(".theme-toggle-mobile").forEach(t => t.textContent = `${icon} Dark Mode`);
       });
     });
-    if (localStorage.getItem("theme") === "dark") document.documentElement.classList.add("dark");
+    
+    // Initialize theme based on localStorage
+    const themeToggleBtns = document.querySelectorAll(".theme-toggle, .theme-toggle-mobile");
+    if (localStorage.getItem("theme") === "dark") {
+        document.documentElement.classList.add("dark");
+        themeToggleBtns.forEach(btn => btn.textContent = btn.classList.contains('theme-toggle') ? "☀️" : "☀️");
+    } else {
+        themeToggleBtns.forEach(btn => btn.textContent = btn.classList.contains('theme-toggle') ? "🌙" : "🌙 Dark Mode");
+    }
 
-    // Format Date
+    // ------------------------------------
+    // Data and Rendering Logic
+    // ------------------------------------
     function formatDate(dateInput) {
       if (!dateInput) return 'No date';
       let date;
@@ -273,14 +350,11 @@
       return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     }
 
-    // Extract YouTube ID - FIXED VERSION
     function getYouTubeId(url) {
       if (!url) return null;
-      
-      // Handle various YouTube URL formats
       const patterns = [
         /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-        /^([a-zA-Z0-9_-]{11})$/ // Direct video ID
+        /^([a-zA-Z0-9_-]{11})$/ 
       ];
       
       for (let pattern of patterns) {
@@ -289,7 +363,6 @@
           return match[1];
         }
       }
-      
       return null;
     }
 
@@ -321,12 +394,11 @@
       grid.innerHTML = '';
       
       if (list.length === 0) {
-        grid.innerHTML = '<div class="col-span-3 text-center py-16 text-muted">No posts found</div>';
+        grid.innerHTML = '<div class="col-span-3 text-center py-16 text-gray-500 dark:text-gray-400">No posts found</div>';
         return;
       }
       
       list.forEach(post => {
-        // Handle image URLs - could be string or array
         let imageUrls = [];
         if (typeof post.imageurls === 'string') {
           try {
@@ -340,18 +412,20 @@
         
         const cover = imageUrls[0] || 'https://placehold.co/600x400/e5e7eb/6b7280?text=No+Image';
         const card = document.createElement('article');
-        card.className = 'card rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border';
+        
+        card.className = 'bg-white dark:bg-slate-800 rounded-2xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-gray-200 dark:border-slate-700';
         card.onclick = () => openPost(post);
+        
         card.innerHTML = `
           <div class="post-image h-48 relative overflow-hidden">
             <img src="${cover}" alt="${post.title}" loading="lazy">
-            <span class="category-badge">${post.category || 'General'}</span>
+            <span class="category-badge bg-gradient-to-br from-primary-brand to-secondary-brand">${post.category || 'General'}</span>
           </div>
           <div class="p-6">
-            <span class="text-sm text-muted">${formatDate(post.date)}</span>
-            <h2 class="text-xl font-bold mt-2 mb-3 line-clamp-2">${post.title}</h2>
-            <p class="text-muted line-clamp-2">${post.excerpt || ''}</p>
-            <div class="mt-4 flex items-center gap-2 font-semibold text-[#821917]">
+            <span class="text-sm text-gray-500 dark:text-gray-400">${formatDate(post.date)}</span>
+            <h2 class="text-xl font-bold mt-2 mb-3 line-clamp-2 text-slate-900 dark:text-gray-100">${post.title}</h2>
+            <p class="text-gray-500 dark:text-gray-400 line-clamp-2">${post.excerpt || ''}</p>
+            <div class="mt-4 flex items-center gap-2 font-semibold dark:text-secondary-brand text-primary-brand">
               Read More → 
             </div>
           </div>
@@ -361,14 +435,11 @@
     }
 
     function openPost(post) {
-      console.log('Opening post:', post);
-      
       document.getElementById('modalTitle').textContent = post.title;
       document.getElementById('modalDate').textContent = formatDate(post.date);
       document.getElementById('modalAuthor').textContent = `by ${post.author || 'Anonymous'}`;
       document.getElementById('modalCategory').textContent = post.category || 'General';
 
-      // Gallery
       const gallery = document.getElementById('gallery');
       let imageUrls = [];
       
@@ -384,26 +455,21 @@
       
       if (imageUrls && imageUrls.length > 0) {
         gallery.innerHTML = imageUrls.map(src => 
-          `<img src="${src}" onclick="window.open('${src}', '_blank')" alt="Gallery image">`
+          `<img src="${src}" onclick="window.open('${src}', '_blank')" alt="Gallery image" class="border-gray-300 dark:border-slate-600">`
         ).join('');
       } else {
         gallery.innerHTML = '';
       }
 
-      // Content
       document.getElementById('modalContent').innerHTML = marked.parse(post.content || '');
 
-      // YouTube Video
       const youtubeSection = document.getElementById('youtubeSection');
       const youtubeContainer = document.getElementById('youtubeContainer');
-      
       youtubeSection.classList.add('hidden');
       youtubeContainer.innerHTML = '';
       
       if (post.youtubeurl) {
         const videoId = getYouTubeId(post.youtubeurl);
-        console.log('YouTube URL:', post.youtubeurl, 'Video ID:', videoId);
-        
         if (videoId) {
           youtubeContainer.innerHTML = `
             <iframe 
@@ -416,24 +482,16 @@
         }
       }
 
-      // PDF Section - CLEAN IMPLEMENTATION
       const pdfSection = document.getElementById('pdfSection');
       const pdfDownload = document.getElementById('pdfDownload');
       const pdfViewer = document.getElementById('pdfViewer');
       
       pdfSection.classList.add('hidden');
       
-      // Check for PDF using the new backend structure
       if (post.drivefileid && post.drivefileid.trim() !== '') {
-        console.log('PDF found with Drive File ID:', post.drivefileid);
-        
-        // Generate the Google Drive preview URL
         const previewUrl = `https://drive.google.com/file/d/${post.drivefileid}/preview`;
-        
-        // Set PDF preview iframe
         pdfViewer.src = previewUrl;
         
-        // Set download URL
         let downloadUrl = post.pdfurl;
         if (!downloadUrl && post.drivefileid) {
           downloadUrl = `https://drive.google.com/uc?export=download&id=${post.drivefileid}`;
@@ -444,14 +502,9 @@
           pdfDownload.setAttribute('download', `${post.title || 'document'}.pdf`);
         }
         
-        // Show PDF section
         pdfSection.classList.remove('hidden');
         
       } else if (post.pdfurl && post.pdfurl.trim() !== '') {
-        // Fallback for old structure
-        console.log('PDF found with direct URL:', post.pdfurl);
-        
-        // Extract file ID from Google Drive URL for preview
         const fileId = extractFileId(post.pdfurl);
         if (fileId) {
           const previewUrl = `https://drive.google.com/file/d/${fileId}/preview`;
@@ -475,15 +528,12 @@
       document.body.style.overflow = 'hidden';
     }
 
-    // Helper function to extract file ID from Google Drive URL
     function extractFileId(url) {
       if (!url) return '';
-      
-      // Handle different Google Drive URL formats
       const patterns = [
-        /\/d\/([^\/]+)/, // /d/FILE_ID/
-        /id=([^&]+)/,    // id=FILE_ID
-        /\/file\/d\/([^\/]+)/ // /file/d/FILE_ID/
+        /\/d\/([^\/]+)/, 
+        /id=([^&]+)/,    
+        /\/file\/d\/([^\/]+)/ 
       ];
       
       for (let pattern of patterns) {
@@ -492,10 +542,11 @@
           return match[1];
         }
       }
-      
       return '';
     }
 
+    // Modal Close Logic
+    document.getElementById('closeModal').onclick = () => {
     // Close modal function
     function closeModal() {
       document.getElementById('modal').classList.add('hidden');
@@ -505,18 +556,19 @@
 
     document.getElementById('closeModal').onclick = closeModal;
 
-    // Close modal when clicking on backdrop
     document.getElementById('modal').onclick = (e) => {
       if (e.target === document.getElementById('modal')) {
         closeModal();
       }
     };
 
-    // Prevent modal content clicks from closing modal
     document.querySelector('.modal-content').onclick = (e) => {
       e.stopPropagation();
     };
-
+    
+    // ------------------------------------
+    // Search and Filter Logic
+    // ------------------------------------
     document.getElementById('search').oninput = e => {
       const term = e.target.value.toLowerCase();
       const filtered = posts.filter(p => 
@@ -530,18 +582,18 @@
     };
     
 
-    // Filter buttons functionality
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        // Remove active classes from all buttons
+        const defaultClasses = ['bg-gray-200', 'hover:bg-gray-300', 'dark:bg-slate-700', 'dark:hover:bg-slate-600', 'text-slate-800', 'dark:text-gray-300'];
+        const activeClasses = ['bg-primary-brand', 'text-white'];
+        
         document.querySelectorAll('.filter-btn').forEach(b => {
-          b.classList.remove('active', 'bg-[#821917]', 'text-white');
-          b.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+          b.classList.remove('active', ...activeClasses);
+          b.classList.add(...defaultClasses);
         });
         
-        // Add active class to clicked button
-        btn.classList.add('active', 'bg-[#821917]', 'text-white');
-        btn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        btn.classList.add('active', ...activeClasses);
+        btn.classList.remove(...defaultClasses);
         
         const category = btn.dataset.cat;
         if (category === 'all') {
@@ -553,12 +605,11 @@
       });
     });
 
-    // Initialize active state for filter buttons
     document.addEventListener('DOMContentLoaded', () => {
       const allButton = document.querySelector('[data-cat="all"]');
       if (allButton) {
-        allButton.classList.add('bg-[#821917]', 'text-white');
-        allButton.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+        allButton.classList.add('bg-primary-brand', 'text-white');
+        allButton.classList.remove('bg-gray-200', 'hover:bg-gray-300', 'dark:bg-slate-700', 'dark:hover:bg-slate-600', 'text-slate-800', 'dark:text-gray-300');
       }
     });
 
