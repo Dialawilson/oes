@@ -337,16 +337,39 @@ function extractYouTubeID(url) {
 }
 
 /**
- * Generates URL-friendly slug from title
+
+/**
+ * Generates a unique, full-title-based slug (best practice)
  */
 function generateSlug(title) {
-  return title
-    .toLowerCase()
+  if (!title || typeof title !== 'string') {
+    title = 'untitled-post';
+  }
+
+  let baseSlug = title
     .trim()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
-    .substring(0, 60); // Limit to 60 characters
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/gi, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  if (!baseSlug) baseSlug = 'post';
+
+  // Ensure uniqueness by checking existing slugs in the sheet
+  const sheet = setupSheets();
+  const data = sheet.getDataRange().getValues();
+  const existingSlugs = data.slice(1).map(row => row[11] || '').filter(Boolean); // Column L = Slug
+
+  let finalSlug = baseSlug;
+  let counter = 1;
+
+  while (existingSlugs.includes(finalSlug)) {
+    finalSlug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  return finalSlug;
 }
 
 // --- Utility Functions ---

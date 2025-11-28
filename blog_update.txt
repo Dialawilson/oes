@@ -1,7 +1,0 @@
-1. using plclan email
-2. file name post updated
-
-Observation
-the slug works 
-the video is too big, it hides the modal title bar when scrolling , the video should be implemented in the middle of the content not the top, top should be for images 
-the pdf preview area is too big as well reduce the size 
