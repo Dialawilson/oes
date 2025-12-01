@@ -499,28 +499,24 @@
         document.getElementById('adminModal').classList.add('hidden');
         document.getElementById('adminPassword').value = '';
       }
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !document.getElementById('adminModal').classList.contains('hidden')) {
-        document.getElementById('adminModal').classList.add('hidden');
-        document.getElementById('adminPassword').value = '';
+      
+      if (!slug || slug === 'blog.html') {
+        // Close modal if on main blog page
+        closeModal();
+      } else {
+        // Open post if slug exists and we have posts loaded
+        if (posts.length > 0) {
+          const post = posts.find(p => p.slug === slug);
+          if (post) {
+            openPost(post);
+          } else {
+            closeModal();
+          }
+        }
       }
     });
 
-    // Optional shake animation
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
-        20%, 40%, 60%, 80% { transform: translateX(8px); }
-      }
-      .animate-shake { animation: shake 0.5s ease-in-out; }
-    `;
-    document.head.appendChild(style);
-
-    // Start
+    // Initialize: Load posts (which will handle slug routing after loading)
     load();
   </script>
 </body>
